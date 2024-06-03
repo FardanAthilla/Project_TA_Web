@@ -1,11 +1,10 @@
-import React from 'react'
+import React from 'react';
 
 const SidebarComponent = () => {
   return (
-    <div>
-      
-    </div>
-  )
+    <div className=''></div>
+    
+  );
 }
 
-export default SidebarComponent
+export default SidebarComponent;
