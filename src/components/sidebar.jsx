@@ -24,23 +24,17 @@ function Sidebar() {
       name: 'Analytics',
       icon: ChartPieIcon,
       isActive: false,
-      path: '/*', // Update as per your routing setup
-    },
-    {
-      name: 'Notification',
-      icon: BellAlertIcon,
-      isActive: false,
-      path: '/notification', // Update as per your routing setup
+      path: '/Apakek', // Update as per your routing setup
     },
   ];
 
   const menu2 = [
-    {
-      name: 'Chat',
-      icon: ChatBubbleLeftIcon,
-      isActive: false,
-      path: '/chat', // Update as per your routing setup
-    },
+    // {
+    //   name: 'Chat',
+    //   icon: ChatBubbleLeftIcon,
+    //   isActive: false,
+    //   path: '/chat', // Update as per your routing setup
+    // },
     {
       name: 'Notes',
       icon: ClipboardDocumentIcon,
@@ -63,7 +57,7 @@ function Sidebar() {
 
   const menu3 = [
     {
-      name: 'Login',
+      name: 'Logout',
       icon: PowerIcon,
       isActive: false,
       path: '/login', // Update as per your routing setup
@@ -73,12 +67,6 @@ function Sidebar() {
       icon: CursorArrowRippleIcon,
       isActive: false,
       path: '/register', // Update as per your routing setup
-    },
-    {
-      name: 'Error',
-      icon: FaceFrownIcon,
-      isActive: false,
-      path: '/error', // Update as per your routing setup
     },
   ];
 
@@ -97,17 +85,17 @@ function Sidebar() {
         <div className="border-b text-sm">
           <Menus menu={menu3} title={{ sm: 'Autentikasi', xs: 'AUTH' }} navigate={navigate} />
         </div>
-        <div className="flex mx-5 mt-8 bg-blue-300 bg-opacity-10 border border-blue-100 rounded-md p-1 sm:p-2">
+        <div className="flex mx-5 mt-8 bg-opacity-10 border border-blue-100 rounded-md p-1 sm:p-2">
           <img
             src="https://images.pexels.com/photos/3778966/pexels-photo-3778966.jpeg?auto=compress&cs=tinysrgb&w=640&h=458&dpr=1"
             alt="img-profile"
             className="object-cover w-8 h-8 sm:w-10 sm:h-10 rounded-full"
           />
           <div className="flex-1 ml-3 items-center text-gray-700 hidden sm:block">
-            <div className="text-md">Hari Irawan</div>
-            <div className="text-xs">Administrator</div>
+            <div className="text-md">Ayla Syafa Syahira</div>
+            <div className="text-xs">Admin</div>
           </div>
-          <CogIcon width={18} />
+
         </div>
       </section>
     </div>
