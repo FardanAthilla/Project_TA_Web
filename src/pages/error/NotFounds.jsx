@@ -1,20 +1,93 @@
-import React from 'react';
-import './NotFound.css'; 
-import { FaHome } from 'react-icons/fa';
+import React, { useEffect } from 'react';
+import Parallax from 'parallax-js';
+import { Link } from 'react-router-dom';
+import Logo from '../../assets/image/logo3.png';
 
 const NotFound = () => {
+  useEffect(() => {
+    const scene = document.getElementById('scene');
+    new Parallax(scene);
+  }, []);
+
   return (
-    <div className="relative h-screen bg-gray-100 overflow-hidden">
-      <div className="parallax-bg absolute top-0 left-0 w-full h-full bg-fixed bg-cover bg-center"></div>
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center">
-        <h1 className="text-9xl font-extrabold text-white drop-shadow-md animate-bounce">404</h1>
-        <p className="text-2xl text-gray-200 mb-8">Oops! The page you're looking for doesn't exist.</p>
-        <a href="/" className="flex items-center px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition transform hover:scale-105">
-          <FaHome className="mr-2" /> Go Back Home
-        </a>
+    <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-b from-black to-[#0D99FF] text-white overflow-hidden">
+      <div className="relative w-full h-full text-center overflow-hidden flex items-center justify-center">
+        <div id="scene" className="absolute w-full h-full" data-hover-only="false">
+         
+          {/* More Stars for parallax effect */}
+          <div className="absolute w-full h-full" data-depth="0.60">
+            {[...Array(100)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute bg-white rounded-full opacity-80 animate-twinkle glow-star"
+                style={{
+                  width: `${Math.random() * 2}px`,
+                  height: `${Math.random() * 2}px`,
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                }}
+              ></div>
+            ))}
+          </div>
+
+          {/* Particles for parallax effect */}
+          <div className="absolute w-full h-full" data-depth="0.50">
+            {[...Array(50)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute bg-yellow-400 rounded-full opacity-70 animate-pulse glow-particle"
+                style={{
+                  width: `${Math.random() * 3}px`,
+                  height: `${Math.random() * 3}px`,
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                }}
+              ></div>
+            ))}
+          </div>
+
+          {/* Astronaut for parallax effect */}
+          <div className="absolute  w-100 h-1000 md:w-60 md:h-60 transform transition-transform duration-300 ease-in-out hover:rotate-6 hover:scale-105 glow-astronaut" data-depth="1" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+            <img src={Logo} alt="Astronaut" className="animate-float" />
+          </div>
+
+          {/* Meteors for parallax effect */}
+          <div className="absolute w-full h-full" data-depth="0.85">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-8 bg-gray-300 rounded-full opacity-60 animate-meteor glow-meteor"
+                style={{
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  transform: 'rotate(45deg) translate(-50%, -50%)',
+                }}
+              ></div>
+            ))}
+          </div>
+
+          {/* 404 Text */}
+          <div className="absolute inset-0 flex items-center justify-center mt-20 md:mt-32">
+            <p className="text-7xl md:text-9xl font-bold text-white glow-text bounce-animation" data-depth="0.30">404</p>
+          </div>
+        </div>
+        
+        <div className="relative z-10 text-center px-4">
+          <article className="space-y-4 mt-12 md:mt-16">
+            <p className="text-lg md:text-2xl glow-text">
+              Tidak! Seperti nya kamu terjebak di luar angkasa.<br />
+              kembali ke halaman Dashboard
+            </p>
+            <Link to="/">
+              <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button">
+                Paham!
+              </button>
+            </Link>
+          </article>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default NotFound;
