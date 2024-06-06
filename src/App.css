@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+#root {
+    max-width: 1280px;
+  }
+=======
 @keyframes twinkle {
     0%, 100% { opacity: 0.8; }
     50% { opacity: 0.2; }
@@ -96,3 +101,4 @@
   }
   
   
+>>>>>>> 2f2fde02ccdcda0f73221ee8a58b19b09f7cd99c
