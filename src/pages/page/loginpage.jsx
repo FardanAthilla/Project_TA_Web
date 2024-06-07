@@ -20,7 +20,7 @@ function LoginPage() {
 
     if (result.success) {
       console.log("Login berhasil:", result.data);
-      Cookies.set("token", result.data.token);
+      Cookies.set("Token", result.data.Token);
       navigate("/");
     } else {
       setError(result.message);

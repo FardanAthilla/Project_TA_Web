@@ -35,3 +35,19 @@ export const login = async (username, password) => {
     };
   }
 };
+
+const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
+
+export const getUser = async (token) => {
+  try {
+    const response = await axios.post(`${baseUrl}/userAuth/getUser`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return { success: false, message: error.message };
+  }
+};
