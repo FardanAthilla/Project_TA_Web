@@ -50,17 +50,20 @@ export const getUser = async (token) => {
   }
 };
 
-export const register = async (username, password, address, no_handphone) => {
+export const register = async (username, password, address, no_handphone, image) => {
   try {
-    console.log('Mengirim data:', { username, password, address, no_handphone });
-    const response = await axios.post(`${baseUrl}/register`, {
-      username,
-      password,
-      address,
-      no_handphone
-    }, {
+    console.log('Mengirim data:', { username, password, address, no_handphone, image });
+
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    formData.append('address', address);
+    formData.append('no_handphone', no_handphone);
+    formData.append('image', image);
+
+    const response = await axios.post(`${baseUrl}/register`, formData, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data'
       }
     });
 
@@ -83,5 +86,15 @@ export const register = async (username, password, address, no_handphone) => {
       success: false,
       message: error.response ? error.response.data.message : error.message,
     };
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/user/all`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    return { success: false, message: error.message };
   }
 };

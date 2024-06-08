@@ -9,7 +9,6 @@ import {
   UsersIcon,
   EnvelopeIcon,
   PowerIcon,
-  CursorArrowRippleIcon,
 } from '@heroicons/react/20/solid';
 import { getUser } from "../service/fetchapi";
 
@@ -55,7 +54,7 @@ function Sidebar() {
       name: "Analytics",
       icon: ChartPieIcon,
       isActive: false,
-      path: "/AddAccount",
+      path: "/allData",
     },
   ];
 
@@ -73,10 +72,10 @@ function Sidebar() {
       path: "/customers",
     },
     {
-      name: "Mail",
+      name: "Akun",
       icon: EnvelopeIcon,
       isActive: false,
-      path: "/mail",
+      path: "/allData",
     },
   ];
 

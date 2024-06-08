@@ -7,12 +7,17 @@ const AddAccount = () => {
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
   const [noHandphone, setNoHandphone] = useState("");
+  const [image, setImage] = useState(null);
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await register(username, password, address, noHandphone);
+    const result = await register(username, password, address, noHandphone, image);
     setMessage(result.success ? "Registration successful!" : result.message);
+  };
+
+  const handleFileChange = (e) => {
+    setImage(e.target.files[0]);
   };
 
   return (
@@ -89,6 +94,21 @@ const AddAccount = () => {
                 id="no_handphone"
                 value={noHandphone}
                 onChange={(e) => setNoHandphone(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="image"
+              >
+                Upload Image
+              </label>
+              <input
+                type="file"
+                id="image"
+                onChange={handleFileChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 required
               />
