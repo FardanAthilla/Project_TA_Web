@@ -5,9 +5,9 @@ import logo from "../assets/image/logo.png";
 import {
   HomeModernIcon,
   ChartPieIcon,
-  ClipboardDocumentIcon,
+  CogIcon,
   UsersIcon,
-  EnvelopeIcon,
+  WrenchIcon,
   PowerIcon,
 } from '@heroicons/react/20/solid';
 import { getUser } from "../service/fetchapi";
@@ -60,20 +60,20 @@ function Sidebar() {
 
   const menu2 = [
     {
-      name: "Notes",
-      icon: ClipboardDocumentIcon,
+      name: "Mesin",
+      icon: WrenchIcon,
       isActive: false,
-      path: "/notes",
+      path: "/mesin",
     },
     {
-      name: "Customers",
-      icon: UsersIcon,
+      name: "Sparepart",
+      icon: CogIcon,
       isActive: false,
-      path: "/customers",
+      path: "/sparepart",
     },
     {
       name: "Akun",
-      icon: EnvelopeIcon,
+      icon: UsersIcon,
       isActive: false,
       path: "/allData",
     },

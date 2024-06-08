@@ -1,19 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Logo from "../../../assets/image/logo.png";
 import { login } from "../../../service/fetchapi";
 
 function LoginPage() {
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error] = useState("");
   const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    visible: false,
+    message: "",
+    type: "",
+  });
+  const [fade, setFade] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (snackbar.visible) {
+      setFade(true);
+      const timer = setTimeout(() => {
+        setFade(false);
+        setTimeout(() => {
+          setSnackbar({ visible: false, message: "", type: "" });
+        }, 500);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [snackbar]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!username || !password) {
+      setSnackbar({
+        visible: true,
+        message: "Gagal, Harap isi semua textfield nya.",
+        type: "error",
+      });
+      return;
+    }
+
     setLoading(true);
     const result = await login(username, password);
     setLoading(false);
@@ -21,14 +49,58 @@ function LoginPage() {
     if (result.success) {
       console.log("Login berhasil:", result.data);
       Cookies.set("Token", result.data.Token);
-      navigate("/");
+      setSnackbar({
+        visible: true,
+        message: "Login Berhasil.",
+        type: "success",
+      });
+      setTimeout(() => navigate("/"), 1500);
     } else {
-      setError(result.message);
+      setSnackbar({
+        visible: true,
+        message: result.message || "Gagal, Username tidak ditemukan.",
+        type: "error",
+      });
     }
   };
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-b from-black to-[#0D99FF] text-white overflow-hidden relative">
+      {snackbar.visible && (
+        <div
+          role="alert"
+          className={`alert ${
+            snackbar.type === "success" ? "alert-success" : "alert-error"
+          } fixed top-4 w-96 mx-auto z-20 transition-opacity duration-500 ${
+            fade ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            {snackbar.type === "success" ? (
+              <path 
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            )}
+          </svg>
+          <span>{snackbar.message}</span>
+        </div>
+      )}
+
       <div className="relative z-10 bg-white p-8 rounded shadow-md w-96">
         <div className="flex justify-center mb-6">
           <img src={Logo} alt="Logo" />
