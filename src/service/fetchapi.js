@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const API_URL = 'https://rdo-app-o955y.ondigitalocean.app/login';
+const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
 
 export const login = async (username, password) => {
   try {
     console.log('Mengirim data:', { username, password });
-    const response = await axios.post(API_URL, {
+    const response = await axios.post(`${baseUrl}/login`, {
       username: username,
       password: password,
     }, {
@@ -36,8 +36,6 @@ export const login = async (username, password) => {
   }
 };
 
-const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
-
 export const getUser = async (token) => {
   try {
     const response = await axios.post(`${baseUrl}/userAuth/getUser`, {}, {
@@ -49,5 +47,41 @@ export const getUser = async (token) => {
   } catch (error) {
     console.error("Error fetching user data:", error);
     return { success: false, message: error.message };
+  }
+};
+
+export const register = async (username, password, address, no_handphone) => {
+  try {
+    console.log('Mengirim data:', { username, password, address, no_handphone });
+    const response = await axios.post(`${baseUrl}/register`, {
+      username,
+      password,
+      address,
+      no_handphone
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('Response from server:', response);
+
+    if (response.status === 200) {
+      return {
+        success: true,
+        data: response.data,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Registration failed. Please check the details and try again.',
+      };
+    }
+  } catch (error) {
+    console.error('Error:', error.response ? error.response.data : error.message);
+    return {
+      success: false,
+      message: error.response ? error.response.data.message : error.message,
+    };
   }
 };

@@ -47,8 +47,8 @@ const NotFound = () => {
           </div>
 
           {/* Astronaut for parallax effect */}
-          <div className="absolute  w-100 h-1000 md:w-60 md:h-60 transform transition-transform duration-300 ease-in-out hover:rotate-6 hover:scale-105 glow-astronaut" data-depth="1" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-            <img src={Logo} alt="Astronaut" className="animate-float" />
+          <div className="absolute  w-100 h-1000 md:w-60 md:h-60 transform transition-transform duration-300 ease-in-out hover:rotate-6 hover:scale-105 glow-astronaut">
+            <img src={Logo} alt="Astronaut"/>
           </div>
 
           {/* Meteors for parallax effect */}

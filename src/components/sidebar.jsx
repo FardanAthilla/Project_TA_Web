@@ -25,22 +25,22 @@ function Sidebar() {
         const result = await getUser(token);
         if (result.success) {
           setUser(result.data);
-          localStorage.setItem("user", JSON.stringify(result.data)); // Simpan data pengguna di localStorage
+          localStorage.setItem("user", JSON.stringify(result.data));
         }
       }
     };
 
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Ambil data pengguna dari localStorage jika tersedia
+      setUser(JSON.parse(storedUser)); 
     } else {
-      fetchUserData(); // Panggil API jika data tidak tersedia di localStorage
+      fetchUserData();
     }
   }, []);
 
   const handleLogout = () => {
     Cookies.remove("Token");
-    localStorage.removeItem("user"); // Hapus data pengguna dari localStorage
+    localStorage.removeItem("user");
     navigate("/login");
   };
 
@@ -55,7 +55,7 @@ function Sidebar() {
       name: "Analytics",
       icon: ChartPieIcon,
       isActive: false,
-      path: "/Apakek",
+      path: "/AddAccount",
     },
   ];
 
