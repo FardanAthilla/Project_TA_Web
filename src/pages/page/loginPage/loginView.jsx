@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import Logo from "../../assets/image/logo.png";
-import { login } from "../../service/fetchapi";
+import Logo from "../../../assets/image/logo.png";
+import { login } from "../../../service/fetchapi";
 
 function LoginPage() {
 
