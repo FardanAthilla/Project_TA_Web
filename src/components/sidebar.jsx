@@ -63,13 +63,13 @@ function Sidebar() {
       name: "Mesin",
       icon: WrenchIcon,
       isActive: false,
-      path: "/mesin",
+      path: "/listMachine",
     },
     {
       name: "Sparepart",
       icon: CogIcon,
       isActive: false,
-      path: "/sparepart",
+      path: "/listSparepart",
     },
     {
       name: "Akun",
@@ -90,44 +90,42 @@ function Sidebar() {
   ];
 
   return (
-    <div className="App">
-      <section className="w-20 sm:w-64 bg-slate-100 h-screen">
-        <div className="border-b p-5 text-center sm:text-left">
-          <img src={logo} alt="Logo" className="w-full h-auto" />
+    <div className="sidebar fixed h-screen overflow-y-auto bg-slate-100 w-20 sm:w-64">
+      <div className="border-b p-5 text-center sm:text-left">
+        <img src={logo} alt="Logo" className="w-full h-auto" />
+      </div>
+      <div className="border-b text-sm">
+        <Menus
+          menu={menu1}
+          title={{ sm: "Home", xs: "BUSINESS" }}
+          navigate={navigate}
+        />
+      </div>
+      <div className="border-b text-sm">
+        <Menus
+          menu={menu2}
+          title={{ sm: "Tambah Data", xs: "APP" }}
+          navigate={navigate}
+        />
+      </div>
+      <div className="border-b text-sm">
+        <Menus
+          menu={menu3}
+          title={{ sm: "Autentikasi", xs: "AUTH" }}
+          navigate={navigate}
+        />
+      </div>
+      <div className="flex mx-5 mt-8 bg-opacity-10 border border-blue-100 rounded-md p-1 sm:p-2">
+        <img
+          src={`${baseUrl}/${user.image}`}
+          alt="img-profile"
+          className="object-cover w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+        />
+        <div className="flex-1 ml-3 items-center text-gray-700 hidden sm:block">
+          <div className="text-md">{user.username}</div>
+          <div className="text-xs">{user.role || 'Admin'}</div>
         </div>
-        <div className="border-b text-sm">
-          <Menus
-            menu={menu1}
-            title={{ sm: "Home", xs: "BUSINESS" }}
-            navigate={navigate}
-          />
-        </div>
-        <div className="border-b text-sm">
-          <Menus
-            menu={menu2}
-            title={{ sm: "Tambah Data", xs: "APP" }}
-            navigate={navigate}
-          />
-        </div>
-        <div className="border-b text-sm">
-          <Menus
-            menu={menu3}
-            title={{ sm: "Autentikasi", xs: "AUTH" }}
-            navigate={navigate}
-          />
-        </div>
-        <div className="flex mx-5 mt-8 bg-opacity-10 border border-blue-100 rounded-md p-1 sm:p-2">
-          <img
-            src={`${baseUrl}/${user.image}`}
-            alt="img-profile"
-            className="object-cover w-8 h-8 sm:w-10 sm:h-10 rounded-full"
-          />
-          <div className="flex-1 ml-3 items-center text-gray-700 hidden sm:block">
-            <div className="text-md">{user.username}</div>
-            <div className="text-xs">{user.role || 'Admin'}</div>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

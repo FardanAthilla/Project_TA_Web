@@ -98,3 +98,33 @@ export const getAllUsers = async () => {
     return { success: false, message: error.message };
   }
 };
+
+export const fetchMachines = async (searchName = "", searchCategories = "") => {
+  try {
+    const url = `${baseUrl}/search/machine`;
+    const params = new URLSearchParams();
+    if (searchName) params.append("name", searchName);
+    if (searchCategories) params.append("categories", searchCategories);
+
+    const response = await axios.get(`${url}?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching machines:", error);
+    throw error;
+  }
+};
+
+export const fetchSparepart = async (searchName = "", searchCategories = "") => {
+  try {
+    const url = `${baseUrl}/search/sparePart`;
+    const params = new URLSearchParams();
+    if (searchName) params.append("name", searchName);
+    if (searchCategories) params.append("categories", searchCategories);
+
+    const response = await axios.get(`${url}?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching sparepart:", error);
+    throw error;
+  }
+};
