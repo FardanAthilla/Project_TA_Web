@@ -12,7 +12,13 @@ const AddAccount = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await register(username, password, address, noHandphone, image);
+    const result = await register(
+      username,
+      password,
+      address,
+      noHandphone,
+      image
+    );
     setMessage(result.success ? "Registration successful!" : result.message);
   };
 
@@ -21,10 +27,9 @@ const AddAccount = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="container-fluid flex">
       <Sidebar />
-
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
         <div className="w-full max-w-md">
           <form
             onSubmit={handleSubmit}

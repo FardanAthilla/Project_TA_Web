@@ -27,8 +27,12 @@ function AllDataView() {
     return (
       <div className="flex">
         <Sidebar />
-        <div className="flex-1 flex flex-col justify-center items-center">
-          <p>Loading...</p>
+        <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
+          <div className="flex-1 flex flex-col justify-center items-center">
+            <div className="text-center">
+              <span className="loading loading-dots loading-lg"></span>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -37,8 +41,10 @@ function AllDataView() {
     return (
       <div className="flex">
         <Sidebar />
-        <div className="flex-1 flex flex-col justify-center items-center">
-          <p>Error: {error}</p>
+        <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
+          <div className="flex-1 flex flex-col justify-center items-center">
+            <p>Error: {error}</p>
+          </div>
         </div>
       </div>
     );
@@ -47,7 +53,7 @@ function AllDataView() {
     <div className="container-fluid">
       <div className="flex">
         <Sidebar />
-        <div className="flex-1 flex flex-col p-10">
+        <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
           <table className="table">
             <thead>
               <tr>
