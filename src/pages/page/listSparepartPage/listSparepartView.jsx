@@ -10,6 +10,8 @@ const ListSparepart = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
   const fetchAndSetSpareparts = async (
     searchName = "",
@@ -57,6 +59,14 @@ const ListSparepart = () => {
   useEffect(() => {
     fetchAndSetSpareparts(name, categoryId);
   }, [name, categoryId]);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = spareparts.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="container-fluid flex">
@@ -138,9 +148,9 @@ const ListSparepart = () => {
               </tr>
             </thead>
             <tbody>
-              {spareparts.map((sparepart, index) => (
+              {currentItems.map((sparepart, index) => (
                 <tr key={sparepart.spare_part_id}>
-                  <td>{index + 1}</td>
+                  <td>{indexOfFirstItem + index + 1}</td>
                   <td>{sparepart.spare_part_name}</td>
                   <td>
                     {sparepart.CategorySparePart.category_spare_part_name}
@@ -156,11 +166,57 @@ const ListSparepart = () => {
             </tbody>
           </table>
         )}
-        <Link to="/AddAccount">
-          <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button">
-            Tambah Data
-          </button>
-        </Link>
+        <div className="flex justify-center mt-4">
+          <div className="join pt-5">
+            <button
+              className="join-item btn"
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              «
+            </button>
+            
+            {Array.from({
+              length: Math.min(
+                5, 
+                Math.ceil(spareparts.length / itemsPerPage)
+              ),
+            }).map((_, index) => {
+              const pageNumber = Math.max(1, currentPage - 2) + index;
+              return (
+                <button
+                  key={index}
+                  onClick={() => paginate(pageNumber)}
+                  className={`join-item btn ${
+                    pageNumber === currentPage ? "active" : ""
+                  }`}
+                  disabled={
+                    pageNumber > Math.ceil(spareparts.length / itemsPerPage)
+                  }
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+
+            <button
+              className="join-item btn"
+              onClick={() => paginate(currentPage + 1)}
+              disabled={
+                currentPage === Math.ceil(spareparts.length / itemsPerPage)
+              }
+            >
+              »
+            </button>
+          </div>
+        </div>
+        <div className="inline-block">
+          <Link to="/AddAccount">
+            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+              Tambah Data
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );

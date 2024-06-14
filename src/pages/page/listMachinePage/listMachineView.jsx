@@ -10,6 +10,8 @@ const ListMachine = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
   const fetchAndSetMachines = async (
     searchName = "",
@@ -18,7 +20,6 @@ const ListMachine = () => {
     setLoading(true);
     setError("");
     try {
-      console.log("Searching with categories:", searchCategoryId);
       const data = await fetchMachines(searchName, searchCategoryId);
       setMachines(data);
     } catch (error) {
@@ -59,6 +60,14 @@ const ListMachine = () => {
     fetchAndSetMachines(name, categoryId);
   }, [name, categoryId]);
 
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = machines.slice(indexOfFirstItem, indexOfLastItem);
+
   return (
     <div className="container-fluid flex">
       <Sidebar />
@@ -72,7 +81,6 @@ const ListMachine = () => {
                 placeholder="Cari"
                 value={name}
                 onChange={(e) => {
-                  console.log("Name input changed:", e.target.value);
                   setName(e.target.value);
                 }}
               />
@@ -107,8 +115,8 @@ const ListMachine = () => {
                 <li key="all">
                   <a onClick={() => setCategoryId("")}>SEMUA KATEGORI</a>
                 </li>
-                {allCategories.map((category, index) => (
-                  <li key={index}>
+                {allCategories.map((category) => (
+                  <li key={category.id}>
                     <a onClick={() => setCategoryId(category.id)}>
                       {category.name}
                     </a>
@@ -139,9 +147,9 @@ const ListMachine = () => {
               </tr>
             </thead>
             <tbody>
-              {machines.map((machine, index) => (
+              {currentItems.map((machine, index) => (
                 <tr key={machine.store_items_id}>
-                  <td>{index + 1}</td>
+                  <td>{indexOfFirstItem + index + 1}</td>
                   <td>{machine.store_items_name}</td>
                   <td>{machine.CategoryMachine.category_machine_name}</td>
                   <td>{machine.price}</td>
@@ -155,14 +163,61 @@ const ListMachine = () => {
             </tbody>
           </table>
         )}
-        <Link to="/AddAccount">
-          <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button">
-            Tambah Data
-          </button>
-        </Link>
+        <div className="flex justify-center mt-4">
+          <div className="join pt-5">
+            <button
+              className="join-item btn"
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              «
+            </button>
+  
+            {Array.from({
+              length: Math.min(
+                5,
+                Math.ceil(machines.length / itemsPerPage)
+              ),
+            }).map((_, index) => {
+              const pageNumber = Math.max(1, currentPage - 2) + index;
+              return (
+                <button
+                  key={index}
+                  onClick={() => paginate(pageNumber)}
+                  className={`join-item btn ${
+                    pageNumber === currentPage ? "active" : ""
+                  }`}
+                  disabled={
+                    pageNumber > Math.ceil(machines.length / itemsPerPage)
+                  }
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+  
+            <button
+              className="join-item btn"
+              onClick={() => paginate(currentPage + 1)}
+              disabled={
+                currentPage === Math.ceil(machines.length / itemsPerPage)
+              }
+            >
+              »
+            </button>
+          </div>
+        </div>
+        <div className="inline-block">
+          <Link to="/AddAccount">
+            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+              Tambah Data
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );
-};
-
-export default ListMachine;
+}
+  
+  export default ListMachine;
+  
