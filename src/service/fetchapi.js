@@ -5,7 +5,7 @@ const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
 export const login = async (username, password) => {
   try {
     console.log('Mengirim data:', { username, password });
-    const response = await axios.post(`${baseUrl}/login`, {
+    const response = await axios.post(`${baseUrl}/login/owner`, {
       username: username,
       password: password,
     }, {
@@ -125,6 +125,36 @@ export const fetchSparepart = async (searchName = "", searchCategories = "") => 
     return response.data;
   } catch (error) {
     console.error("Error fetching sparepart:", error);
+    throw error;
+  }
+};
+
+export const getCategory = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/category/machine`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Error fetching category machine:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+export const fetchCategoryMachine = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/category/machine`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
+
+export const fetchCategorySpareParts = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/category/spare/part`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
     throw error;
   }
 };

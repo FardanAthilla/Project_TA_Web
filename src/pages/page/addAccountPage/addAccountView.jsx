@@ -1,5 +1,6 @@
-import { PhotoIcon } from '@heroicons/react/24/solid'
+import { PhotoIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
 import { register } from "../../../service/fetchapi";
 
@@ -12,9 +13,17 @@ export default function AddAccount() {
   const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await register(username, password, address, noHandphone, image);
+    const result = await register(
+      username,
+      password,
+      address,
+      noHandphone,
+      image
+    );
     setMessage(result.success ? "Pendaftaran berhasil!" : result.message);
   };
 
@@ -41,7 +50,17 @@ export default function AddAccount() {
         <form onSubmit={handleSubmit}>
           <div className="space-y-12">
             <div className="border-b border-gray-900/10 pb-12">
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Daftar</h2>
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="text-base font-semibold leading-7 text-gray-900 flex items-center mb-5"
+              >
+                <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                Kembali
+              </button>
+              <h2 className="text-base font-semibold leading-7 text-gray-900">
+                Daftar
+              </h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Informasi ini akan digunakan untuk membuat akun Anda.
               </p>
@@ -51,46 +70,57 @@ export default function AddAccount() {
               )}
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                
                 <div className="sm:col-span-4">
-                  <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label
+                    htmlFor="cover-photo"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
                     Foto Sampul
                   </label>
                   <div className="mt-2 flex items-center">
                     <div className="text-center">
                       {preview ? (
-                        <img src={preview} alt="Preview" className="mx-auto h-24 w-24 object-cover rounded-full" />
+                        <img
+                          src={preview}
+                          alt="Preview"
+                          className="mx-auto h-24 w-24 object-cover rounded-full"
+                        />
                       ) : (
-                        <>
-                          <div className="mx-auto h-24 w-24 flex items-center justify-center rounded-full border border-dashed border-gray-900/25">
-                            <PhotoIcon className="h-12 w-12 text-gray-300" aria-hidden="true" />
-                          </div>
-                          <div className="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
-                            <label
-                              htmlFor="file-upload"
-                              className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                            >
-                              <span>Unggah file</span>
-                              <input
-                                id="file-upload"
-                                name="file-upload"
-                                type="file"
-                                onChange={handleFileChange}
-                                className="sr-only"
-                                required
-                              />
-                            </label>
-                            <p className="pl-1">atau seret dan jatuhkan</p>
-                          </div>
-                          <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF hingga 10MB</p>
-                        </>
+                        <div className="mx-auto h-24 w-24 flex items-center justify-center rounded-full border border-dashed border-gray-900/25">
+                          <PhotoIcon
+                            className="h-12 w-12 text-gray-300"
+                            aria-hidden="true"
+                          />
+                        </div>
                       )}
+                      <div className="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                        >
+                          <span>Unggah file</span>
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            onChange={handleFileChange}
+                            className="sr-only"
+                            required
+                          />
+                        </label>
+                      </div>
+                      <p className="text-xs leading-5 text-gray-600">
+                        PNG, JPG, GIF hingga 10MB
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="sm:col-span-4">
-                  <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
                     Nama Pengguna
                   </label>
                   <div className="mt-2">
@@ -108,7 +138,10 @@ export default function AddAccount() {
                 </div>
 
                 <div className="sm:col-span-4">
-                  <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
                     Kata Sandi
                   </label>
                   <div className="mt-2">
@@ -126,7 +159,10 @@ export default function AddAccount() {
                 </div>
 
                 <div className="sm:col-span-4">
-                  <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
                     Alamat
                   </label>
                   <div className="mt-2">
@@ -144,7 +180,10 @@ export default function AddAccount() {
                 </div>
 
                 <div className="sm:col-span-4">
-                  <label htmlFor="no_handphone" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label
+                    htmlFor="no_handphone"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
                     No Handphone
                   </label>
                   <div className="mt-2">
@@ -160,7 +199,6 @@ export default function AddAccount() {
                     />
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -168,13 +206,14 @@ export default function AddAccount() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="text-sm font-semibold leading-6 text-gray-900"
+                className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
               >
                 Batal
               </button>
+
               <button
                 type="submit"
-                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
               >
                 Daftar
               </button>
@@ -183,5 +222,5 @@ export default function AddAccount() {
         </form>
       </div>
     </div>
-  )
+  );
 }

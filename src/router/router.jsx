@@ -6,6 +6,7 @@ import AddAccount from "../pages/page/addAccountPage/addAccountView.jsx";
 import AllData from "../pages/page/addAccountPage/allDataView.jsx";
 import ListMachine from "../pages/page/listMachinePage/listMachineView.jsx";
 import ListSparepart from "../pages/page/listSparepartPage/listSparepartView.jsx";
+import ListCategory from "../pages/page/listCategoryPage/listCategoryView.jsx";
 import LoginPage from "../pages/page/loginPage/loginView.jsx";
 import ProtectedRoute from "../router/protectedRoute.jsx";
 import PublicRoute from "../router/publicRoute.jsx";
@@ -21,6 +22,7 @@ const Router = () => {
         <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
         <Route path="/ListMachine" element={<ProtectedRoute element={<ListMachine />} />} />
         <Route path="/ListSparepart" element={<ProtectedRoute element={<ListSparepart />} />} />
+        <Route path="/ListCategory" element={<ProtectedRoute element={<ListCategory />} />} />
       </Routes>
     </BrowserRouter>
   );
