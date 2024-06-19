@@ -50,15 +50,16 @@ export const getUser = async (token) => {
   }
 };
 
-export const register = async (username, password, address, no_handphone, image) => {
+export const register = async (username, password, address, no_handphone, role, image) => {
   try {
-    console.log('Mengirim data:', { username, password, address, no_handphone, image });
+    console.log('Mengirim data:', { username, password, address, no_handphone, role, image });
 
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
     formData.append('address', address);
     formData.append('no_handphone', no_handphone);
+    formData.append('role', role);
     formData.append('image', image);
 
     const response = await axios.post(`${baseUrl}/register`, formData, {

@@ -9,22 +9,30 @@ export default function AddAccount() {
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
   const [noHandphone, setNoHandphone] = useState("");
+  const [role, setRole] = useState("1"); 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const result = await register(
       username,
       password,
       address,
       noHandphone,
+      role,
       image
     );
+    setIsLoading(false);
     setMessage(result.success ? "Pendaftaran berhasil!" : result.message);
+    if (result.success) {
+      navigate(-1);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -38,6 +46,7 @@ export default function AddAccount() {
     setPassword("");
     setAddress("");
     setNoHandphone("");
+    setRole("1");
     setImage(null);
     setPreview(null);
     setMessage("");
@@ -199,6 +208,35 @@ export default function AddAccount() {
                     />
                   </div>
                 </div>
+
+                <div className="sm:col-span-4">
+                  <label
+                    htmlFor="role"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Role
+                  </label>
+                  <div className="dropdown dropdown-hover mt-2 w-full">
+                    <div
+                      tabIndex={0}
+                      role="button"
+                      className="btn w-full"
+y                    >
+                      {role === "1" ? "Owner" : "Member"}
+                    </div>
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
+                    >
+                      <li key="1">
+                        <a onClick={() => setRole("1")}>Owner</a>
+                      </li>
+                      <li key="2">
+                        <a onClick={() => setRole("2")}>Member</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -215,7 +253,8 @@ export default function AddAccount() {
                 type="submit"
                 className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
               >
-                Daftar
+                  {isLoading ? "Loading..." : "Daftar"}
+
               </button>
             </div>
           </div>
