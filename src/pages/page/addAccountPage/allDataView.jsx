@@ -86,7 +86,7 @@ function AllDataView() {
                         {user.username || "No Username"}
                       </div>
                       <div className="text-sm opacity-50">
-                        {user.role || "No Role"}
+                        {user.Role.role_name || "No Role"}
                       </div>
                     </div>
                   </td>
@@ -100,11 +100,13 @@ function AllDataView() {
               ))}
             </tbody>
           </table>
-          <Link to="/AddAccount">
-            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button">
-              Tambah Akun
-            </button>
-          </Link>
+          <div className="inline-block">
+            <Link to="/AddAccount">
+              <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button">
+                Tambah Akun
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

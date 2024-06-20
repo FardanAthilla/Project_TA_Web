@@ -9,6 +9,7 @@ import {
   UsersIcon,
   WrenchIcon,
   PowerIcon,
+  CubeIcon,
 } from '@heroicons/react/20/solid';
 import { getUser } from "../service/fetchapi";
 
@@ -77,6 +78,12 @@ function Sidebar() {
       isActive: false,
       path: "/allData",
     },
+    {
+      name: "Kategori",
+      icon: CubeIcon,
+      isActive: false,
+      path: "/listCategory",
+    },
   ];
 
   const menu3 = [
@@ -97,21 +104,21 @@ function Sidebar() {
       <div className="border-b text-sm">
         <Menus
           menu={menu1}
-          title={{ sm: "Home", xs: "BUSINESS" }}
+          title={{ sm: "Home", xs: "Home" }}
           navigate={navigate}
         />
       </div>
       <div className="border-b text-sm">
         <Menus
           menu={menu2}
-          title={{ sm: "Tambah Data", xs: "APP" }}
+          title={{ sm: "Tambah Data", xs: "Tambah Data" }}
           navigate={navigate}
         />
       </div>
       <div className="border-b text-sm">
         <Menus
           menu={menu3}
-          title={{ sm: "Autentikasi", xs: "AUTH" }}
+          title={{ sm: "Autentikasi", xs: "Autentikasi" }}
           navigate={navigate}
         />
       </div>
