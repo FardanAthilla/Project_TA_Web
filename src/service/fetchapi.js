@@ -159,3 +159,13 @@ export const fetchCategorySpareParts = async () => {
     throw error;
   }
 };
+
+export const addMachine = async (machineData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/category/machine`, machineData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding machine:", error);
+    throw error;
+  }
+};

@@ -5,6 +5,7 @@ import NotFound from "../pages/error/NotFounds";
 import AddAccount from "../pages/page/addAccountPage/addAccountView.jsx";
 import AllData from "../pages/page/addAccountPage/allDataView.jsx";
 import ListMachine from "../pages/page/listMachinePage/listMachineView.jsx";
+import AddMachine from "../pages/page/listMachinePage/addMachineView.jsx";
 import ListSparepart from "../pages/page/listSparepartPage/listSparepartView.jsx";
 import ListCategory from "../pages/page/listCategoryPage/listCategoryView.jsx";
 import LoginPage from "../pages/page/loginPage/loginView.jsx";
@@ -23,6 +24,7 @@ const Router = () => {
         <Route path="/ListMachine" element={<ProtectedRoute element={<ListMachine />} />} />
         <Route path="/ListSparepart" element={<ProtectedRoute element={<ListSparepart />} />} />
         <Route path="/ListCategory" element={<ProtectedRoute element={<ListCategory />} />} />
+        <Route path="/AddMachine" element={<ProtectedRoute element={<AddMachine />} />} />
       </Routes>
     </BrowserRouter>
   );

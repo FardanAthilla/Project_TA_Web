@@ -1,54 +1,52 @@
-import { PhotoIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
-import { register } from "../../../service/fetchapi";
+import { addMachine } from "../../../service/fetchapi";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 
-export default function AddAccount() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [address, setAddress] = useState("");
-  const [noHandphone, setNoHandphone] = useState("");
-  const [role, setRole] = useState("1"); 
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+const AddMachineView = () => {
+  const [machineData, setMachineData] = useState({
+    store_items_name: "",
+    quantity: "",
+    category_machine_id: "",
+    price: "",
+  });
+
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setMachineData({
+      ...machineData,
+      [name]: value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const result = await register(
-      username,
-      password,
-      address,
-      noHandphone,
-      role,
-      image
-    );
-    setIsLoading(false);
-    setMessage(result.success ? "Pendaftaran berhasil!" : result.message);
-    if (result.success) {
-      navigate(-1);
+    try {
+      const result = await addMachine(machineData);
+      setMessage(result.success ? "Mesin berhasil ditambahkan!" : result.message);
+      if (result.success) {
+        navigate(-1);
+      }
+    } catch (error) {
+      setMessage("Gagal menambahkan mesin.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
-  };
-
   const handleCancel = () => {
-    setUsername("");
-    setPassword("");
-    setAddress("");
-    setNoHandphone("");
-    setRole("1");
-    setImage(null);
-    setPreview(null);
+    setMachineData({
+      store_items_name: "",
+      quantity: "",
+      category_machine_id: "",
+      price: "",
+    });
     setMessage("");
   };
 
@@ -68,10 +66,10 @@ export default function AddAccount() {
                 Kembali
               </button>
               <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Daftar
+                Tambah Mesin
               </h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Informasi ini akan digunakan untuk membuat akun Anda.
+                Informasi ini akan digunakan untuk menambah mesin baru.
               </p>
 
               {message && (
@@ -81,65 +79,19 @@ export default function AddAccount() {
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="cover-photo"
+                    htmlFor="store_items_name"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Foto Sampul
-                  </label>
-                  <div className="mt-2 flex items-center">
-                    <div className="text-center">
-                      {preview ? (
-                        <img
-                          src={preview}
-                          alt="Preview"
-                          className="mx-auto h-24 w-24 object-cover rounded-full"
-                        />
-                      ) : (
-                        <div className="mx-auto h-24 w-24 flex items-center justify-center rounded-full border border-dashed border-gray-900/25">
-                          <PhotoIcon
-                            className="h-12 w-12 text-gray-300"
-                            aria-hidden="true"
-                          />
-                        </div>
-                      )}
-                      <div className="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                        >
-                          <span>Unggah file</span>
-                          <input
-                            id="file-upload"
-                            name="file-upload"
-                            type="file"
-                            onChange={handleFileChange}
-                            className="sr-only"
-                            required
-                          />
-                        </label>
-                      </div>
-                      <p className="text-xs leading-5 text-gray-600">
-                        PNG, JPG, GIF hingga 10MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sm:col-span-4">
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Nama Pengguna
+                    Nama Mesin
                   </label>
                   <div className="mt-2">
                     <input
                       type="text"
-                      name="username"
-                      id="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      autoComplete="username"
+                      name="store_items_name"
+                      id="store_items_name"
+                      value={machineData.store_items_name}
+                      onChange={handleChange}
+                      autoComplete="store_items_name"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
@@ -148,19 +100,19 @@ export default function AddAccount() {
 
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="password"
+                    htmlFor="quantity"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Kata Sandi
+                    Jumlah
                   </label>
                   <div className="mt-2">
                     <input
-                      type="password"
-                      name="password"
-                      id="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      autoComplete="current-password"
+                      type="number"
+                      name="quantity"
+                      id="quantity"
+                      value={machineData.quantity}
+                      onChange={handleChange}
+                      autoComplete="quantity"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
@@ -169,19 +121,19 @@ export default function AddAccount() {
 
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="address"
+                    htmlFor="category_machine_id"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Alamat
+                    ID Kategori Mesin
                   </label>
                   <div className="mt-2">
                     <input
-                      type="text"
-                      name="address"
-                      id="address"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      autoComplete="address"
+                      type="number"
+                      name="category_machine_id"
+                      id="category_machine_id"
+                      value={machineData.category_machine_id}
+                      onChange={handleChange}
+                      autoComplete="category_machine_id"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
@@ -190,51 +142,22 @@ export default function AddAccount() {
 
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="no_handphone"
+                    htmlFor="price"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    No Handphone
+                    Harga
                   </label>
                   <div className="mt-2">
                     <input
-                      type="text"
-                      name="no_handphone"
-                      id="no_handphone"
-                      value={noHandphone}
-                      onChange={(e) => setNoHandphone(e.target.value)}
-                      autoComplete="tel"
+                      type="number"
+                      name="price"
+                      id="price"
+                      value={machineData.price}
+                      onChange={handleChange}
+                      autoComplete="price"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-4">
-                  <label
-                    htmlFor="role"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Role
-                  </label>
-                  <div className="dropdown dropdown-hover mt-2 w-full">
-                    <div
-                      tabIndex={0}
-                      role="button"
-                      className="btn w-full"
-y                    >
-                      {role === "1" ? "Owner" : "Member"}
-                    </div>
-                    <ul
-                      tabIndex={0}
-                      className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
-                    >
-                      <li key="1">
-                        <a onClick={() => setRole("1")}>Owner</a>
-                      </li>
-                      <li key="2">
-                        <a onClick={() => setRole("2")}>Member</a>
-                      </li>
-                    </ul>
                   </div>
                 </div>
               </div>
@@ -253,8 +176,7 @@ y                    >
                 type="submit"
                 className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
               >
-                  {isLoading ? "Loading..." : "Daftar"}
-
+                {isLoading ? "Loading..." : "Tambah"}
               </button>
             </div>
           </div>
@@ -262,4 +184,6 @@ y                    >
       </div>
     </div>
   );
-}
+};
+
+export default AddMachineView;
