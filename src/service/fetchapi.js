@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
 
+// Login
 export const login = async (username, password) => {
   try {
     console.log('Mengirim data:', { username, password });
@@ -36,6 +37,7 @@ export const login = async (username, password) => {
   }
 };
 
+// User
 export const getUser = async (token) => {
   try {
     const response = await axios.post(`${baseUrl}/userAuth/getUser`, {}, {
@@ -50,6 +52,7 @@ export const getUser = async (token) => {
   }
 };
 
+// Account
 export const register = async (username, password, address, no_handphone, role, image) => {
   try {
     console.log('Mengirim data:', { username, password, address, no_handphone, role, image });
@@ -100,6 +103,18 @@ export const getAllUsers = async () => {
   }
 };
 
+export const deleteUser = async (userId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Delete User Error: ", error.response.data);
+    return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
+  }
+};
+
+
+// Machine
 export const fetchMachines = async (searchName = "", searchCategories = "") => {
   try {
     const url = `${baseUrl}/search/machine`;
@@ -115,6 +130,7 @@ export const fetchMachines = async (searchName = "", searchCategories = "") => {
   }
 };
 
+// Sparepart
 export const fetchSparepart = async (searchName = "", searchCategories = "") => {
   try {
     const url = `${baseUrl}/search/sparePart`;
