@@ -5,6 +5,7 @@ import {
   fetchCategoryMachine,
 } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
+import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid"; // Import icons
 
 const ListCategoryView = () => {
   const [sparePartCategories, setSparePartCategories] = useState([]);
@@ -101,8 +102,12 @@ const ListCategoryView = () => {
                       <td>{indexOfFirstItemSpareParts + index + 1}</td>
                       <td>{category.category_spare_part_name}</td>
                       <td>
-                        <button className="btn btn-ghost btn-xs">Edit</button>
-                        <button className="btn btn-ghost btn-xs">Hapus</button>
+                        <button className="btn btn-ghost btn-xs">
+                          <PencilIcon className="h-5 w-5 text-blue-500" />
+                        </button>
+                        <button className="btn btn-ghost btn-xs text-red-600">
+                          <TrashIcon className="h-5 w-5" />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -181,8 +186,12 @@ const ListCategoryView = () => {
                       <td>{indexOfFirstItemMachine + index + 1}</td>
                       <td>{category.category_machine_name}</td>
                       <td>
-                        <button className="btn btn-ghost btn-xs">Edit</button>
-                        <button className="btn btn-ghost btn-xs">Hapus</button>
+                        <button className="btn btn-ghost btn-xs">
+                          <PencilIcon className="h-5 w-5 text-blue-500" />
+                        </button>
+                        <button className="btn btn-ghost btn-xs text-red-600">
+                          <TrashIcon className="h-5 w-5" />
+                        </button>
                       </td>
                     </tr>
                   ))}

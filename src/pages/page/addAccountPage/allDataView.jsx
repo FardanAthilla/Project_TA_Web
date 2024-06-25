@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../../components/sidebar";
 import { getAllUsers, deleteUser } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
-import { TrashIcon } from "@heroicons/react/20/solid";
+import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
+
 function AllDataView() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -123,7 +124,9 @@ function AllDataView() {
                   <td>{user.address || "No Address"}</td>
                   <td>{user.no_handphone || "No Phone Number"}</td>
                   <td>
-                    <button className="btn btn-ghost btn-xs">Edit</button>
+                    <button className="btn btn-ghost btn-xs">
+                      <PencilIcon className="h-5 w-5 text-blue-600" />
+                    </button>
                     <button
                       className="btn btn-ghost btn-xs text-red-600"
                       onClick={() => handleDelete(user.user_id)}
