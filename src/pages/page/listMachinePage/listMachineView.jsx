@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
 import { fetchMachines } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
+import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
 
 const ListMachine = () => {
   const [machines, setMachines] = useState([]);
@@ -13,10 +14,7 @@ const ListMachine = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
 
-  const fetchAndSetMachines = async (
-    searchName = "",
-    searchCategoryId = ""
-  ) => {
+  const fetchAndSetMachines = async (searchName = "", searchCategoryId = "") => {
     setLoading(true);
     setError("");
     try {
@@ -155,8 +153,12 @@ const ListMachine = () => {
                   <td>{machine.price}</td>
                   <td>{machine.quantity}</td>
                   <td>
-                    <button className="btn btn-ghost btn-xs">Edit</button>
-                    <button className="btn btn-ghost btn-xs">Hapus</button>
+                    <button className="btn btn-ghost btn-xs">
+                      <PencilIcon className="h-5 w-5 text-blue-600" />
+                    </button>
+                    <button className="btn btn-ghost btn-xs">
+                      <TrashIcon className="h-5 w-5 text-red-600" />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -172,12 +174,9 @@ const ListMachine = () => {
             >
               «
             </button>
-  
+
             {Array.from({
-              length: Math.min(
-                5,
-                Math.ceil(machines.length / itemsPerPage)
-              ),
+              length: Math.min(5, Math.ceil(machines.length / itemsPerPage)),
             }).map((_, index) => {
               const pageNumber = Math.max(1, currentPage - 2) + index;
               return (
@@ -195,13 +194,11 @@ const ListMachine = () => {
                 </button>
               );
             })}
-  
+
             <button
               className="join-item btn"
               onClick={() => paginate(currentPage + 1)}
-              disabled={
-                currentPage === Math.ceil(machines.length / itemsPerPage)
-              }
+              disabled={currentPage === Math.ceil(machines.length / itemsPerPage)}
             >
               »
             </button>
@@ -217,7 +214,6 @@ const ListMachine = () => {
       </div>
     </div>
   );
-}
-  
-  export default ListMachine;
-  
+};
+
+export default ListMachine;

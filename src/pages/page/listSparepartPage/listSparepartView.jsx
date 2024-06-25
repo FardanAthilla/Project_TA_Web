@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
 import { fetchSparepart } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
+import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
 
 const ListSparepart = () => {
   const [spareparts, setSpareparts] = useState([]);
@@ -158,8 +159,12 @@ const ListSparepart = () => {
                   <td>{sparepart.price}</td>
                   <td>{sparepart.quantity}</td>
                   <td>
-                    <button className="btn btn-ghost btn-xs">Edit</button>
-                    <button className="btn btn-ghost btn-xs">Hapus</button>
+                    <button className="btn btn-ghost btn-xs">
+                      <PencilIcon className="h-5 w-5 text-blue-600" />
+                    </button>
+                    <button className="btn btn-ghost btn-xs">
+                      <TrashIcon className="h-5 w-5 text-red-600" />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -175,7 +180,7 @@ const ListSparepart = () => {
             >
               «
             </button>
-            
+
             {Array.from({
               length: Math.min(
                 5, 
