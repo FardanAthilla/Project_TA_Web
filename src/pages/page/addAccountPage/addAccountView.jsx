@@ -1,5 +1,5 @@
 import { PhotoIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
 import { register } from "../../../service/fetchapi";
@@ -9,16 +9,29 @@ export default function AddAccount() {
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
   const [noHandphone, setNoHandphone] = useState("");
-  const [role, setRole] = useState("1"); 
+  const [role, setRole] = useState("1");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    visible: false,
+    message: "",
+    type: "success",
+  });
+  const [fade, setFade] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!username || !password || !address || !noHandphone || !image) {
+      setSnackbar({
+        visible: true,
+        message: "Semua Field harus diisi",
+        type: "error",
+      });
+      return;
+    }
     setIsLoading(true);
     const result = await register(
       username,
@@ -29,10 +42,15 @@ export default function AddAccount() {
       image
     );
     setIsLoading(false);
-    setMessage(result.success ? "Pendaftaran berhasil!" : result.message);
-      if (result.success) {
-        navigate(-1);
-      }
+    setSnackbar({
+      
+      visible: true,
+      message: result.success ? "Pendaftaran berhasil!" : result.message,
+      type: result.success ? "success" : "error",
+    });
+    if (result.success) {
+      setTimeout(() => navigate(-1), 1500);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -49,13 +67,60 @@ export default function AddAccount() {
     setRole("1");
     setImage(null);
     setPreview(null);
-    setMessage("");
   };
+
+  useEffect(() => {
+    if (snackbar.visible) {
+      setFade(true);
+      const timer = setTimeout(() => {
+        setFade(false);
+        setTimeout(() => {
+          setSnackbar({ visible: false, message: "", type: "" });
+        }, 500);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [snackbar]);
+
 
   return (
     <div className="container-fluid flex">
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
+        {snackbar.visible && (
+          <div
+            role="alert"
+            className={`alert ${
+              snackbar.type === "success" ? "alert-success" : "alert-error"
+            } fixed top-4 w-96 mx-auto z-20 transition-opacity duration-500 ${
+              fade ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              {snackbar.type === "success" ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              )}
+            </svg>
+            <span>{snackbar.message}</span>
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="space-y-12">
             <div className="border-b border-gray-900/10 pb-12">
@@ -74,9 +139,6 @@ export default function AddAccount() {
                 Informasi ini akan digunakan untuk membuat akun Anda.
               </p>
 
-              {message && (
-                <div className="mb-4 text-center text-red-500">{message}</div>
-              )}
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
                   <label
@@ -113,7 +175,6 @@ export default function AddAccount() {
                             type="file"
                             onChange={handleFileChange}
                             className="sr-only"
-                            required
                           />
                         </label>
                       </div>
@@ -140,7 +201,6 @@ export default function AddAccount() {
                       onChange={(e) => setUsername(e.target.value)}
                       autoComplete="username"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
                     />
                   </div>
                 </div>
@@ -161,7 +221,6 @@ export default function AddAccount() {
                       onChange={(e) => setPassword(e.target.value)}
                       autoComplete="current-password"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
                     />
                   </div>
                 </div>
@@ -182,7 +241,6 @@ export default function AddAccount() {
                       onChange={(e) => setAddress(e.target.value)}
                       autoComplete="address"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
                     />
                   </div>
                 </div>
@@ -203,7 +261,6 @@ export default function AddAccount() {
                       onChange={(e) => setNoHandphone(e.target.value)}
                       autoComplete="tel"
                       className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
                     />
                   </div>
                 </div>
@@ -216,11 +273,7 @@ export default function AddAccount() {
                     Role
                   </label>
                   <div className="dropdown dropdown-hover mt-2 w-full">
-                    <div
-                      tabIndex={0}
-                      role="button"
-                      className="btn w-full"
-y                    >
+                    <div tabIndex={0} role="button" className="btn w-full">
                       {role === "1" ? "Owner" : "Member"}
                     </div>
                     <ul
@@ -251,8 +304,7 @@ y                    >
                 type="submit"
                 className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
               >
-                  {isLoading ? "Loading..." : "Daftar"}
-
+                {isLoading ? "Loading..." : "Daftar"}
               </button>
             </div>
           </div>
