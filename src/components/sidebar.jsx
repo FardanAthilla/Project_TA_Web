@@ -17,6 +17,7 @@ function Sidebar() {
   const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
   const navigate = useNavigate();
   const [user, setUser] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -92,48 +93,103 @@ function Sidebar() {
       icon: PowerIcon,
       isActive: false,
       path: "/login",
-      action: handleLogout,
+      action: () => setIsModalOpen(true),
     },
   ];
 
   return (
-    <div className="sidebar fixed h-screen overflow-y-auto bg-slate-100 w-20 sm:w-64">
-      <div className="border-b p-5 text-center sm:text-left">
-        <img src={logo} alt="Logo" className="w-full h-auto" />
-      </div>
-      <div className="border-b text-sm">
-        <Menus
-          menu={menu1}
-          title={{ sm: "Home", xs: "Home" }}
-          navigate={navigate}
-        />
-      </div>
-      <div className="border-b text-sm">
-        <Menus
-          menu={menu2}
-          title={{ sm: "Tambah Data", xs: "Tambah Data" }}
-          navigate={navigate}
-        />
-      </div>
-      <div className="border-b text-sm">
-        <Menus
-          menu={menu3}
-          title={{ sm: "Autentikasi", xs: "Autentikasi" }}
-          navigate={navigate}
-        />
-      </div>
-      <div className="flex mx-5 mt-8 bg-opacity-10 border border-blue-100 rounded-md p-1 sm:p-2">
-        <img
-          src={`${baseUrl}/${user.image}`}
-          alt="img-profile"
-          className="object-cover w-8 h-8 sm:w-10 sm:h-10 rounded-full"
-        />
-        <div className="flex-1 ml-3 items-center text-gray-700 hidden sm:block">
-          <div className="text-md">{user.username}</div>
-          <div className="text-xs">{user.role || 'Admin'}</div>
+    <>
+      <div className="sidebar fixed h-screen overflow-y-auto bg-slate-100 w-20 sm:w-64 z-20">
+        <div className="border-b p-5 text-center sm:text-left">
+          <img src={logo} alt="Logo" className="w-full h-auto" />
+        </div>
+        <div className="border-b text-sm">
+          <Menus
+            menu={menu1}
+            title={{ sm: "Home", xs: "Home" }}
+            navigate={navigate}
+          />
+        </div>
+        <div className="border-b text-sm">
+          <Menus
+            menu={menu2}
+            title={{ sm: "Tambah Data", xs: "Tambah Data" }}
+            navigate={navigate}
+          />
+        </div>
+        <div className="border-b text-sm">
+          <Menus
+            menu={menu3}
+            title={{ sm: "Autentikasi", xs: "Autentikasi" }}
+            navigate={navigate}
+          />
+        </div>
+        <div className="flex mx-5 mt-8 bg-opacity-10 border border-blue-100 rounded-md p-1 sm:p-2">
+          <img
+            src={`${baseUrl}/${user.image}`}
+            alt="img-profile"
+            className="object-cover w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+          />
+          <div className="flex-1 ml-3 items-center text-gray-700 hidden sm:block">
+            <div className="text-md">{user.username}</div>
+            <div className="text-xs">{user.role || 'Admin'}</div>
+          </div>
         </div>
       </div>
-    </div>
+
+      {isModalOpen && (
+        <div
+          id="static-modal"
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
+          style={{ pointerEvents: "auto" }}
+        >
+          <div className="bg-white dark:bg-gray-700 rounded-lg shadow p-4 max-w-md w-full">
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Konfirmasi Logout
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 p-1 rounded-lg"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4">
+              <p className="text-gray-500 dark:text-gray-400">
+                Apakah kamu yakin ingin logout? Semua sesi akan diakhiri.
+              </p>
+            </div>
+            <div className="flex justify-end p-4 border-t dark:border-gray-600">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="py-2 px-4 mr-3 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleLogout}
+                className="py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
