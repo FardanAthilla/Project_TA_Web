@@ -84,7 +84,7 @@ export default function AddAccount() {
 
 
   return (
-    <div className="container-fluid flex">
+    <div className="h-auto container-fluid flex ">
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
         {snackbar.visible && (
@@ -127,15 +127,15 @@ export default function AddAccount() {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="text-base font-semibold leading-7 text-gray-900 flex items-center mb-5"
+                className="text-base font-semibold leading-7 flex items-center mb-5"
               >
                 <ArrowLeftIcon className="h-5 w-5 mr-2" />
                 Kembali
               </button>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
+              <h2 className="text-base font-semibold leading-7">
                 Daftar
               </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
+              <p className="mt-1 text-sm leading-6">
                 Informasi ini akan digunakan untuk membuat akun Anda.
               </p>
 
@@ -143,7 +143,7 @@ export default function AddAccount() {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="cover-photo"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Foto Sampul
                   </label>
@@ -158,15 +158,15 @@ export default function AddAccount() {
                       ) : (
                         <div className="mx-auto h-24 w-24 flex items-center justify-center rounded-full border border-dashed border-gray-900/25">
                           <PhotoIcon
-                            className="h-12 w-12 text-gray-300"
+                            className="h-12 w-12"
                             aria-hidden="true"
                           />
                         </div>
                       )}
-                      <div className="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
+                      <div className="mt-4 flex text-sm leading-6 justify-center">
                         <label
                           htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                          className="relative cursor-pointer rounded-md  font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
                         >
                           <span>Unggah file</span>
                           <input
@@ -178,7 +178,7 @@ export default function AddAccount() {
                           />
                         </label>
                       </div>
-                      <p className="text-xs leading-5 text-gray-600">
+                      <p className="text-xs leading-5">
                         PNG, JPG, GIF hingga 10MB
                       </p>
                     </div>
@@ -188,7 +188,7 @@ export default function AddAccount() {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="username"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Nama Pengguna
                   </label>
@@ -200,7 +200,7 @@ export default function AddAccount() {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       autoComplete="username"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -208,7 +208,7 @@ export default function AddAccount() {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Kata Sandi
                   </label>
@@ -220,7 +220,7 @@ export default function AddAccount() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       autoComplete="current-password"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -228,7 +228,7 @@ export default function AddAccount() {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="address"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Alamat
                   </label>
@@ -240,7 +240,7 @@ export default function AddAccount() {
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       autoComplete="address"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export default function AddAccount() {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="no_handphone"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     No Handphone
                   </label>
@@ -260,7 +260,7 @@ export default function AddAccount() {
                       value={noHandphone}
                       onChange={(e) => setNoHandphone(e.target.value)}
                       autoComplete="tel"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export default function AddAccount() {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="role"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Role
                   </label>
