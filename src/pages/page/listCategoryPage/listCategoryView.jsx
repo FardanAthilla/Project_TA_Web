@@ -5,7 +5,7 @@ import {
   fetchCategoryMachine,
 } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
-import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid"; // Import icons
+import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
 
 const ListCategoryView = () => {
   const [sparePartCategories, setSparePartCategories] = useState([]);
@@ -83,7 +83,6 @@ const ListCategoryView = () => {
           <p className="text-center">{error}</p>
         ) : (
           <>
-            {/* Spare Parts Table */}
             <h2 className="mt-8 text-lg">Kategori Spare Parts</h2>
             {sparePartCategories.length === 0 ? (
               <p className="text-center">Kategori tidak ditemukan</p>
@@ -243,15 +242,15 @@ const ListCategoryView = () => {
                 </button>
               </div>
             </div>
+            <div className="inline-block">
+              <Link to="/AddCategory">
+                <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+                  Tambah Data
+                </button>
+              </Link>
+            </div>
           </>
         )}
-        <div className="inline-block">
-          <Link to="/AddCategory">
-            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
-              Tambah Data
-            </button>
-          </Link>
-        </div>
       </div>
     </div>
   );

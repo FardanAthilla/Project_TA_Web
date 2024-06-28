@@ -60,15 +60,15 @@ const AddMachineView = () => {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="text-base font-semibold leading-7 text-gray-900 flex items-center mb-5"
+                className="text-base font-semibold leading-7 flex items-center mb-5"
               >
                 <ArrowLeftIcon className="h-5 w-5 mr-2" />
                 Kembali
               </button>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
+              <h2 className="text-base font-semibold leading-7">
                 Tambah Mesin
               </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
+              <p className="mt-1 text-sm leading-6">
                 Informasi ini akan digunakan untuk menambah mesin baru.
               </p>
 
@@ -80,7 +80,7 @@ const AddMachineView = () => {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="store_items_name"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Nama Mesin
                   </label>
@@ -92,7 +92,7 @@ const AddMachineView = () => {
                       value={machineData.store_items_name}
                       onChange={handleChange}
                       autoComplete="store_items_name"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
                   </div>
@@ -101,7 +101,7 @@ const AddMachineView = () => {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="quantity"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Jumlah
                   </label>
@@ -113,7 +113,7 @@ const AddMachineView = () => {
                       value={machineData.quantity}
                       onChange={handleChange}
                       autoComplete="quantity"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
                   </div>
@@ -122,7 +122,7 @@ const AddMachineView = () => {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="category_machine_id"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     ID Kategori Mesin
                   </label>
@@ -134,7 +134,7 @@ const AddMachineView = () => {
                       value={machineData.category_machine_id}
                       onChange={handleChange}
                       autoComplete="category_machine_id"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
                   </div>
@@ -143,7 +143,7 @@ const AddMachineView = () => {
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="price"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6"
                   >
                     Harga
                   </label>
@@ -155,7 +155,7 @@ const AddMachineView = () => {
                       value={machineData.price}
                       onChange={handleChange}
                       autoComplete="price"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       required
                     />
                   </div>
