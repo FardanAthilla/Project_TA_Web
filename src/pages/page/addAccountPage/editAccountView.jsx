@@ -1,17 +1,19 @@
-import { PhotoIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
-import { register } from "../../../service/fetchapi";
+import { updateUser, updateUserPhoto } from "../../../service/fetchapi";
+import { PhotoIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 
-export default function AddAccount() {
-  const [username, setUsername] = useState("");
+export default function EditAccount() {
+  const location = useLocation();
+  const user = location.state.user;
+  
+  const [username, setUsername] = useState(user.username);
   const [password, setPassword] = useState("");
-  const [address, setAddress] = useState("");
-  const [noHandphone, setNoHandphone] = useState("");
-  const [role, setRole] = useState("1");
+  const [address, setAddress] = useState(user.address);
+  const [noHandphone, setNoHandphone] = useState(user.no_handphone);
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState(`https://rdo-app-o955y.ondigitalocean.app/${user.image}`);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     visible: false,
@@ -19,7 +21,7 @@ export default function AddAccount() {
     type: "success",
   });
   const [fade, setFade] = useState(false);
-
+  
   const navigate = useNavigate();
 
   const validatePassword = (password) => {
@@ -33,16 +35,16 @@ export default function AddAccount() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password || !address || !noHandphone || !image) {
+    if (!username || !address || !noHandphone) {
       setSnackbar({
         visible: true,
-        message: "Semua Field harus diisi",
+        message: "Semua Field harus diisi kecuali password",
         type: "error",
       });
       return;
     }
 
-    if (!validatePassword(password)) {
+    if (password && !validatePassword(password)) {
       setSnackbar({
         visible: true,
         message: "Password harus memiliki minimal 8 karakter, satu huruf besar, satu angka, dan satu karakter spesial",
@@ -50,25 +52,51 @@ export default function AddAccount() {
       });
       return;
     }
-
+    
     setIsLoading(true);
-    const result = await register(
+    
+    const userData = { 
+      id: user.user_id,
       username,
-      password,
       address,
-      noHandphone,
-      role,
-      image
-    );
-    setIsLoading(false);
+      no_handphone: noHandphone,
+    };
+
+    if (password) {
+      userData.password = password;
+    }
+
+    const updateResult = await updateUser(userData);
+    if (!updateResult.success) {
+      setSnackbar({
+        visible: true,
+        message: updateResult.message,
+        type: "error",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (image) {
+      const photoResult = await updateUserPhoto(user.user_id, image);
+      if (!photoResult.success) {
+        setSnackbar({
+          visible: true,
+          message: photoResult.message,
+          type: "error",
+        });
+        setIsLoading(false);
+        return;
+      }
+    }
+
     setSnackbar({
       visible: true,
-      message: result.success ? "Pendaftaran berhasil!" : result.message,
-      type: result.success ? "success" : "error",
+      message: "Perbarui berhasil!",
+      type: "success",
     });
-    if (result.success) {
-      setTimeout(() => navigate(-1), 1500);
-    }
+    setIsLoading(false);
+    setTimeout(() => navigate(-1), 1500);
   };
 
   const handleFileChange = (e) => {
@@ -78,13 +106,12 @@ export default function AddAccount() {
   };
 
   const handleCancel = () => {
-    setUsername("");
+    setUsername(user.username);
     setPassword("");
-    setAddress("");
-    setNoHandphone("");
-    setRole("1");
+    setAddress(user.address);
+    setNoHandphone(user.no_handphone);
     setImage(null);
-    setPreview(null);
+    setPreview(`https://rdo-app-o955y.ondigitalocean.app/${user.image}`);
   };
 
   useEffect(() => {
@@ -101,7 +128,7 @@ export default function AddAccount() {
   }, [snackbar]);
 
   return (
-    <div className="h-auto container-fluid flex ">
+    <div className="h-auto container-fluid flex">
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
         {snackbar.visible && (
@@ -150,10 +177,10 @@ export default function AddAccount() {
                 Kembali
               </button>
               <h2 className="text-base font-semibold leading-7">
-                Daftar
+                Edit Akun
               </h2>
               <p className="mt-1 text-sm leading-6">
-                Informasi ini akan digunakan untuk membuat akun Anda.
+                Informasi ini akan digunakan untuk memperbarui akun Anda.
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -227,7 +254,7 @@ export default function AddAccount() {
                     htmlFor="password"
                     className="block text-sm font-medium leading-6"
                   >
-                    Kata Sandi
+                    Kata Sandi (Tidak perlu jika tidak lupa password)
                   </label>
                   <div className="mt-2">
                     <input
@@ -251,12 +278,12 @@ export default function AddAccount() {
                   </label>
                   <div className="mt-2">
                     <input
-                      type="text"
-                      name="address"
                       id="address"
+                      name="address"
+                      type="text"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      autoComplete="address"
+                      autoComplete="street-address"
                       className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -271,9 +298,9 @@ export default function AddAccount() {
                   </label>
                   <div className="mt-2">
                     <input
-                      type="number"
-                      name="no_handphone"
                       id="no_handphone"
+                      name="no_handphone"
+                      type="text"
                       value={noHandphone}
                       onChange={(e) => setNoHandphone(e.target.value)}
                       autoComplete="tel"
@@ -281,49 +308,17 @@ export default function AddAccount() {
                     />
                   </div>
                 </div>
-
-                <div className="sm:col-span-4">
-                  <label
-                    htmlFor="role"
-                    className="block text-sm font-medium leading-6"
-                  >
-                    Role
-                  </label>
-                  <div className="dropdown dropdown-hover mt-2 w-full">
-                    <div tabIndex={0} role="button" className="btn w-full">
-                      {role === "1" ? "Owner" : "Member"}
-                    </div>
-                    <ul
-                      tabIndex={0}
-                      className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
-                    >
-                      <li key="1">
-                        <a onClick={() => setRole("1")}>Owner</a>
-                      </li>
-                      <li key="2">
-                        <a onClick={() => setRole("2")}>Member</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
               </div>
             </div>
+          </div>
 
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
-              >
-                {isLoading ? "Loading..." : "Daftar"}
-              </button>
-            </div>
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <button
+              type="submit"
+              className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
+            >
+              {isLoading ? "Loading..." : "Perbarui"}
+            </button>
           </div>
         </form>
       </div>
