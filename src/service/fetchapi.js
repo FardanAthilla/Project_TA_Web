@@ -112,6 +112,30 @@ export const deleteUser = async (userId) => {
     return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
   }
 };
+export const updateUser = async (userData) => {
+  try {
+    const response = await axios.put(`${baseUrl}/user`, userData);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+export const updateUserPhoto = async (userId, image) => {
+  const formData = new FormData();
+  formData.append('image', image);
+
+  try {
+    const response = await axios.put(`${baseUrl}/user/foto/${userId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
 
 
 // Machine

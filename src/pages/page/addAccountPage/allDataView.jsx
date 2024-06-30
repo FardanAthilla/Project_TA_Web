@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
 import { getAllUsers, deleteUser } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
@@ -10,6 +11,7 @@ function AllDataView() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const navigate = useNavigate();
   const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
 
   const fetchUsers = async () => {
@@ -51,6 +53,10 @@ function AllDataView() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedUserId(null);
+  };
+
+  const handleEdit = (user) => {
+    navigate("/EditAccount", { state: { user } });
   };
 
   if (loading)
@@ -124,7 +130,10 @@ function AllDataView() {
                   <td>{user.address || "No Address"}</td>
                   <td>{user.no_handphone || "No Phone Number"}</td>
                   <td>
-                    <button className="btn btn-ghost btn-xs">
+                    <button
+                      className="btn btn-ghost btn-xs"
+                      onClick={() => handleEdit(user)}
+                    >
                       <PencilIcon className="h-5 w-5 text-blue-600" />
                     </button>
                     <button
