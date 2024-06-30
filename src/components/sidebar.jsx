@@ -56,7 +56,7 @@ function Sidebar() {
       name: "Analytics",
       icon: ChartPieIcon,
       isActive: false,
-      path: "/allData",
+      path: "/history",
     },
   ];
 

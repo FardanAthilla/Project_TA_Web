@@ -4,7 +4,7 @@ import Sidebar from "../../../components/sidebar";
 
 const DashboardPage = () => {
   return (
-    <div className="h-screen  container-fluid flex bg-white">
+    <div className="container-fluid flex">
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
         <div className="text-black">istri jaehyun</div>

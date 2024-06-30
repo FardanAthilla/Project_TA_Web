@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainContent from "../pages/page/dashboardPage/dashboardView.jsx";
+import Page1 from "../pages/page/historyanalytics/view.jsx";
 import NotFound from "../pages/error/NotFounds";
 import AddAccount from "../pages/page/addAccountPage/addAccountView.jsx";
 import AllData from "../pages/page/addAccountPage/allDataView.jsx";
@@ -18,6 +19,7 @@ const Router = () => {
       <Routes>
         <Route path="/" element={<ProtectedRoute element={<MainContent />} />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/history" element={<ProtectedRoute element={<Page1 />} />} />        
         <Route path="/AddAccount" element={<ProtectedRoute element={<AddAccount />} />} />
         <Route path="/AllData" element={<ProtectedRoute element={<AllData />} />} />
         <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
