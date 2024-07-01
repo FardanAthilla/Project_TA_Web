@@ -153,6 +153,15 @@ export const fetchMachines = async (searchName = "", searchCategories = "") => {
     throw error;
   }
 };
+export const deleteMachine = async (machineId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/store/items/${machineId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Delete User Error: ", error.response.data);
+    return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
+  }
+};
 
 // Sparepart
 export const fetchSparepart = async (searchName = "", searchCategories = "") => {
