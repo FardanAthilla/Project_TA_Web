@@ -26,9 +26,8 @@ export default function AddAccount() {
     const minLength = 8;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     
-    return password.length >= minLength && hasUpperCase && hasNumber && hasSpecialChar;
+    return password.length >= minLength && hasUpperCase && hasNumber;
   };
 
   const handleSubmit = async (e) => {
@@ -45,7 +44,7 @@ export default function AddAccount() {
     if (!validatePassword(password)) {
       setSnackbar({
         visible: true,
-        message: "Password harus memiliki minimal 8 karakter, satu huruf besar, satu angka, dan satu karakter spesial",
+        message: "Password harus memiliki minimal 8 karakter, satu huruf besar, satu angka",
         type: "error",
       });
       return;
