@@ -61,7 +61,11 @@ const ListMachine = () => {
 
   useEffect(() => {
     fetchAndSetMachines(name, categoryId);
-  }, [name, categoryId]);
+  }, [categoryId]);
+
+  const handleSearchClick = () => {
+    fetchAndSetMachines(name, categoryId);
+  };
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -87,7 +91,7 @@ const ListMachine = () => {
       }
       setLoading(false);
       setIsModalOpen(false);
-      setSelectedMachineId(null);
+      handleSearchClick(); 
     }
   };
 
@@ -116,7 +120,8 @@ const ListMachine = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
                 fill="currentColor"
-                className="w-4 h-4 opacity-70"
+                className="w-4 h-4 opacity-70 cursor-pointer"
+                onClick={handleSearchClick}
               >
                 <path
                   fillRule="evenodd"
@@ -125,11 +130,11 @@ const ListMachine = () => {
                 />
               </svg>
             </label>
-            <div className="dropdown dropdown-hover">
+            <div className="dropdown dropdown-hover ml-5">
               <div
                 tabIndex={0}
                 role="button"
-                className="btn ml-5"
+                className="btn"
                 style={{ minWidth: "200px" }}
               >
                 {categoryId !== ""
