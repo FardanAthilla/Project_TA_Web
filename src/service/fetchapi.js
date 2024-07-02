@@ -162,6 +162,15 @@ export const deleteMachine = async (machineId) => {
     return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
   }
 };
+export const addMachine = async (machineData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/store/items`, machineData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding machine:", error);
+    throw error;
+  }
+};
 
 // Sparepart
 export const fetchSparepart = async (searchName = "", searchCategories = "") => {
@@ -209,12 +218,3 @@ export const fetchCategorySpareParts = async () => {
   }
 };
 
-export const addMachine = async (machineData) => {
-  try {
-    const response = await axios.post(`${baseUrl}/category/machine`, machineData);
-    return response.data;
-  } catch (error) {
-    console.error("Error adding machine:", error);
-    throw error;
-  }
-};
