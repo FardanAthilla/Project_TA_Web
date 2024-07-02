@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '../../../components/sidebar';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import DataTable from 'react-data-table-component';
 
 const Page1 = () => {
   const [salesData, setSalesData] = useState([]);
@@ -15,7 +16,7 @@ const Page1 = () => {
         const formattedData = result.Data.map((sale) => ({
           id: sale.sales_report_id,
           date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
-          total_price: new Intl.NumberFormat('id-ID', { //ini biar ada Rp ny
+          total_price: new Intl.NumberFormat('id-ID', { //ini ngubah format angka ke Rp
             style: 'currency',
             currency: 'IDR',
             minimumFractionDigits: 0,
@@ -38,6 +39,45 @@ const Page1 = () => {
     fetchData();
   }, []);
 
+  const columns = [
+    {
+      name: 'ID',
+      selector: row => row.id,
+      sortable: true,
+      width: '15%'
+    },
+    {
+      name: 'Barang',
+      selector: row => row.items.map((item, index) => (
+        <div key={index}>{item.name} ({item.quantity}x)</div>
+      )),
+      sortable: false,
+      width: '45%'
+    },
+    {
+      name: 'Tanggal',
+      selector: row => row.date,
+      sortable: true,
+      width: '20%'
+    },
+    {
+      name: 'Total Harga',
+      selector: row => row.total_price,
+      sortable: true,
+      width: '20%'
+    }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        backgroundColor: '#cfe2ff', 
+        fontSize: '16px',
+        fontWeight: 'bold',
+      },
+    },
+  };
+
   return (
     <div className="h-screen flex bg-white">
       <Sidebar />
@@ -47,32 +87,12 @@ const Page1 = () => {
         ) : (
           <>
             <h1 className="text-3xl font-bold mb-4">History Penjualan</h1>
-            <table className="table-fixed w-full border-collapse border border-gray-200">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="w-1/6 px-4 py-2 border border-gray-200">ID</th>
-                  <th className="w-1/2 px-4 py-2 border border-gray-200">Barang</th>
-                  <th className="w-1/6 px-4 py-2 border border-gray-200">Tanggal</th>
-                  <th className="w-1/6 px-4 py-2 border border-gray-200">Total Harga</th>
-                </tr>
-              </thead>
-              <tbody>
-                {salesData.map((sale, index) => (
-                  <tr key={index}>
-                    <td className="px-4 py-2 border border-gray-200">{sale.id}</td>
-                    <td className="px-4 py-2 border border-gray-200">
-                      {sale.items.map((item, itemIndex) => (
-                        <div key={itemIndex}>
-                          {item.name} ({item.quantity}x)
-                        </div>
-                      ))}
-                    </td>
-                    <td className="px-4 py-2 border border-gray-200">{sale.date}</td>
-                    <td className="px-4 py-2 border border-gray-200">{sale.total_price}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <DataTable
+              columns={columns}
+              data={salesData}
+              customStyles={customStyles}
+              pagination
+            />
           </>
         )}
       </div>
@@ -80,4 +100,4 @@ const Page1 = () => {
   );
 };
 
-export default Page1;
+export default Page1; 
