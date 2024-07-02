@@ -21,7 +21,7 @@ const Router = () => {
         <Route path="/" element={<ProtectedRoute element={<MainContent />} />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/history" element={<ProtectedRoute element={<Page1 />} />} />        
-
+        <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
         <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
 
         <Route path="/AddAccount" element={<ProtectedRoute element={<AddAccount />} />} />
