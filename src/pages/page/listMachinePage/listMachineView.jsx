@@ -3,10 +3,12 @@ import Sidebar from "../../../components/sidebar";
 import { fetchMachines, deleteMachine } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
 import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
+import { useNavigate } from "react-router-dom";
 
 const ListMachine = () => {
   const [machines, setMachines] = useState([]);
   const [name, setName] = useState("");
+  const navigate = useNavigate();
   const [categoryId, setCategoryId] = useState("");
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -79,6 +81,9 @@ const ListMachine = () => {
     setSelectedMachineId(machineId);
     setIsModalOpen(true);
   };
+  const handleEdit = (machine) => {
+    navigate("/editMachine", { state: { machine } });
+  };
 
   const confirmDelete = async () => {
     if (selectedMachineId) {
@@ -91,7 +96,7 @@ const ListMachine = () => {
       }
       setLoading(false);
       setIsModalOpen(false);
-      handleSearchClick(); 
+      handleSearchClick();
     }
   };
 
@@ -189,7 +194,10 @@ const ListMachine = () => {
                   <td>{machine.quantity}</td>
                   <td>
                     <button className="btn btn-ghost btn-xs">
-                      <PencilIcon className="h-5 w-5 text-blue-600" />
+                      <PencilIcon
+                        className="h-5 w-5 text-blue-600"
+                        onClick={() => handleEdit(machine)}
+                      />
                     </button>
                     <button
                       className="btn btn-ghost btn-xs text-red-600"

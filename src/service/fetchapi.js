@@ -164,7 +164,7 @@ export const deleteMachine = async (machineId) => {
 };
 export const addMachine = async (machineData) => {
   try {
-    const response = await axios.post(`${baseUrl}/store/items`, machineData);
+    const response = await axios.post(`${baseUrl}/store/`, machineData);
     return response.data;
   } catch (error) {
     console.error("Error adding machine:", error.message);
@@ -172,6 +172,14 @@ export const addMachine = async (machineData) => {
       console.error("Error details:", error.response.data);
     }
     throw error;
+  }
+};
+export const updateMachine = async (machineData) => {
+  try {
+    const response = await axios.put(`${baseUrl}/store/items`, machineData);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, message: error.message };
   }
 };
 
@@ -191,6 +199,7 @@ export const fetchSparepart = async (searchName = "", searchCategories = "") => 
   }
 };
 
+// Category
 export const getCategory = async () => {
   try {
     const response = await axios.get(`${baseUrl}/category/machine`);

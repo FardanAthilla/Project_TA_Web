@@ -13,6 +13,7 @@ import ListCategory from "../pages/page/listCategoryPage/listCategoryView.jsx";
 import LoginPage from "../pages/page/loginPage/loginView.jsx";
 import ProtectedRoute from "../router/protectedRoute.jsx";
 import PublicRoute from "../router/publicRoute.jsx";
+import EditMachine from "../pages/page/listMachinePage/editMachineView.jsx";
 
 const Router = () => {
   return (
@@ -33,6 +34,8 @@ const Router = () => {
 
         <Route path="/ListMachine" element={<ProtectedRoute element={<ListMachine />} />} />
         <Route path="/AddMachine" element={<ProtectedRoute element={<AddMachine />} />} />
+        <Route path="/EditMachine" element={<ProtectedRoute element={<EditMachine />} />} />
+
       </Routes>
     </BrowserRouter>
   );
