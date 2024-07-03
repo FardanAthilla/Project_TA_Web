@@ -28,18 +28,23 @@ const AddMachineView = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const result = await addMachine(machineData);
+      const dataToSend = {
+        ...machineData,
+        quantity: parseInt(machineData.quantity, 10),
+        category_machine_id: parseInt(machineData.category_machine_id, 10),
+        price: parseInt(machineData.price, 10),
+      };
+      console.log("Sending data:", dataToSend);
+      const result = await addMachine(dataToSend);
+      console.log("Result from API:", result);
       setMessage(result.success ? "Mesin berhasil ditambahkan!" : result.message);
-      if (result.success) {
-        navigate(-1);
-      }
+      navigate(-1);
     } catch (error) {
       setMessage("Gagal menambahkan mesin.");
     } finally {
       setIsLoading(false);
     }
   };
-
   const handleCancel = () => {
     setMachineData({
       store_items_name: "",

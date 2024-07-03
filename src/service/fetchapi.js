@@ -167,7 +167,10 @@ export const addMachine = async (machineData) => {
     const response = await axios.post(`${baseUrl}/store/items`, machineData);
     return response.data;
   } catch (error) {
-    console.error("Error adding machine:", error);
+    console.error("Error adding machine:", error.message);
+    if (error.response) {
+      console.error("Error details:", error.response.data);
+    }
     throw error;
   }
 };
