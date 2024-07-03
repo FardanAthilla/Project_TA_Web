@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
-import { updateMachine } from "../../../service/fetchapi";
+import { updateSparepart } from "../../../service/fetchapi";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 
-const EditMachinePage = () => {
+const EditSparepartPage = () => {
   const location = useLocation();
-  const machine = location.state.machine;
+  const sparepart = location.state.sparepart;
 
-  const [name, setName] = useState(machine.store_items_name);
-  const [price, setPrice] = useState(machine.price);
-  const [quantity, setQuantity] = useState(machine.quantity);
+  const [name, setName] = useState(sparepart.spare_part_name);
+  const [price, setPrice] = useState(sparepart.price);
+  const [quantity, setQuantity] = useState(sparepart.quantity);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     visible: false,
@@ -34,14 +34,14 @@ const EditMachinePage = () => {
 
     setIsLoading(true);
 
-    const machineData = {
-      store_items_id: machine.store_items_id,
-      store_items_name: name,
+    const sparepartData = {
+      spare_part_id: sparepart.spare_part_id,
+      spare_part_name: name,
       price: parseInt(price, 10),
       quantity: parseInt(quantity, 10),
     };
 
-    const updateResult = await updateMachine(machineData);
+    const updateResult = await updateSparepart(sparepartData);
     if (!updateResult.success) {
       setSnackbar({
         visible: true,
@@ -123,9 +123,11 @@ const EditMachinePage = () => {
                 <ArrowLeftIcon className="h-5 w-5 mr-2" />
                 Kembali
               </button>
-              <h2 className="text-base font-semibold leading-7">Edit Mesin</h2>
+              <h2 className="text-base font-semibold leading-7">
+                Edit Sparepart
+              </h2>
               <p className="mt-1 text-sm leading-6">
-                Informasi ini akan digunakan untuk memperbarui mesin.
+                Informasi ini akan digunakan untuk memperbarui sparepart.
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -134,7 +136,7 @@ const EditMachinePage = () => {
                     htmlFor="name"
                     className="block text-sm font-medium leading-6"
                   >
-                    Nama Mesin
+                    Nama Sparepart
                   </label>
                   <div className="mt-2">
                     <input
@@ -209,4 +211,4 @@ const EditMachinePage = () => {
   );
 };
 
-export default EditMachinePage;
+export default EditSparepartPage;

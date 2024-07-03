@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
-import { fetchSparepart } from "../../../service/fetchapi";
+import { fetchSparepart, deleteSparepart } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
 import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
+import { useNavigate } from "react-router-dom";
 
 const ListSparepart = () => {
   const [spareparts, setSpareparts] = useState([]);
   const [name, setName] = useState("");
+  const navigate = useNavigate();
   const [categoryId, setCategoryId] = useState("");
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSparepartId, setSelectedSparepartId] = useState(null);
 
   const fetchAndSetSpareparts = async (
     searchName = "",
@@ -37,11 +41,11 @@ const ListSparepart = () => {
     try {
       const data = await fetchSparepart();
       const categories = data.map((sparepart) => ({
-        id: sparepart.category_spare_part_id,
+        id: sparepart.CategorySparePart.category_spare_part_id,
         name: sparepart.CategorySparePart.category_spare_part_name,
       }));
       const uniqueCategories = Array.from(
-        new Map(categories.map((cat) => [cat.id, cat])).values()
+        new Map(categories.map((category) => [category.id, category])).values()
       );
       setAllCategories(uniqueCategories);
     } catch (error) {
@@ -59,7 +63,11 @@ const ListSparepart = () => {
 
   useEffect(() => {
     fetchAndSetSpareparts(name, categoryId);
-  }, [name, categoryId]);
+  }, [categoryId]);
+
+  const handleSearchClick = () => {
+    fetchAndSetSpareparts(name, categoryId);
+  };
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -68,6 +76,34 @@ const ListSparepart = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = spareparts.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleDelete = (sparepartId) => {
+    setSelectedSparepartId(sparepartId);
+    setIsModalOpen(true);
+  };
+  const handleEdit = (sparepart) => {
+    navigate("/editSparepart", { state: { sparepart } });
+  };
+
+  const confirmDelete = async () => {
+    if (selectedSparepartId) {
+      setLoading(true);
+      const result = await deleteSparepart(selectedSparepartId);
+      if (result.success) {
+        await fetchAndSetSpareparts(name, categoryId);
+      } else {
+        setError(result.message);
+      }
+      setLoading(false);
+      setIsModalOpen(false);
+      handleSearchClick();
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSparepartId(null);
+  };
 
   return (
     <div className="container-fluid flex">
@@ -82,7 +118,6 @@ const ListSparepart = () => {
                 placeholder="Cari"
                 value={name}
                 onChange={(e) => {
-                  console.log("Name input changed:", e.target.value);
                   setName(e.target.value);
                 }}
               />
@@ -90,7 +125,8 @@ const ListSparepart = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
                 fill="currentColor"
-                className="w-4 h-4 opacity-70"
+                className="w-4 h-4 opacity-70 cursor-pointer"
+                onClick={handleSearchClick}
               >
                 <path
                   fillRule="evenodd"
@@ -99,11 +135,11 @@ const ListSparepart = () => {
                 />
               </svg>
             </label>
-            <div className="dropdown dropdown-hover">
+            <div className="dropdown dropdown-hover ml-5">
               <div
                 tabIndex={0}
                 role="button"
-                className="btn ml-5"
+                className="btn"
                 style={{ minWidth: "200px" }}
               >
                 {categoryId !== ""
@@ -160,10 +196,16 @@ const ListSparepart = () => {
                   <td>{sparepart.quantity}</td>
                   <td>
                     <button className="btn btn-ghost btn-xs">
-                      <PencilIcon className="h-5 w-5 text-blue-600" />
+                      <PencilIcon
+                        className="h-5 w-5 text-blue-600"
+                        onClick={() => handleEdit(sparepart)}
+                      />
                     </button>
-                    <button className="btn btn-ghost btn-xs">
-                      <TrashIcon className="h-5 w-5 text-red-600" />
+                    <button
+                      className="btn btn-ghost btn-xs text-red-600"
+                      onClick={() => handleDelete(sparepart.spare_part_id)}
+                    >
+                      <TrashIcon className="h-5 w-5" />
                     </button>
                   </td>
                 </tr>
@@ -182,10 +224,7 @@ const ListSparepart = () => {
             </button>
 
             {Array.from({
-              length: Math.min(
-                5, 
-                Math.ceil(spareparts.length / itemsPerPage)
-              ),
+              length: Math.min(5, Math.ceil(spareparts.length / itemsPerPage)),
             }).map((_, index) => {
               const pageNumber = Math.max(1, currentPage - 2) + index;
               return (
@@ -216,13 +255,68 @@ const ListSparepart = () => {
           </div>
         </div>
         <div className="inline-block">
-          <Link to="/AddAccount">
+          <Link to="/AddSparepart">
             <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
-              Tambah Data
+              Tambah Sparepart
             </button>
           </Link>
         </div>
       </div>
+      {isModalOpen && (
+        <div
+          id="static-modal"
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
+        >
+          <div className="bg-white dark:bg-gray-700 rounded-lg shadow p-4 max-w-md w-full">
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Hapus Mesin
+              </h3>
+              <button
+                type="button"
+                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                onClick={closeModal}
+              >
+                <svg
+                  aria-hidden="true"
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6">
+              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                Apakah anda yakin ingin menghapus sparepart ini?
+              </p>
+            </div>
+
+            <div className="flex justify-end p-4 border-t dark:border-gray-600">
+              <button
+                type="button"
+                className="py-2 px-4 mr-3 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                onClick={closeModal}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                className="py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                onClick={confirmDelete}
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

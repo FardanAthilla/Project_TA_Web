@@ -164,7 +164,7 @@ export const deleteMachine = async (machineId) => {
 };
 export const addMachine = async (machineData) => {
   try {
-    const response = await axios.post(`${baseUrl}/store/`, machineData);
+    const response = await axios.post(`${baseUrl}/store/items`, machineData);
     return response.data;
   } catch (error) {
     console.error("Error adding machine:", error.message);
@@ -198,6 +198,36 @@ export const fetchSparepart = async (searchName = "", searchCategories = "") => 
     throw error;
   }
 };
+export const deleteSparepart = async (sparepartId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/spare/part/${sparepartId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Delete User Error: ", error.response.data);
+    return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
+  }
+};
+export const addSparepart = async (sparepartData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/spare/part`, sparepartData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding machine:", error.message);
+    if (error.response) {
+      console.error("Error details:", error.response.data);
+    }
+    throw error;
+  }
+};
+export const updateSparepart = async (sparepartId) => {
+  try {
+    const response = await axios.put(`${baseUrl}/spare/part`, sparepartId);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
 
 // Category
 export const getCategory = async () => {
