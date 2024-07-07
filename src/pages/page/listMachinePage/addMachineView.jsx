@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
-import { addMachine } from "../../../service/fetchapi";
+import { addMachine, fetchCategoryMachine } from "../../../service/fetchapi";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 
@@ -12,9 +12,27 @@ const AddMachineView = () => {
     price: "",
   });
 
-  const [message, setMessage] = useState("");
+  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    visible: false,
+    message: "",
+    type: "success",
+  });
+  const [fade, setFade] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await fetchCategoryMachine();
+        setCategories(data.Data);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,14 +55,26 @@ const AddMachineView = () => {
       console.log("Sending data:", dataToSend);
       const result = await addMachine(dataToSend);
       console.log("Result from API:", result);
-      setMessage(result.success ? "Mesin berhasil ditambahkan!" : result.message);
-      navigate(-1);
+      const isSuccess = result.Succes === 'Succes Create Store Items';
+      setSnackbar({
+        visible: true,
+        message: isSuccess ? "Mesin berhasil ditambahkan!" : result.message || "Gagal menambahkan mesin.",
+        type: isSuccess ? "success" : "error",
+      });
+      if (isSuccess) {
+        setTimeout(() => navigate(-1), 1500);
+      }
     } catch (error) {
-      setMessage("Gagal menambahkan mesin.");
+      setSnackbar({
+        visible: true,
+        message: "Gagal menambahkan mesin.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleCancel = () => {
     setMachineData({
       store_items_name: "",
@@ -52,13 +82,59 @@ const AddMachineView = () => {
       category_machine_id: "",
       price: "",
     });
-    setMessage("");
   };
+
+  useEffect(() => {
+    if (snackbar.visible) {
+      setFade(true);
+      const timer = setTimeout(() => {
+        setFade(false);
+        setTimeout(() => {
+          setSnackbar({ visible: false, message: "", type: "" });
+        }, 500);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [snackbar]);
 
   return (
     <div className="container-fluid flex">
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
+        {snackbar.visible && (
+          <div
+            role="alert"
+            className={`alert ${
+              snackbar.type === "success" ? "alert-success" : "alert-error"
+            } fixed top-4 w-96 mx-auto z-20 transition-opacity duration-500 ${
+              fade ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              {snackbar.type === "success" ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              )}
+            </svg>
+            <span>{snackbar.message}</span>
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="space-y-12">
             <div className="border-b border-gray-900/10 pb-12">
@@ -77,10 +153,6 @@ const AddMachineView = () => {
                 Informasi ini akan digunakan untuk menambah mesin baru.
               </p>
 
-              {message && (
-                <div className="mb-4 text-center text-red-500">{message}</div>
-              )}
-
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
                   <label
@@ -98,7 +170,6 @@ const AddMachineView = () => {
                       onChange={handleChange}
                       autoComplete="store_items_name"
                       className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
                     />
                   </div>
                 </div>
@@ -119,7 +190,6 @@ const AddMachineView = () => {
                       onChange={handleChange}
                       autoComplete="quantity"
                       className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
                     />
                   </div>
                 </div>
@@ -129,19 +199,40 @@ const AddMachineView = () => {
                     htmlFor="category_machine_id"
                     className="block text-sm font-medium leading-6"
                   >
-                    ID Kategori Mesin
+                    Kategori Mesin
                   </label>
                   <div className="mt-2">
-                    <input
-                      type="number"
-                      name="category_machine_id"
-                      id="category_machine_id"
-                      value={machineData.category_machine_id}
-                      onChange={handleChange}
-                      autoComplete="category_machine_id"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
-                    />
+                    <div className="dropdown dropdown-hover w-full">
+                      <div
+                        tabIndex={0}
+                        role="button"
+                        className="btn w-full"
+                        style={{ minWidth: "200px" }}
+                      >
+                        {machineData.category_machine_id !== ""
+                          ? categories.find(
+                              (c) =>
+                                c.category_machine_id ===
+                                parseInt(machineData.category_machine_id)
+                            )?.category_machine_name
+                          : "Pilih Kategori"}
+                      </div>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
+                      >
+                        <li key="all">
+                          <a onClick={() => handleChange({target: {name: "category_machine_id", value: ""}})}>SEMUA KATEGORI</a>
+                        </li>
+                        {categories.map((category) => (
+                          <li key={category.category_machine_id}>
+                            <a onClick={() => handleChange({target: {name: "category_machine_id", value: category.category_machine_id}})}>
+                              {category.category_machine_name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
@@ -161,7 +252,6 @@ const AddMachineView = () => {
                       onChange={handleChange}
                       autoComplete="price"
                       className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      required
                     />
                   </div>
                 </div>
