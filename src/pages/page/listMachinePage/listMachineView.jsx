@@ -66,6 +66,7 @@ const ListMachine = () => {
   }, [categoryId]);
 
   const handleSearchClick = () => {
+    setCurrentPage(1); 
     fetchAndSetMachines(name, categoryId);
   };
 

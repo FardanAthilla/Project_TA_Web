@@ -11,6 +11,8 @@ function AllDataView() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   const navigate = useNavigate();
   const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
 
@@ -59,6 +61,14 @@ function AllDataView() {
     navigate("/EditAccount", { state: { user } });
   };
 
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+
   if (loading)
     return (
       <div className="flex">
@@ -101,7 +111,7 @@ function AllDataView() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {currentItems.map((user) => (
                 <tr key={user.user_id}>
                   <td>
                     <div className="flex items-center gap-3">
@@ -147,6 +157,49 @@ function AllDataView() {
               ))}
             </tbody>
           </table>
+
+          <div className="flex justify-center mt-4">
+            <div className="join pt-5">
+              <button
+                className="join-item btn"
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                «
+              </button>
+
+              {Array.from({
+                length: Math.min(5, Math.ceil(users.length / itemsPerPage)),
+              }).map((_, index) => {
+                const pageNumber = Math.max(1, currentPage - 2) + index;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => paginate(pageNumber)}
+                    className={`join-item btn ${
+                      pageNumber === currentPage ? "active" : ""
+                    }`}
+                    disabled={
+                      pageNumber > Math.ceil(users.length / itemsPerPage)
+                    }
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              })}
+
+              <button
+                className="join-item btn"
+                onClick={() => paginate(currentPage + 1)}
+                disabled={
+                  currentPage === Math.ceil(users.length / itemsPerPage)
+                }
+              >
+                »
+              </button>
+            </div>
+          </div>
+
           <div className="inline-block">
             <Link to="/AddAccount">
               <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button">

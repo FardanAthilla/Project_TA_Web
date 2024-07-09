@@ -66,6 +66,7 @@ const ListSparepart = () => {
   }, [categoryId]);
 
   const handleSearchClick = () => {
+    setCurrentPage(1); 
     fetchAndSetSpareparts(name, categoryId);
   };
 
