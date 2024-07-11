@@ -20,6 +20,9 @@ import AddSparepart from "../pages/page/listSparepartPage/addSparepart.jsx";
 import EditSparepart from "../pages/page/listSparepartPage/editSparepartView.jsx";
 
 import ListCategory from "../pages/page/listCategoryPage/listCategoryView.jsx";
+import AddCategory from "../pages/page/listCategoryPage/addCategoryView.jsx";
+import EditCategory from "../pages/page/listCategoryPage/editCategoryView.jsx";
+
 import LoginPage from "../pages/page/loginPage/loginView.jsx";
 import ProtectedRoute from "../router/protectedRoute.jsx";
 import PublicRoute from "../router/publicRoute.jsx";
@@ -44,6 +47,8 @@ const Router = () => {
         <Route path="/EditSparepart" element={<ProtectedRoute element={<EditSparepart />} />} />
 
         <Route path="/ListCategory" element={<ProtectedRoute element={<ListCategory />} />} />
+        <Route path="/AddCategory" element={<ProtectedRoute element={<AddCategory />} />} />
+        <Route path="/EditCategory" element={<ProtectedRoute element={<EditCategory />} />} />
 
         <Route path="/ListMachine" element={<ProtectedRoute element={<ListMachine />} />} />
         <Route path="/AddMachine" element={<ProtectedRoute element={<AddMachine />} />} />
