@@ -230,16 +230,6 @@ export const updateSparepart = async (sparepartId) => {
 
 
 // Category
-export const getCategory = async () => {
-  try {
-    const response = await axios.get(`${baseUrl}/category/machine`);
-    return { success: true, data: response.data };
-  } catch (error) {
-    console.error("Error fetching category machine:", error);
-    return { success: false, message: error.message };
-  }
-};
-
 export const fetchCategoryMachine = async () => {
   try {
     const response = await axios.get(`${baseUrl}/category/machine`);
@@ -260,3 +250,46 @@ export const fetchCategorySpareParts = async () => {
   }
 };
 
+export const addMachineCategory = async (machineData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/category/machine`, machineData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding category:", error.message);
+    if (error.response) {
+      console.error("Error details:", error.response.data);
+    }
+    throw error;
+  }
+};
+export const addSparepartCategory = async (sparepartData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/category/spare/part`, sparepartData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding category:", error.message);
+    if (error.response) {
+      console.error("Error details:", error.response.data);
+    }
+    throw error;
+  }
+};
+
+export const deleteCategoryMachine = async (machineId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/category/machine/${machineId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Delete User Error: ", error.response.data);
+    return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
+  }
+};
+export const deleteCategorySparePart = async (sparepartId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/category/spare/part/${sparepartId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Delete User Error: ", error.response.data);
+    return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
+  }
+};
