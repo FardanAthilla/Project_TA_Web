@@ -1,34 +1,36 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../../components/sidebar";
-import { fetchCategoryMachine, deleteCategoryMachine } from "../../../service/fetchapi";
-import { Link } from "react-router-dom";
+import { fetchCategory, deleteCategory } from "../../../service/fetchapi";
+import { Link, useNavigate } from "react-router-dom";
 import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
 
 const ListCategoryView = () => {
-  const [machineCategories, setMachineCategories] = useState([]);
+  const [Categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [currentPageMachine, setCurrentPageMachine] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const getCategoryMachine = async () => {
+    const getCategory = async () => {
       setLoading(true);
       setError("");
       try {
-        const data = await fetchCategoryMachine();
-        setMachineCategories(data.Data);
+        const data = await fetchCategory();
+        setCategories(data.Data);
       } catch (error) {
         setError("Gagal mengambil data kategori mesin");
-        setMachineCategories([]);
+        setCategories([]);
       } finally {
         setLoading(false);
       }
     };
 
-    getCategoryMachine();
+    getCategory();
   }, []);
 
   const handleDelete = (id) => {
@@ -39,8 +41,12 @@ const ListCategoryView = () => {
   const confirmDelete = async () => {
     setLoading(true);
     try {
-      await deleteCategoryMachine(selectedCategoryId);
-      setMachineCategories(machineCategories.filter((category) => category.category_machine_id !== selectedCategoryId));
+      await deleteCategory(selectedCategoryId);
+      setCategories(
+        Categories.filter(
+          (category) => category.category_id !== selectedCategoryId
+        )
+      );
     } catch (error) {
       setError("Gagal menghapus kategori");
     } finally {
@@ -49,23 +55,24 @@ const ListCategoryView = () => {
     }
   };
 
+  const handleEdit = (category) => {
+    navigate("/EditCategory", { state: { category } });
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedCategoryId(null);
   };
 
-  const paginateMachine = (pageNumber) => {
-    setCurrentPageMachine(pageNumber);
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
-  const indexOfLastItemMachine = currentPageMachine * itemsPerPage;
-  const indexOfFirstItemMachine = indexOfLastItemMachine - itemsPerPage;
-  const currentMachineItems = machineCategories.slice(
-    indexOfFirstItemMachine,
-    indexOfLastItemMachine
-  );
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = Categories.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(machineCategories.length / itemsPerPage);
+  const totalPages = Math.ceil(Categories.length / itemsPerPage);
 
   return (
     <div className="container-fluid flex">
@@ -79,8 +86,8 @@ const ListCategoryView = () => {
           <p className="text-center">{error}</p>
         ) : (
           <>
-            <h2 className="mt-8 text-lg">Kategori Mesin</h2>
-            {machineCategories.length === 0 ? (
+            <h2 className="mt-8 text-lg">Kategori</h2>
+            {Categories.length === 0 ? (
               <p className="text-center">Kategori tidak ditemukan</p>
             ) : (
               <table className="table">
@@ -92,15 +99,21 @@ const ListCategoryView = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentMachineItems.map((category, index) => (
-                    <tr key={category.category_machine_id}>
-                      <td>{indexOfFirstItemMachine + index + 1}</td>
-                      <td>{category.category_machine_name}</td>
+                  {currentItems.map((category, index) => (
+                    <tr key={category.category_id}>
+                      <td>{indexOfFirstItem + index + 1}</td>
+                      <td>{category.category_name}</td>
                       <td>
                         <button className="btn btn-ghost btn-xs">
-                          <PencilIcon className="h-5 w-5 text-blue-500" />
+                          <PencilIcon
+                            className="h-5 w-5 text-blue-600"
+                            onClick={() => handleEdit(category)}
+                          />
                         </button>
-                        <button className="btn btn-ghost btn-xs text-red-600" onClick={() => handleDelete(category.category_machine_id)}>
+                        <button
+                          className="btn btn-ghost btn-xs text-red-600"
+                          onClick={() => handleDelete(category.category_id)}
+                        >
                           <TrashIcon className="h-5 w-5" />
                         </button>
                       </td>
@@ -113,8 +126,8 @@ const ListCategoryView = () => {
               <div className="join pt-5">
                 <button
                   className="join-item btn"
-                  onClick={() => paginateMachine(currentPageMachine - 1)}
-                  disabled={currentPageMachine === 1}
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
                 >
                   «
                 </button>
@@ -125,9 +138,9 @@ const ListCategoryView = () => {
                   return (
                     <button
                       key={index}
-                      onClick={() => paginateMachine(pageNumber)}
+                      onClick={() => paginate(pageNumber)}
                       className={`join-item btn ${
-                        pageNumber === currentPageMachine ? "active" : ""
+                        pageNumber === currentPage ? "active" : ""
                       }`}
                     >
                       {pageNumber}
@@ -136,8 +149,8 @@ const ListCategoryView = () => {
                 })}
                 <button
                   className="join-item btn"
-                  onClick={() => paginateMachine(currentPageMachine + 1)}
-                  disabled={currentPageMachine === totalPages}
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
                 >
                   »
                 </button>

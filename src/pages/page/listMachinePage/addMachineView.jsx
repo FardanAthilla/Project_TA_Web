@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
-import { addMachine, fetchCategoryMachine } from "../../../service/fetchapi";
+import { addMachine, fetchCategory } from "../../../service/fetchapi";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 
@@ -8,7 +8,7 @@ const AddMachineView = () => {
   const [machineData, setMachineData] = useState({
     store_items_name: "",
     quantity: "",
-    category_machine_id: "",
+    category_id: "",
     price: "",
   });
 
@@ -25,7 +25,7 @@ const AddMachineView = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await fetchCategoryMachine();
+        const data = await fetchCategory();
         setCategories(data.Data);
       } catch (error) {
         console.error("Failed to fetch categories", error);
@@ -44,12 +44,23 @@ const AddMachineView = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Pengecekan validasi
+    if (!machineData.store_items_name || !machineData.quantity || !machineData.category_id || !machineData.price) {
+      setSnackbar({
+        visible: true,
+        message: "Semua field harus diisi.",
+        type: "error",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const dataToSend = {
         ...machineData,
         quantity: parseInt(machineData.quantity, 10),
-        category_machine_id: parseInt(machineData.category_machine_id, 10),
+        category_id: parseInt(machineData.category_id, 10),
         price: parseInt(machineData.price, 10),
       };
       console.log("Sending data:", dataToSend);
@@ -79,7 +90,7 @@ const AddMachineView = () => {
     setMachineData({
       store_items_name: "",
       quantity: "",
-      category_machine_id: "",
+      category_id: "",
       price: "",
     });
   };
@@ -196,7 +207,7 @@ const AddMachineView = () => {
 
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="category_machine_id"
+                    htmlFor="category_id"
                     className="block text-sm font-medium leading-6"
                   >
                     Kategori Mesin
@@ -209,12 +220,12 @@ const AddMachineView = () => {
                         className="btn w-full"
                         style={{ minWidth: "200px" }}
                       >
-                        {machineData.category_machine_id !== ""
+                        {machineData.category_id !== ""
                           ? categories.find(
                               (c) =>
-                                c.category_machine_id ===
-                                parseInt(machineData.category_machine_id)
-                            )?.category_machine_name
+                                c.category_id ===
+                                parseInt(machineData.category_id)
+                            )?.category_name
                           : "Pilih Kategori"}
                       </div>
                       <ul
@@ -222,12 +233,12 @@ const AddMachineView = () => {
                         className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
                       >
                         <li key="all">
-                          <a onClick={() => handleChange({target: {name: "category_machine_id", value: ""}})}>SEMUA KATEGORI</a>
+                          <a onClick={() => handleChange({target: {name: "category_id", value: ""}})}>SEMUA KATEGORI</a>
                         </li>
                         {categories.map((category) => (
-                          <li key={category.category_machine_id}>
-                            <a onClick={() => handleChange({target: {name: "category_machine_id", value: category.category_machine_id}})}>
-                              {category.category_machine_name}
+                          <li key={category.category_id}>
+                            <a onClick={() => handleChange({target: {name: "category_id", value: category.category_id}})}>
+                              {category.category_name}
                             </a>
                           </li>
                         ))}
