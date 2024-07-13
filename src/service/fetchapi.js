@@ -153,6 +153,7 @@ export const fetchMachines = async (searchName = "", searchCategories = "") => {
     throw error;
   }
 };
+
 export const deleteMachine = async (machineId) => {
   try {
     const response = await axios.delete(`${baseUrl}/store/items/${machineId}`);
@@ -198,6 +199,7 @@ export const fetchSparepart = async (searchName = "", searchCategories = "") => 
     throw error;
   }
 };
+
 export const deleteSparepart = async (sparepartId) => {
   try {
     const response = await axios.delete(`${baseUrl}/spare/part/${sparepartId}`);

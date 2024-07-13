@@ -191,15 +191,12 @@ const EditMachinePage = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              <button
+            <div className="mt-6 flex items-center justify-end gap-x-4">
+            <button
                 type="submit"
-                disabled={isLoading}
-                className={`inline-flex justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
-                  isLoading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
               >
-                {isLoading ? "Memuat..." : "Simpan"}
+                {isLoading ? "Loading..." : "Simpan"}
               </button>
             </div>
           </div>

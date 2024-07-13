@@ -18,10 +18,7 @@ const ListSparepart = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSparepartId, setSelectedSparepartId] = useState(null);
 
-  const fetchAndSetSpareparts = async (
-    searchName = "",
-    searchCategoryId = ""
-  ) => {
+  const fetchAndSetSpareparts = async (searchName = "", searchCategoryId = "") => {
     setLoading(true);
     setError("");
     try {
@@ -41,8 +38,8 @@ const ListSparepart = () => {
     try {
       const data = await fetchSparepart();
       const categories = data.map((sparepart) => ({
-        id: sparepart.CategorySparePart.category_spare_part_id,
-        name: sparepart.CategorySparePart.category_spare_part_name,
+        id: sparepart.Category.category_id,
+        name: sparepart.Category.category_name,
       }));
       const uniqueCategories = Array.from(
         new Map(categories.map((category) => [category.id, category])).values()
@@ -66,7 +63,7 @@ const ListSparepart = () => {
   }, [categoryId]);
 
   const handleSearchClick = () => {
-    setCurrentPage(1); 
+    setCurrentPage(1);
     fetchAndSetSpareparts(name, categoryId);
   };
 
@@ -82,6 +79,7 @@ const ListSparepart = () => {
     setSelectedSparepartId(sparepartId);
     setIsModalOpen(true);
   };
+
   const handleEdit = (sparepart) => {
     navigate("/editSparepart", { state: { sparepart } });
   };
@@ -118,9 +116,7 @@ const ListSparepart = () => {
                 className="grow"
                 placeholder="Cari"
                 value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
+                onChange={(e) => setName(e.target.value)}
               />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -190,9 +186,7 @@ const ListSparepart = () => {
                 <tr key={sparepart.spare_part_id}>
                   <td>{indexOfFirstItem + index + 1}</td>
                   <td>{sparepart.spare_part_name}</td>
-                  <td>
-                    {sparepart.CategorySparePart.category_spare_part_name}
-                  </td>
+                  <td>{sparepart.Category.category_name}</td>
                   <td>{sparepart.price}</td>
                   <td>{sparepart.quantity}</td>
                   <td>
@@ -257,12 +251,14 @@ const ListSparepart = () => {
         </div>
         <div className="inline-block">
           <Link to="/AddSparepart">
+
             <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
-              Tambah Sparepart
+              Tambah Data
             </button>
           </Link>
         </div>
       </div>
+
       {isModalOpen && (
         <div
           id="static-modal"
@@ -271,7 +267,7 @@ const ListSparepart = () => {
           <div className="bg-white dark:bg-gray-700 rounded-lg shadow p-4 max-w-md w-full">
             <div className="flex items-center justify-between p-4 border-b dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Hapus Mesin
+                Hapus Sparepart
               </h3>
               <button
                 type="button"
@@ -299,17 +295,17 @@ const ListSparepart = () => {
               </p>
             </div>
 
-            <div className="flex justify-end p-4 border-t dark:border-gray-600">
+            <div className=" p-4 border-t dark:border-gray-600 flex items-center justify-end gap-x-4">
               <button
                 type="button"
-                className="py-2 px-4 mr-3 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
                 onClick={closeModal}
               >
                 Batal
               </button>
               <button
                 type="button"
-                className="py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
                 onClick={confirmDelete}
               >
                 Hapus

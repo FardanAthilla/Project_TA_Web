@@ -245,17 +245,17 @@ function AllDataView() {
                 di kembalikan
               </p>
             </div>
-            <div className="flex justify-end p-4 border-t dark:border-gray-600">
+            <div className=" p-4 border-t dark:border-gray-600 flex items-center justify-end gap-x-4">
               <button
                 onClick={closeModal}
-                className="py-2 px-4 mr-3 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
               >
                 Batal
               </button>
               <button
                 onClick={confirmDelete}
-                className="py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
+                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
+                >
                 Konfirmasi
               </button>
             </div>
