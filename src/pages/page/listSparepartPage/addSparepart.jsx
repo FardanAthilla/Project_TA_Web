@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
-import { addSparepart, fetchCategorySpareParts } from "../../../service/fetchapi";
+import { addSparepart, fetchCategory } from "../../../service/fetchapi";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 
@@ -8,7 +8,7 @@ const AddSparepartView = () => {
   const [sparepartData, setSparepartData] = useState({
     spare_part_name: "",
     quantity: "",
-    category_spare_part_id: "",
+    category_id: "",
     price: "",
   });
 
@@ -25,7 +25,7 @@ const AddSparepartView = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await fetchCategorySpareParts();
+        const data = await fetchCategory();
         setCategories(data.Data);
       } catch (error) {
         console.error("Failed to fetch categories", error);
@@ -44,21 +44,39 @@ const AddSparepartView = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Pengecekan validasi
+    if (
+      !sparepartData.spare_part_name ||
+      !sparepartData.quantity ||
+      !sparepartData.category_id ||
+      !sparepartData.price
+    ) {
+      setSnackbar({
+        visible: true,
+        message: "Semua field harus diisi.",
+        type: "error",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const dataToSend = {
         ...sparepartData,
         quantity: parseInt(sparepartData.quantity, 10),
-        category_spare_part_id: parseInt(sparepartData.category_spare_part_id, 10),
+        category_id: parseInt(sparepartData.category_id, 10),
         price: parseInt(sparepartData.price, 10),
       };
       console.log("Sending data:", dataToSend);
       const result = await addSparepart(dataToSend);
       console.log("Result from API:", result);
-      const isSuccess = result.Succes === 'Succes Create Spare Part';
+      const isSuccess = result.Succes === "Succes Create Spare Part";
       setSnackbar({
         visible: true,
-        message: isSuccess ? "Sparepart berhasil ditambahkan!" : result.message || "Gagal menambahkan sparepart.",
+        message: isSuccess
+          ? "Sparepart berhasil ditambahkan!"
+          : result.message || "Gagal menambahkan sparepart.",
         type: isSuccess ? "success" : "error",
       });
       if (isSuccess) {
@@ -79,7 +97,7 @@ const AddSparepartView = () => {
     setSparepartData({
       spare_part_name: "",
       quantity: "",
-      category_spare_part_id: "",
+      category_id: "",
       price: "",
     });
   };
@@ -196,7 +214,7 @@ const AddSparepartView = () => {
 
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="category_spare_part_id"
+                    htmlFor="category_id"
                     className="block text-sm font-medium leading-6"
                   >
                     Kategori Sparepart
@@ -209,12 +227,12 @@ const AddSparepartView = () => {
                         className="btn w-full"
                         style={{ minWidth: "200px" }}
                       >
-                        {sparepartData.category_spare_part_id !== ""
+                        {sparepartData.category_id !== ""
                           ? categories.find(
                               (c) =>
-                                c.category_spare_part_id ===
-                                parseInt(sparepartData.category_spare_part_id)
-                            )?.category_spare_part_name
+                                c.category_id ===
+                                parseInt(sparepartData.category_id)
+                            )?.category_name
                           : "Pilih Kategori"}
                       </div>
                       <ul
@@ -222,12 +240,29 @@ const AddSparepartView = () => {
                         className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
                       >
                         <li key="all">
-                          <a onClick={() => handleChange({target: {name: "category_spare_part_id", value: ""}})}>SEMUA KATEGORI</a>
+                          <a
+                            onClick={() =>
+                              handleChange({
+                                target: { name: "category_id", value: "" },
+                              })
+                            }
+                          >
+                            SEMUA KATEGORI
+                          </a>
                         </li>
                         {categories.map((category) => (
-                          <li key={category.category_spare_part_id}>
-                            <a onClick={() => handleChange({target: {name: "category_spare_part_id", value: category.category_spare_part_id}})}>
-                              {category.category_spare_part_name}
+                          <li key={category.category_id}>
+                            <a
+                              onClick={() =>
+                                handleChange({
+                                  target: {
+                                    name: "category_id",
+                                    value: category.category_id,
+                                  },
+                                })
+                              }
+                            >
+                              {category.category_name}
                             </a>
                           </li>
                         ))}
@@ -241,7 +276,7 @@ const AddSparepartView = () => {
                     htmlFor="price"
                     className="block text-sm font-medium leading-6"
                   >
-                    Harga
+                    Harga Sparepart
                   </label>
                   <div className="mt-2">
                     <input
@@ -257,23 +292,23 @@ const AddSparepartView = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
-              >
-                Batal
-              </button>
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
+            >
+              Batal
+            </button>
 
-              <button
-                type="submit"
-                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
-              >
-                {isLoading ? "Loading..." : "Tambah"}
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
+            >
+              {isLoading ? "Loading..." : "Tambah"}
+            </button>
           </div>
         </form>
       </div>

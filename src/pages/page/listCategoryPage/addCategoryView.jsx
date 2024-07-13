@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../../components/sidebar';
-import { addMachineCategory } from '../../../service/fetchapi';
+import { addCategory } from '../../../service/fetchapi';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,10 +36,10 @@ const AddCategoryView = () => {
     console.log('Inputan:', categoryName);
 
     try {
-      const machineCategoryData = { machine_name: categoryName };
-      const machineCategoryResult = await addMachineCategory(machineCategoryData);
+      const CategoryData = { category_name: categoryName };
+      const CategoryResult = await addCategory(CategoryData);
 
-      const isSuccess = machineCategoryResult.Succes === "Succes Create Category Machine";
+      const isSuccess = CategoryResult.Succes === "Succes Create Category";
 
       setSnackbar({
         visible: true,
@@ -50,7 +50,7 @@ const AddCategoryView = () => {
       if (isSuccess) {
         setTimeout(() => navigate(-1), 1500);
       } else {
-        setErrors(machineCategoryResult.errors || []);
+        setErrors(CategoryResult.errors || []);
         console.log('Errors:', machineCategoryResult.errors || []);
       }
     } catch (error) {

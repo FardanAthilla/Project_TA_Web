@@ -153,6 +153,7 @@ export const fetchMachines = async (searchName = "", searchCategories = "") => {
     throw error;
   }
 };
+
 export const deleteMachine = async (machineId) => {
   try {
     const response = await axios.delete(`${baseUrl}/store/items/${machineId}`);
@@ -198,6 +199,7 @@ export const fetchSparepart = async (searchName = "", searchCategories = "") => 
     throw error;
   }
 };
+
 export const deleteSparepart = async (sparepartId) => {
   try {
     const response = await axios.delete(`${baseUrl}/spare/part/${sparepartId}`);
@@ -230,9 +232,9 @@ export const updateSparepart = async (sparepartId) => {
 
 
 // Category
-export const fetchCategoryMachine = async () => {
+export const fetchCategory = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/category/machine`);
+    const response = await axios.get(`${baseUrl}/category`);
     return response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -240,31 +242,9 @@ export const fetchCategoryMachine = async () => {
   }
 };
 
-export const fetchCategorySpareParts = async () => {
+export const addCategory = async (categoryData) => {
   try {
-    const response = await axios.get(`${baseUrl}/category/spare/part`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    throw error;
-  }
-};
-
-export const addMachineCategory = async (machineData) => {
-  try {
-    const response = await axios.post(`${baseUrl}/category/machine`, machineData);
-    return response.data;
-  } catch (error) {
-    console.error("Error adding category:", error.message);
-    if (error.response) {
-      console.error("Error details:", error.response.data);
-    }
-    throw error;
-  }
-};
-export const addSparepartCategory = async (sparepartData) => {
-  try {
-    const response = await axios.post(`${baseUrl}/category/spare/part`, sparepartData);
+    const response = await axios.post(`${baseUrl}/category`, categoryData);
     return response.data;
   } catch (error) {
     console.error("Error adding category:", error.message);
@@ -275,21 +255,21 @@ export const addSparepartCategory = async (sparepartData) => {
   }
 };
 
-export const deleteCategoryMachine = async (machineId) => {
+export const deleteCategory = async (categoryId) => {
   try {
-    const response = await axios.delete(`${baseUrl}/category/machine/${machineId}`);
+    const response = await axios.delete(`${baseUrl}/category/${categoryId}`);
     return response.data;
   } catch (error) {
     console.error("Delete User Error: ", error.response.data);
     return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
   }
 };
-export const deleteCategorySparePart = async (sparepartId) => {
+
+export const updateCategory = async (categoryId) => {
   try {
-    const response = await axios.delete(`${baseUrl}/category/spare/part/${sparepartId}`);
-    return response.data;
+    const response = await axios.put(`${baseUrl}/category`, categoryId);
+    return { success: true, data: response.data };
   } catch (error) {
-    console.error("Delete User Error: ", error.response.data);
-    return { success: false, message: error.response.data.message || 'Terjadi kesalahan saat menghapus data.' };
+    return { success: false, message: error.message };
   }
 };
