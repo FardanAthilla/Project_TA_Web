@@ -104,6 +104,8 @@ const ListMachine = () => {
     setSelectedMachineId(null);
   };
 
+  const zeroQuantityItems = machines.filter(machine => machine.quantity === 0);
+
   return (
     <div className="container-fluid flex">
       <Sidebar />
@@ -258,6 +260,55 @@ const ListMachine = () => {
             </button>
           </Link>
         </div>
+
+        <h2 className="text-xl font-semibold mt-10">Mesin dengan Jumlah Nol</h2>
+        {loading ? (
+          <div className="text-center">
+            <span className="loading loading-dots loading-lg"></span>
+          </div>
+        ) : error ? (
+          <p className="text-center">{error}</p>
+        ) : zeroQuantityItems.length === 0 ? (
+          <p className="text-center">Tidak ada sparepart dengan jumlah nol</p>
+        ) : (
+          <table className="table mt-4">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Jumlah</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {zeroQuantityItems.map((machine, index) => (
+                <tr key={machine.store_items_id}>
+                  <td>{index + 1}</td>
+                  <td>{machine.store_items_name}</td>
+                  <td>{machine.Category.category_name}</td>
+                  <td>{machine.price}</td>
+                  <td>{machine.quantity}</td>
+                  <td>
+                    <button className="btn btn-ghost btn-xs">
+                      <PencilIcon
+                        className="h-5 w-5 text-blue-600"
+                        onClick={() => handleEdit(machine)}
+                      />
+                    </button>
+                    <button
+                      className="btn btn-ghost btn-xs text-red-600"
+                      onClick={() => handleDelete(machine.store_items_id)}
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {isModalOpen && (
