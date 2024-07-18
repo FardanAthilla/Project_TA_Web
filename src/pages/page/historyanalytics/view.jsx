@@ -8,6 +8,9 @@ const Page1 = () => {
   const [salesData, setSalesData] = useState([]);
   const [serviceData, setServiceData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentSalesPage, setCurrentSalesPage] = useState(1);
+  const [currentServicePage, setCurrentServicePage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,6 +145,25 @@ const Page1 = () => {
     },
   };
 
+  const paginateSales = (pageNumber) => {
+    setCurrentSalesPage(pageNumber);
+  };
+
+  const paginateService = (pageNumber) => {
+    setCurrentServicePage(pageNumber);
+  };
+
+  const indexOfLastSalesItem = currentSalesPage * itemsPerPage;
+  const indexOfFirstSalesItem = indexOfLastSalesItem - itemsPerPage;
+  const currentSalesItems = salesData.slice(indexOfFirstSalesItem, indexOfLastSalesItem);
+
+  const indexOfLastServiceItem = currentServicePage * itemsPerPage;
+  const indexOfFirstServiceItem = indexOfLastServiceItem - itemsPerPage;
+  const currentServiceItems = serviceData.slice(indexOfFirstServiceItem, indexOfLastServiceItem);
+
+  const totalSalesPages = Math.ceil(salesData.length / itemsPerPage);
+  const totalServicePages = Math.ceil(serviceData.length / itemsPerPage);
+
   return (
     <div className="h-screen flex bg-white">
       <Sidebar />
@@ -153,17 +175,78 @@ const Page1 = () => {
             <h1 className="text-3xl font-bold mb-4">History Penjualan</h1>
             <DataTable
               columns={salesColumns}
-              data={salesData}
+              data={currentSalesItems}
               customStyles={customStyles}
-              pagination
+              pagination={false}
             />
+            <div className="flex justify-center mt-4">
+              <div className="join pt-5">
+                <button
+                  className="join-item btn"
+                  onClick={() => paginateSales(currentSalesPage - 1)}
+                  disabled={currentSalesPage === 1}
+                >
+                  «
+                </button>
+                {Array.from({ length: totalSalesPages }).map((_, index) => {
+                  const pageNumber = index + 1;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => paginateSales(pageNumber)}
+                      className={`join-item btn ${pageNumber === currentSalesPage ? "active" : ""}`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+                <button
+                  className="join-item btn"
+                  onClick={() => paginateSales(currentSalesPage + 1)}
+                  disabled={currentSalesPage === totalSalesPages}
+                >
+                  »
+                </button>
+              </div>
+            </div>
+
             <h1 className="text-3xl font-bold mt-10 mb-4">History Service</h1>
             <DataTable
               columns={serviceColumns}
-              data={serviceData}
+              data={currentServiceItems}
               customStyles={customStyles}
-              pagination
+              pagination={false}
             />
+            <div className="flex justify-center mt-4">
+              <div className="join pt-5">
+                <button
+                  className="join-item btn"
+                  onClick={() => paginateService(currentServicePage - 1)}
+                  disabled={currentServicePage === 1}
+                >
+                  «
+                </button>
+                {Array.from({ length: totalServicePages }).map((_, index) => {
+                  const pageNumber = index + 1;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => paginateService(pageNumber)}
+                      className={`join-item btn ${pageNumber === currentServicePage ? "active" : ""}`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+                <button
+                  className="join-item btn"
+                  onClick={() => paginateService(currentServicePage + 1)}
+                  disabled={currentServicePage === totalServicePages}
+                >
+                  »
+                </button>
+              </div>
+            </div>
           </>
         )}
       </div>
