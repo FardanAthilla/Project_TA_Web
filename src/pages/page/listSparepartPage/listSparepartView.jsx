@@ -18,7 +18,10 @@ const ListSparepart = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSparepartId, setSelectedSparepartId] = useState(null);
 
-  const fetchAndSetSpareparts = async (searchName = "", searchCategoryId = "") => {
+  const fetchAndSetSpareparts = async (
+    searchName = "",
+    searchCategoryId = ""
+  ) => {
     setLoading(true);
     setError("");
     try {
@@ -104,6 +107,10 @@ const ListSparepart = () => {
     setSelectedSparepartId(null);
   };
 
+  const zeroQuantityItems = spareparts.filter(
+    (sparepart) => sparepart.quantity === 0
+  );
+
   return (
     <div className="container-fluid flex">
       <Sidebar />
@@ -170,7 +177,110 @@ const ListSparepart = () => {
         ) : spareparts.length === 0 ? (
           <p className="text-center">Sparepart tidak ditemukan</p>
         ) : (
-          <table className="table">
+          <>
+            <table className="table mt-4">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Kategori</th>
+                  <th>Harga</th>
+                  <th>Jumlah</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.map((sparepart, index) => (
+                  <tr key={sparepart.spare_part_id}>
+                    <td>{indexOfFirstItem + index + 1}</td>
+                    <td>{sparepart.spare_part_name}</td>
+                    <td>{sparepart.Category.category_name}</td>
+                    <td>{sparepart.price}</td>
+                    <td>{sparepart.quantity}</td>
+                    <td>
+                      <button className="btn btn-ghost btn-xs">
+                        <PencilIcon
+                          className="h-5 w-5 text-blue-600"
+                          onClick={() => handleEdit(sparepart)}
+                        />
+                      </button>
+                      <button
+                        className="btn btn-ghost btn-xs text-red-600"
+                        onClick={() => handleDelete(sparepart.spare_part_id)}
+                      >
+                        <TrashIcon className="h-5 w-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="flex justify-center mt-4">
+              <div className="join pt-5">
+                <button
+                  className="join-item btn"
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  «
+                </button>
+
+                {Array.from({
+                  length: Math.min(
+                    5,
+                    Math.ceil(spareparts.length / itemsPerPage)
+                  ),
+                }).map((_, index) => {
+                  const pageNumber = Math.max(1, currentPage - 2) + index;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => paginate(pageNumber)}
+                      className={`join-item btn ${
+                        pageNumber === currentPage ? "active" : ""
+                      }`}
+                      disabled={
+                        pageNumber > Math.ceil(spareparts.length / itemsPerPage)
+                      }
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+
+                <button
+                  className="join-item btn"
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={
+                    currentPage === Math.ceil(spareparts.length / itemsPerPage)
+                  }
+                >
+                  »
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+        <div className="inline-block">
+          <Link to="/AddSparepart">
+            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+              Tambah Data
+            </button>
+          </Link>
+        </div>
+        <h2 className="text-xl font-semibold mt-10">
+          Sparepart dengan Jumlah Nol
+        </h2>
+        {loading ? (
+          <div className="text-center">
+            <span className="loading loading-dots loading-lg"></span>
+          </div>
+        ) : error ? (
+          <p className="text-center">{error}</p>
+        ) : zeroQuantityItems.length === 0 ? (
+          <p className="text-center">Tidak ada sparepart dengan jumlah nol</p>
+        ) : (
+          <table className="table mt-4">
             <thead>
               <tr>
                 <th>No</th>
@@ -182,19 +292,19 @@ const ListSparepart = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((sparepart, index) => (
+              {zeroQuantityItems.map((sparepart, index) => (
                 <tr key={sparepart.spare_part_id}>
-                  <td>{indexOfFirstItem + index + 1}</td>
+                  <td>{index + 1}</td>
                   <td>{sparepart.spare_part_name}</td>
                   <td>{sparepart.Category.category_name}</td>
                   <td>{sparepart.price}</td>
                   <td>{sparepart.quantity}</td>
                   <td>
-                    <button className="btn btn-ghost btn-xs">
-                      <PencilIcon
-                        className="h-5 w-5 text-blue-600"
-                        onClick={() => handleEdit(sparepart)}
-                      />
+                    <button
+                      className="btn btn-ghost btn-xs"
+                      onClick={() => handleEdit(sparepart)}
+                    >
+                      <PencilIcon className="h-5 w-5 text-blue-600" />
                     </button>
                     <button
                       className="btn btn-ghost btn-xs text-red-600"
@@ -208,55 +318,6 @@ const ListSparepart = () => {
             </tbody>
           </table>
         )}
-        <div className="flex justify-center mt-4">
-          <div className="join pt-5">
-            <button
-              className="join-item btn"
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              «
-            </button>
-
-            {Array.from({
-              length: Math.min(5, Math.ceil(spareparts.length / itemsPerPage)),
-            }).map((_, index) => {
-              const pageNumber = Math.max(1, currentPage - 2) + index;
-              return (
-                <button
-                  key={index}
-                  onClick={() => paginate(pageNumber)}
-                  className={`join-item btn ${
-                    pageNumber === currentPage ? "active" : ""
-                  }`}
-                  disabled={
-                    pageNumber > Math.ceil(spareparts.length / itemsPerPage)
-                  }
-                >
-                  {pageNumber}
-                </button>
-              );
-            })}
-
-            <button
-              className="join-item btn"
-              onClick={() => paginate(currentPage + 1)}
-              disabled={
-                currentPage === Math.ceil(spareparts.length / itemsPerPage)
-              }
-            >
-              »
-            </button>
-          </div>
-        </div>
-        <div className="inline-block">
-          <Link to="/AddSparepart">
-
-            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
-              Tambah Data
-            </button>
-          </Link>
-        </div>
       </div>
 
       {isModalOpen && (
