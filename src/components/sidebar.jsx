@@ -18,6 +18,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const [user, setUser] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,7 +57,17 @@ function Sidebar() {
       name: "Analytics",
       icon: ChartPieIcon,
       isActive: false,
-      path: "/history",
+      path: "/analytics",
+      subMenu: [
+        {
+          name: "Penjualan",
+          path: "/analytics/penjualan",
+        },
+        {
+          name: "Service",
+          path: "/analytics/service",
+        },
+      ],
     },
   ];
 
@@ -108,6 +119,8 @@ function Sidebar() {
             menu={menu1}
             title={{ sm: "Home", xs: "Home" }}
             navigate={navigate}
+            isAnalyticsDropdownOpen={isAnalyticsDropdownOpen}
+            setIsAnalyticsDropdownOpen={setIsAnalyticsDropdownOpen}
           />
         </div>
         <div className="border-b text-sm">
@@ -193,7 +206,7 @@ function Sidebar() {
   );
 }
 
-function Menus({ menu, title, navigate }) {
+function Menus({ menu, title, navigate, isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen }) {
   return (
     <div className="py-5">
       <h6 className="mb-4 text-[10px] sm:text-sm text-center sm:text-left sm:px-5">
@@ -217,19 +230,36 @@ function Menus({ menu, title, navigate }) {
           return (
             <li
               key={index}
-              className={`${menuActive} cursor-pointer mx-5`}
+              className={`${menuActive} cursor-pointer mx-5 relative`}
               onClick={() => {
-                if (val.action) {
+                if (val.subMenu) {
+                  setIsAnalyticsDropdownOpen(!isAnalyticsDropdownOpen);
+                } else if (val.action) {
                   val.action();
                 } else {
                   navigate(val.path);
                 }
               }}
+              onMouseEnter={() => val.subMenu && setIsAnalyticsDropdownOpen(true)}
+              onMouseLeave={() => val.subMenu && setIsAnalyticsDropdownOpen(false)}
             >
               <Icon width={18} className={`${iconActive}`} />
               <div className={`ml-2 ${textActive} hidden sm:block`}>
                 {val.name}
               </div>
+              {val.subMenu && isAnalyticsDropdownOpen && (
+                <ul className="absolute left-0 top-full bg-slate-100 border border-blue-100 rounded-md shadow-lg py-2 w-48">
+                  {val.subMenu.map((subItem, subIndex) => (
+                    <li
+                      key={subIndex}
+                      className="px-4 py-2 hover:bg-blue-300 hover:bg-opacity-10"
+                      onClick={() => navigate(subItem.path)}
+                    >
+                      {subItem.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           );
         })}
