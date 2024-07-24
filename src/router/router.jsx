@@ -27,6 +27,9 @@ import LoginPage from "../pages/page/loginPage/loginView.jsx";
 import ProtectedRoute from "../router/protectedRoute.jsx";
 import PublicRoute from "../router/publicRoute.jsx";
 
+import AnalyticsPenjualan from "../pages/page/historyanalytics/penjualan.jsx";
+import AnalyticsService from "../pages/page/historyanalytics/service.jsx";
+
 const Router = () => {
   return (
     <BrowserRouter>
@@ -54,6 +57,9 @@ const Router = () => {
         <Route path="/AddMachine" element={<ProtectedRoute element={<AddMachine />} />} />
         <Route path="/EditMachine" element={<ProtectedRoute element={<EditMachine />} />} />
 
+        {/* Add the new routes for the dropdown menu items */}
+        <Route path="/analytics/penjualan" element={<ProtectedRoute element={<AnalyticsPenjualan />} />} />
+        <Route path="/analytics/service" element={<ProtectedRoute element={<AnalyticsService />} />} />
       </Routes>
     </BrowserRouter>
   );
