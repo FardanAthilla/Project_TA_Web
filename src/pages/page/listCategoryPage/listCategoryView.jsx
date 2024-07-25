@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../../components/sidebar";
 import { fetchCategory, deleteCategory } from "../../../service/fetchapi";
 import { Link, useNavigate } from "react-router-dom";
-import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
+import { TrashIcon, PencilIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 const ListCategoryView = () => {
   const [Categories, setCategories] = useState([]);
@@ -12,6 +12,9 @@ const ListCategoryView = () => {
   const [itemsPerPage] = useState(5);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isDeletable, setIsDeletable] = useState(true);
+  const [expandedCategory, setExpandedCategory] = useState(null);
 
   const navigate = useNavigate();
 
@@ -33,8 +36,15 @@ const ListCategoryView = () => {
     getCategory();
   }, []);
 
-  const handleDelete = (id) => {
-    setSelectedCategoryId(id);
+  const handleDelete = (id, category) => {
+    if (category.SparePart.length > 0 || category.StoreItems.length > 0) {
+      setIsDeletable(false);
+      setModalMessage("Kategori ini tidak dapat dihapus karena ada barang yang menggunakan kategori ini");
+    } else {
+      setIsDeletable(true);
+      setSelectedCategoryId(id);
+      setModalMessage("Apa kamu yakin menghapus data ini? Setelah dihapus, tidak dapat dikembalikan.");
+    }
     setIsModalOpen(true);
   };
 
@@ -62,6 +72,10 @@ const ListCategoryView = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedCategoryId(null);
+  };
+
+  const toggleExpandCategory = (categoryId) => {
+    setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
   };
 
   const paginate = (pageNumber) => {
@@ -100,24 +114,68 @@ const ListCategoryView = () => {
                 </thead>
                 <tbody>
                   {currentItems.map((category, index) => (
-                    <tr key={category.category_id}>
-                      <td>{indexOfFirstItem + index + 1}</td>
-                      <td>{category.category_name}</td>
-                      <td>
-                        <button className="btn btn-ghost btn-xs">
-                          <PencilIcon
-                            className="h-5 w-5 text-blue-600"
-                            onClick={() => handleEdit(category)}
-                          />
-                        </button>
-                        <button
-                          className="btn btn-ghost btn-xs text-red-600"
-                          onClick={() => handleDelete(category.category_id)}
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                        </button>
-                      </td>
-                    </tr>
+                    <React.Fragment key={category.category_id}>
+                      <tr>
+                        <td>{indexOfFirstItem + index + 1}</td>
+                        <td>{category.category_name}</td>
+                        <td>
+                          <button className="btn btn-ghost btn-xs">
+                            <PencilIcon
+                              className="h-5 w-5 text-blue-600"
+                              onClick={() => handleEdit(category)}
+                            />
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-xs text-red-600"
+                            onClick={() => handleDelete(category.category_id, category)}
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-xs"
+                            onClick={() => toggleExpandCategory(category.category_id)}
+                          >
+                            {expandedCategory === category.category_id ? (
+                              <ChevronUpIcon className="h-5 w-5 text-green-600" />
+                            ) : (
+                              <ChevronDownIcon className="h-5 w-5 text-green-600" />
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                      {expandedCategory === category.category_id && (
+                        <tr>
+                          <td colSpan="3">
+                            <div className="p-4 bg-gray-100 rounded-md">
+                              <h4 className="font-semibold">Spare Parts:</h4>
+                              {category.SparePart.length > 0 ? (
+                                <ul className="list-disc list-inside">
+                                  {category.SparePart.map((part) => (
+                                    <li key={part.spare_part_id}>
+                                      {part.spare_part_name} - Quantity: {part.quantity}, Price: {part.price}
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p>Tidak ada spare parts.</p>
+                              )}
+                              <h4 className="font-semibold mt-4">Store Items:</h4>
+                              {category.StoreItems.length > 0 ? (
+                                <ul className="list-disc list-inside">
+                                  {category.StoreItems.map((item) => (
+                                    <li key={item.store_items_id}>
+                                      {item.store_items_name} - Quantity: {item.quantity}, Price: {item.price}
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p>Tidak ada store items.</p>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
@@ -197,24 +255,25 @@ const ListCategoryView = () => {
               </button>
             </div>
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400">
-                Apa kamu yakin menghapus data ini? Setelah dihapus, tidak dapat
-                dikembalikan.
+              <p className="text-base text-gray-500 dark:text-gray-300">
+                {modalMessage}
               </p>
             </div>
-            <div className=" p-4 border-t dark:border-gray-600 flex items-center justify-end gap-x-4">
+            <div className="flex justify-end p-4 space-x-2 border-t dark:border-gray-600">
               <button
                 onClick={closeModal}
                 className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
               >
-                Batal
+                Batalkan
               </button>
-              <button
-                onClick={confirmDelete}
-                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
-              >
-                Konfirmasi
-              </button>
+              {isDeletable && (
+                <button
+                  onClick={confirmDelete}
+                  className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
+                >
+                  Hapus
+                </button>
+              )}
             </div>
           </div>
         </div>
