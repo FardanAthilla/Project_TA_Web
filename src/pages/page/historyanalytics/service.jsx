@@ -49,13 +49,13 @@ const ServiceView = () => {
       name: 'Tanggal',
       selector: row => row.date,
       sortable: true,
-      width: '25%',
+      width: '20%',
     },
     {
-      name: 'Nama Personil',
+      name: 'Customer',
       selector: row => row.person_name,
       sortable: true,
-      width: '20%',
+      width: '15%',
     },
     {
       name: 'Nomor Mesin',
@@ -67,13 +67,13 @@ const ServiceView = () => {
       name: 'Nama Mesin',
       selector: row => row.machine_name,
       sortable: true,
-      width: '15%',
+      width: '20%',
     },
     {
       name: 'Keluhan',
       selector: row => row.complaints,
       sortable: true,
-      width: '25%',
+      width: '20%',
     },
     {
       name: 'Status',
