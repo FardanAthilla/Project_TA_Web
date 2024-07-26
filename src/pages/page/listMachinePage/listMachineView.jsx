@@ -257,6 +257,8 @@ const ListMachine = () => {
           </div>
         ) : error ? (
           <p className="text-center">{error}</p>
+        ) : showZeroQuantity && zeroQuantityItems.length === 0 ? (
+          <p className="text-center">Mesin tidak ditemukan</p>
         ) : machines.length === 0 ? (
           <p className="text-center">Mesin tidak ditemukan</p>
         ) : (
@@ -300,61 +302,52 @@ const ListMachine = () => {
                 )}
               </tbody>
             </table>
-            <div className="flex justify-center mt-4">
-              <div className="join pt-5">
-                <button
-                  className="join-item btn"
-                  onClick={() => paginate(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  «
-                </button>
+            {!showZeroQuantity && (
+              <div className="flex justify-center mt-4">
+                <div className="join pt-5">
+                  <button
+                    className="join-item btn"
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    «
+                  </button>
 
-                {Array.from({
-                  length: Math.min(
-                    5,
-                    Math.ceil(
-                      (showZeroQuantity ? zeroQuantityItems : machines).length /
-                        itemsPerPage
-                    )
-                  ),
-                }).map((_, index) => {
-                  const pageNumber = Math.max(1, currentPage - 2) + index;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => paginate(pageNumber)}
-                      className={`join-item btn ${
-                        pageNumber === currentPage ? "active" : ""
-                      }`}
-                      disabled={
-                        pageNumber >
-                        Math.ceil(
-                          (showZeroQuantity ? zeroQuantityItems : machines)
-                            .length / itemsPerPage
-                        )
-                      }
-                    >
-                      {pageNumber}
-                    </button>
-                  );
-                })}
+                  {Array.from({
+                    length: Math.min(
+                      5,
+                      Math.ceil(machines.length / itemsPerPage)
+                    ),
+                  }).map((_, index) => {
+                    const pageNumber = Math.max(1, currentPage - 2) + index;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => paginate(pageNumber)}
+                        className={`join-item btn ${
+                          pageNumber === currentPage ? "active" : ""
+                        }`}
+                        disabled={
+                          pageNumber > Math.ceil(machines.length / itemsPerPage)
+                        }
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  })}
 
-                <button
-                  className="join-item btn"
-                  onClick={() => paginate(currentPage + 1)}
-                  disabled={
-                    currentPage ===
-                    Math.ceil(
-                      (showZeroQuantity ? zeroQuantityItems : machines).length /
-                        itemsPerPage
-                    )
-                  }
-                >
-                  »
-                </button>
+                  <button
+                    className="join-item btn"
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={
+                      currentPage === Math.ceil(machines.length / itemsPerPage)
+                    }
+                  >
+                    »
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="inline-block">
               <Link to="/AddMachine">
