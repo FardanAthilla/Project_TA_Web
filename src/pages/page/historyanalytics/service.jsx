@@ -4,6 +4,7 @@ import Sidebar from '../../../components/sidebar';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import DataTable from 'react-data-table-component';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const ServiceView = () => {
   const [serviceData, setServiceData] = useState([]);
@@ -43,13 +44,13 @@ const ServiceView = () => {
       name: 'ID',
       selector: row => row.id,
       sortable: true,
-      width: '10%',
+      width: '5%',
     },
     {
       name: 'Tanggal',
       selector: row => row.date,
       sortable: true,
-      width: '20%',
+      width: '15%',
     },
     {
       name: 'Customer',
@@ -67,7 +68,7 @@ const ServiceView = () => {
       name: 'Nama Mesin',
       selector: row => row.machine_name,
       sortable: true,
-      width: '20%',
+      width: '15%',
     },
     {
       name: 'Keluhan',
@@ -83,12 +84,18 @@ const ServiceView = () => {
     },
   ];
 
-  const customStyles = {
+  const customStyles = { //ngatur biar dia ke bawah column 
     headCells: {
       style: {
         backgroundColor: '#cfe2ff',
         fontSize: '16px',
         fontWeight: 'bold',
+      },
+    },
+    cells: { 
+      style: {
+        whiteSpace: 'normal',
+        wordWrap: 'break-word',
       },
     },
   };
@@ -107,10 +114,12 @@ const ServiceView = () => {
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
         {loading ? (
-          <div className="text-center text-2xl">Sebentar, sedang memuat</div>
+          <div className="flex justify-center items-center h-full">
+            <ClipLoader size={50} color={"#123abc"} loading={loading} />
+          </div>
         ) : (
           <>
-            <h1 className="text-3xl font-bold mb-4">Analitik service</h1>
+            <h1 className="text-3xl font-bold mb-4">Analitik Service</h1>
             <DataTable
               columns={serviceColumns}
               data={currentItems}
