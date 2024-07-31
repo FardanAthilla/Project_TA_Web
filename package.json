@@ -17,6 +17,7 @@
     "@mui/x-charts": "^7.7.1",
     "@mui/x-data-grid-generator": "^7.8.0",
     "@mui/x-data-grid-pro": "^7.8.0",
+    "apexcharts": "^3.51.0",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "js-cookie": "^3.0.5",

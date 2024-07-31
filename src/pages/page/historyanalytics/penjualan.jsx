@@ -9,7 +9,7 @@ const PenjualanView = () => {
   const [salesData, setSalesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(8); // Change this to 10
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,9 +46,8 @@ const PenjualanView = () => {
 
   const salesColumns = [
     {
-      name: 'ID',
-      selector: row => row.id,
-      sortable: true,
+      name: 'No',
+      selector: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
       width: '10%',
     },
     {
@@ -56,24 +55,21 @@ const PenjualanView = () => {
       selector: row => row.items.map((item, index) => (
         <div key={index}>{item.name} ({item.quantity}x)</div>
       )),
-      sortable: false,
       width: '40%',
     },
     {
       name: 'Tanggal',
       selector: row => row.date,
-      sortable: true,
       width: '25%',
     },
     {
       name: 'Total Harga',
       selector: row => row.total_price,
-      sortable: true,
       width: '25%',
     },
   ];
 
-  const customStyles = { //ngatur biar kebawah column
+  const customStyles = {
     headCells: {
       style: {
         backgroundColor: '#cfe2ff',
@@ -84,7 +80,7 @@ const PenjualanView = () => {
     cells: {
       style: {
         whiteSpace: 'normal',
-        wordWrap: 'break-word', 
+        wordWrap: 'break-word',
       },
     },
   };
@@ -103,7 +99,7 @@ const PenjualanView = () => {
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
         {loading ? (
-          <div className="flex justify-center items-center h-full"> 
+          <div className="flex justify-center items-center h-full">
             <ClipLoader size={50} color={"#123abc"} loading={loading} />
           </div>
         ) : (
