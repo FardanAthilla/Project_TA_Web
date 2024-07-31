@@ -5,12 +5,13 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import DataTable from 'react-data-table-component';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Link } from 'react-router-dom';
 
 const ServiceView = () => {
   const [serviceData, setServiceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(8);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,11 +22,13 @@ const ServiceView = () => {
         const formattedServiceData = result.Data.map((service) => ({
           id: service.service_report_id,
           date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
-          person_name: service.person_name,
+          customer_name: service.name, 
+          worker_name: service.User.username,
           machine_number: service.machine_number,
           machine_name: service.machine_name,
           complaints: service.complaints,
-          status: service.status,
+          status: service.Status.status_name,
+          worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
         }));
 
         setServiceData(formattedServiceData);
@@ -39,52 +42,65 @@ const ServiceView = () => {
     fetchData();
   }, []);
 
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'Belum Selesai':
+        return 'border-red-500';
+      case 'Sudah Selesai':
+        return 'border-blue-500';
+      default:
+        return 'border-gray-400';
+    }
+  };
+
   const serviceColumns = [
     {
-      name: 'ID',
-      selector: row => row.id,
-      sortable: true,
+      name: 'No',
+      selector: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
       width: '5%',
+    },
+    {
+      name: 'Pekerja',
+      selector: row => (
+        <div className="flex items-center">
+          <img src={row.worker_image} alt="Worker" className="w-10 h-10 rounded-full mr-2" />
+          <span>{row.worker_name}</span>
+        </div>
+      ),
+      width: '12%',
     },
     {
       name: 'Tanggal',
       selector: row => row.date,
-      sortable: true,
       width: '15%',
     },
     {
-      name: 'Customer',
-      selector: row => row.person_name,
-      sortable: true,
-      width: '15%',
-    },
-    {
-      name: 'Nomor Mesin',
-      selector: row => row.machine_number,
-      sortable: true,
-      width: '15%',
+      name: 'Nama Pelanggan',
+      selector: row => row.customer_name, 
+      width: '20%',
     },
     {
       name: 'Nama Mesin',
       selector: row => row.machine_name,
-      sortable: true,
+      width: '23%',
+    },
+    {
+      name: 'Status',
+      selector: row => (
+        <div className={`border p-2 rounded ${getStatusStyle(row.status)}`}>
+          {row.status}
+        </div>
+      ),
       width: '15%',
     },
     {
       name: 'Keluhan',
-      selector: row => row.complaints,
-      sortable: true,
-      width: '20%',
-    },
-    {
-      name: 'Status',
-      selector: row => row.status,
-      sortable: true,
-      width: '15%',
+      selector: row => <Link to={`/service/${row.id}`} className="text-blue-500">Lihat Detail</Link>,
+      width: '10%',
     },
   ];
 
-  const customStyles = { //ngatur biar dia ke bawah column 
+  const customStyles = {
     headCells: {
       style: {
         backgroundColor: '#cfe2ff',
@@ -92,7 +108,7 @@ const ServiceView = () => {
         fontWeight: 'bold',
       },
     },
-    cells: { 
+    cells: {
       style: {
         whiteSpace: 'normal',
         wordWrap: 'break-word',

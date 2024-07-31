@@ -30,6 +30,9 @@ import PublicRoute from "../router/publicRoute.jsx";
 import AnalyticsPenjualan from "../pages/page/historyanalytics/penjualan.jsx";
 import AnalyticsService from "../pages/page/historyanalytics/service.jsx";
 
+import ServiceView from "../pages/page/historyanalytics/service.jsx" 
+import ServiceDetailView from "../pages/page/historyanalytics/servicedetail.jsx"; 
+
 const Router = () => {
   return (
     <BrowserRouter>
@@ -60,6 +63,10 @@ const Router = () => {
         {/* Add the new routes for the dropdown menu items */}
         <Route path="/analytics/penjualan" element={<ProtectedRoute element={<AnalyticsPenjualan />} />} />
         <Route path="/analytics/service" element={<ProtectedRoute element={<AnalyticsService />} />} />
+
+        {/* Add the new routes for ServiceView and ServiceDetailView */}
+        <Route path="/service" element={<ProtectedRoute element={<ServiceView />} />} />
+        <Route path="/service/:id" element={<ProtectedRoute element={<ServiceDetailView />} />} />
       </Routes>
     </BrowserRouter>
   );
