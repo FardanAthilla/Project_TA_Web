@@ -15,7 +15,7 @@ const ServiceView = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
+      try {    
         const response = await axios.get('https://rdo-app-o955y.ondigitalocean.app/service');
         const result = response.data;
 
