@@ -20,6 +20,7 @@ function Sidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
+  const [activeSubMenu, setActiveSubMenu] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,6 +44,9 @@ function Sidebar() {
     // Set active menu based on current path
     const currentPath = window.location.pathname;
     setActiveMenu(currentPath);
+    if (currentPath.startsWith("/analytics")) {
+      setActiveSubMenu(currentPath);
+    }
   }, []);
 
   const handleLogout = () => {
@@ -51,14 +55,15 @@ function Sidebar() {
     navigate("/login");
   };
 
-  const handleMenuClick = (menu) => {
+  const handleMenuClick = (menu, subMenu = null) => {
     setActiveMenu(menu.path);
-    if (menu.subMenu) {
+    setActiveSubMenu(subMenu ? subMenu.path : null);
+    if (menu.subMenu && !subMenu) {
       setIsAnalyticsDropdownOpen(!isAnalyticsDropdownOpen);
     } else if (menu.action) {
       menu.action();
     } else {
-      navigate(menu.path);
+      navigate(subMenu ? subMenu.path : menu.path);
     }
   };
 
@@ -129,6 +134,7 @@ function Sidebar() {
             title={{ sm: "Home", xs: "Home" }}
             navigate={navigate}
             activeMenu={activeMenu}
+            activeSubMenu={activeSubMenu}
             handleMenuClick={handleMenuClick}
             isAnalyticsDropdownOpen={isAnalyticsDropdownOpen}
             setIsAnalyticsDropdownOpen={setIsAnalyticsDropdownOpen}
@@ -140,6 +146,7 @@ function Sidebar() {
             title={{ sm: "Tambah Data", xs: "Tambah Data" }}
             navigate={navigate}
             activeMenu={activeMenu}
+            activeSubMenu={activeSubMenu}
             handleMenuClick={handleMenuClick}
           />
         </div>
@@ -149,6 +156,7 @@ function Sidebar() {
             title={{ sm: "Autentikasi", xs: "Autentikasi" }}
             navigate={navigate}
             activeMenu={activeMenu}
+            activeSubMenu={activeSubMenu}
             handleMenuClick={handleMenuClick}
           />
         </div>
@@ -221,7 +229,7 @@ function Sidebar() {
   );
 }
 
-function Menus({ menu, title, navigate, activeMenu, handleMenuClick, isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen }) {
+function Menus({ menu, title, navigate, activeMenu, activeSubMenu, handleMenuClick, isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen }) {
   return (
     <div className="py-5">
       <h6 className="mb-4 text-[10px] sm:text-sm text-center sm:text-left sm:px-5">
@@ -231,14 +239,15 @@ function Menus({ menu, title, navigate, activeMenu, handleMenuClick, isAnalytics
       <ul>
         {menu.map((val, index) => {
           const Icon = val.icon;
-          const menuActive = val.path === activeMenu
+          const isActive = val.path === activeMenu || val.subMenu?.some(sub => sub.path === activeSubMenu);
+          const menuActive = isActive
             ? "bg-blue-300 bg-opacity-10 px-3 border border-blue-100 py-2 rounded-md text-blue-400 flex"
             : "px-3 py-2 flex group hover:bg-blue-300 hover:bg-opacity-10 hover:border hover:border-blue-100 hover:rounded-md";
 
-          const textActive = val.path === activeMenu
+          const textActive = isActive
             ? "text-blue-500"
             : "text-gray-700 group-hover:text-blue-500";
-          const iconActive = val.path === activeMenu
+          const iconActive = isActive
             ? "text-blue-500"
             : "text-gray-600 group-hover:text-blue-500";
 
@@ -259,8 +268,10 @@ function Menus({ menu, title, navigate, activeMenu, handleMenuClick, isAnalytics
                   {val.subMenu.map((subItem, subIndex) => (
                     <li
                       key={subIndex}
-                      className="px-4 py-2 rounded-md hover:bg-blue-300 hover:bg-opacity-10"
-                      onClick={() => navigate(subItem.path)}
+                      className={`px-4 py-2 rounded-md hover:bg-blue-300 hover:bg-opacity-10 ${
+                        activeSubMenu === subItem.path ? "bg-blue-300 bg-opacity-10 text-blue-500" : ""
+                      }`}
+                      onClick={() => handleMenuClick(val, subItem)}
                     >
                       {subItem.name}
                     </li>
@@ -274,5 +285,5 @@ function Menus({ menu, title, navigate, activeMenu, handleMenuClick, isAnalytics
     </div>
   );
 }
-git 
+
 export default Sidebar;
