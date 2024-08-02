@@ -60,11 +60,9 @@ const Router = () => {
         <Route path="/AddMachine" element={<ProtectedRoute element={<AddMachine />} />} />
         <Route path="/EditMachine" element={<ProtectedRoute element={<EditMachine />} />} />
 
-        {/* Add the new routes for the dropdown menu items */}
         <Route path="/analytics/penjualan" element={<ProtectedRoute element={<AnalyticsPenjualan />} />} />
         <Route path="/analytics/service" element={<ProtectedRoute element={<AnalyticsService />} />} />
 
-        {/* Add the new routes for ServiceView and ServiceDetailView */}
         <Route path="/service" element={<ProtectedRoute element={<ServiceView />} />} />
         <Route path="/service/:id" element={<ProtectedRoute element={<ServiceDetailView />} />} />
       </Routes>

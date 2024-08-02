@@ -93,6 +93,31 @@ export const register = async (username, password, address, no_handphone, role, 
   }
 };
 
+//detail
+export const getServiceDetails = async (serviceReportId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/service?service_report_id=${serviceReportId}`);
+    
+    if (response.status === 200) {
+      return {
+        success: true,
+        data: response.data,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Failed to fetch service details.',
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching service details:', error.response ? error.response.data : error.message);
+    return {
+      success: false,
+      message: error.response ? error.response.data.message : error.message,
+    };
+  }
+};
+
 export const getAllUsers = async () => {
   try {
     const response = await axios.get(`${baseUrl}/user/all`);

@@ -24,35 +24,9 @@ const ServiceDetailView = () => {
     fetchServiceDetail();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <ClipLoader size={50} color={"#123abc"} loading={loading} />
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen flex bg-white">
       <Sidebar />
-      <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
-        {serviceDetail ? (
-          <>
-            <h1 className="text-3xl font-bold mb-4">Detail Service</h1>
-            <div className="mb-4">
-              <strong>Tanggal:</strong> {serviceDetail.date}
-            </div>
-            <div className="mb-4">
-              <strong>Nomor Mesin:</strong> {serviceDetail.machine_number}
-            </div>
-            <div className="mb-4">
-              <strong>Keluhan:</strong> {serviceDetail.complaints}
-            </div>
-          </>
-        ) : (
-          <p>Service detail not found.</p>
-        )}
-      </div>
     </div>
   );
 };

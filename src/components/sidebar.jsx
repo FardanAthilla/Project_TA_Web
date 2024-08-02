@@ -19,6 +19,8 @@ function Sidebar() {
   const [user, setUser] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [activeSubMenu, setActiveSubMenu] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -38,6 +40,13 @@ function Sidebar() {
     } else {
       fetchUserData();
     }
+
+    // Set active menu based on current path
+    const currentPath = window.location.pathname;
+    setActiveMenu(currentPath);
+    if (currentPath.startsWith("/analytics")) {
+      setActiveSubMenu(currentPath);
+    }
   }, []);
 
   const handleLogout = () => {
@@ -46,17 +55,27 @@ function Sidebar() {
     navigate("/login");
   };
 
+  const handleMenuClick = (menu, subMenu = null) => {
+    setActiveMenu(menu.path);
+    setActiveSubMenu(subMenu ? subMenu.path : null);
+    if (menu.subMenu && !subMenu) {
+      setIsAnalyticsDropdownOpen(!isAnalyticsDropdownOpen);
+    } else if (menu.action) {
+      menu.action();
+    } else {
+      navigate(subMenu ? subMenu.path : menu.path);
+    }
+  };
+
   const menu1 = [
     {
       name: "Dashboard",
       icon: HomeModernIcon,
-      isActive: false,
       path: "/",
     },
     {
       name: "Analytics",
       icon: ChartPieIcon,
-      isActive: false,
       path: "/analytics",
       subMenu: [
         {
@@ -75,25 +94,21 @@ function Sidebar() {
     {
       name: "Mesin",
       icon: WrenchIcon,
-      isActive: false,
       path: "/listMachine",
     },
     {
       name: "Sparepart",
       icon: CogIcon,
-      isActive: false,
       path: "/listSparepart",
     },
     {
       name: "Akun",
       icon: UsersIcon,
-      isActive: false,
       path: "/allData",
     },
     {
       name: "Kategori",
       icon: CubeIcon,
-      isActive: false,
       path: "/listCategory",
     },
   ];
@@ -102,7 +117,6 @@ function Sidebar() {
     {
       name: "Logout",
       icon: PowerIcon,
-      isActive: false,
       path: "/login",
       action: () => setIsModalOpen(true),
     },
@@ -119,6 +133,9 @@ function Sidebar() {
             menu={menu1}
             title={{ sm: "Home", xs: "Home" }}
             navigate={navigate}
+            activeMenu={activeMenu}
+            activeSubMenu={activeSubMenu}
+            handleMenuClick={handleMenuClick}
             isAnalyticsDropdownOpen={isAnalyticsDropdownOpen}
             setIsAnalyticsDropdownOpen={setIsAnalyticsDropdownOpen}
           />
@@ -128,6 +145,9 @@ function Sidebar() {
             menu={menu2}
             title={{ sm: "Tambah Data", xs: "Tambah Data" }}
             navigate={navigate}
+            activeMenu={activeMenu}
+            activeSubMenu={activeSubMenu}
+            handleMenuClick={handleMenuClick}
           />
         </div>
         <div className="border-b text-sm">
@@ -135,6 +155,9 @@ function Sidebar() {
             menu={menu3}
             title={{ sm: "Autentikasi", xs: "Autentikasi" }}
             navigate={navigate}
+            activeMenu={activeMenu}
+            activeSubMenu={activeSubMenu}
+            handleMenuClick={handleMenuClick}
           />
         </div>
         <div className="flex mx-5 mt-8 bg-opacity-10 border border-blue-100 rounded-md p-1 sm:p-2">
@@ -206,7 +229,7 @@ function Sidebar() {
   );
 }
 
-function Menus({ menu, title, navigate, isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen }) {
+function Menus({ menu, title, navigate, activeMenu, activeSubMenu, handleMenuClick, isAnalyticsDropdownOpen, setIsAnalyticsDropdownOpen }) {
   return (
     <div className="py-5">
       <h6 className="mb-4 text-[10px] sm:text-sm text-center sm:text-left sm:px-5">
@@ -216,14 +239,15 @@ function Menus({ menu, title, navigate, isAnalyticsDropdownOpen, setIsAnalyticsD
       <ul>
         {menu.map((val, index) => {
           const Icon = val.icon;
-          const menuActive = val.isActive
+          const isActive = val.path === activeMenu || val.subMenu?.some(sub => sub.path === activeSubMenu);
+          const menuActive = isActive
             ? "bg-blue-300 bg-opacity-10 px-3 border border-blue-100 py-2 rounded-md text-blue-400 flex"
             : "px-3 py-2 flex group hover:bg-blue-300 hover:bg-opacity-10 hover:border hover:border-blue-100 hover:rounded-md";
 
-          const textActive = val.isActive
+          const textActive = isActive
             ? "text-blue-500"
             : "text-gray-700 group-hover:text-blue-500";
-          const iconActive = val.isActive
+          const iconActive = isActive
             ? "text-blue-500"
             : "text-gray-600 group-hover:text-blue-500";
 
@@ -231,15 +255,7 @@ function Menus({ menu, title, navigate, isAnalyticsDropdownOpen, setIsAnalyticsD
             <li
               key={index}
               className={`${menuActive} cursor-pointer mx-5 relative`}
-              onClick={() => {
-                if (val.subMenu) {
-                  setIsAnalyticsDropdownOpen(!isAnalyticsDropdownOpen);
-                } else if (val.action) {
-                  val.action();
-                } else {
-                  navigate(val.path);
-                }
-              }}
+              onClick={() => handleMenuClick(val)}
               onMouseEnter={() => val.subMenu && setIsAnalyticsDropdownOpen(true)}
               onMouseLeave={() => val.subMenu && setIsAnalyticsDropdownOpen(false)}
             >
@@ -252,8 +268,10 @@ function Menus({ menu, title, navigate, isAnalyticsDropdownOpen, setIsAnalyticsD
                   {val.subMenu.map((subItem, subIndex) => (
                     <li
                       key={subIndex}
-                      className="px-4 py-2 rounded-md hover:bg-blue-300 hover:bg-opacity-10"
-                      onClick={() => navigate(subItem.path)}
+                      className={`px-4 py-2 rounded-md hover:bg-blue-300 hover:bg-opacity-10 ${
+                        activeSubMenu === subItem.path ? "bg-blue-300 bg-opacity-10 text-blue-500" : ""
+                      }`}
+                      onClick={() => handleMenuClick(val, subItem)}
                     >
                       {subItem.name}
                     </li>
