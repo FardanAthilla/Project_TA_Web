@@ -6,23 +6,28 @@ import { id } from 'date-fns/locale';
 import DataTable from 'react-data-table-component';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Link } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const ServiceView = () => {
   const [serviceData, setServiceData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {    
+      try {
         const response = await axios.get('https://rdo-app-o955y.ondigitalocean.app/service');
         const result = response.data;
 
         const formattedServiceData = result.Data.map((service) => ({
           id: service.service_report_id,
           date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
-          customer_name: service.name, 
+          customer_name: service.name,
           worker_name: service.User.username,
           machine_number: service.machine_number,
           machine_name: service.machine_name,
@@ -32,6 +37,7 @@ const ServiceView = () => {
         }));
 
         setServiceData(formattedServiceData);
+        setFilteredData(formattedServiceData);
       } catch (error) {
         console.error('Error fetching data: ', error);
       } finally {
@@ -41,6 +47,19 @@ const ServiceView = () => {
 
     fetchData();
   }, []);
+
+  const filterDataByDate = () => {
+    if (startDate && endDate) {
+      const filtered = serviceData.filter((service) => {
+        const serviceDate = new Date(service.date);
+        return serviceDate >= startDate && serviceDate <= endDate;
+      });
+      setFilteredData(filtered);
+      setCurrentPage(1); // Reset to the first page when filtering
+    } else {
+      setFilteredData(serviceData);
+    }
+  };
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -76,7 +95,7 @@ const ServiceView = () => {
     },
     {
       name: 'Nama Pelanggan',
-      selector: row => row.customer_name, 
+      selector: row => row.customer_name,
       width: '20%',
     },
     {
@@ -122,8 +141,8 @@ const ServiceView = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = serviceData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(serviceData.length / itemsPerPage);
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   return (
     <div className="h-screen flex bg-white">
@@ -135,7 +154,38 @@ const ServiceView = () => {
           </div>
         ) : (
           <>
-            <h1 className="text-3xl font-bold mb-4">Analitik Service</h1>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-3xl font-bold">Analitik Service</h1>
+              <div className="flex items-end space-x-4">
+                <div>
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    dateFormat="dd/MM/yyyy"
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">Tanggal Akhir</label>
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    dateFormat="dd/MM/yyyy"
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                </div>
+                <button
+                  onClick={filterDataByDate}
+                  className="btn btn-active btn-neutral">Confirm</button>
+              </div>
+            </div>
             <DataTable
               columns={serviceColumns}
               data={currentItems}
