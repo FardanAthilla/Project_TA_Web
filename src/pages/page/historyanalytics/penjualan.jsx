@@ -4,12 +4,17 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import DataTable from 'react-data-table-component';
 import ClipLoader from 'react-spinners/ClipLoader';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const PenjualanView = () => {
   const [salesData, setSalesData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8); // Change this to 10
+  const [itemsPerPage] = useState(10); // ubah ke 10
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +39,7 @@ const PenjualanView = () => {
         }));
 
         setSalesData(formattedSalesData);
+        setFilteredData(formattedSalesData);
       } catch (error) {
         console.error('Error fetching data: ', error);
       } finally {
@@ -43,6 +49,19 @@ const PenjualanView = () => {
 
     fetchData();
   }, []);
+
+  const filterDataByDate = () => {
+    if (startDate && endDate) {
+      const filtered = salesData.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        return saleDate >= startDate && saleDate <= endDate;
+      });
+      setFilteredData(filtered);
+      setCurrentPage(1); // Reset to the first page when filtering
+    } else {
+      setFilteredData(salesData);
+    }
+  };
 
   const salesColumns = [
     {
@@ -91,8 +110,8 @@ const PenjualanView = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = salesData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(salesData.length / itemsPerPage);
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   return (
     <div className="h-screen flex bg-white">
@@ -104,7 +123,38 @@ const PenjualanView = () => {
           </div>
         ) : (
           <>
-            <h1 className="text-3xl font-bold mb-4">Analitik Penjualan</h1>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-3xl font-bold">Analitik Penjualan</h1>
+              <div className="flex items-end space-x-4">
+                <div>
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    dateFormat="dd/MM/yyyy"
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">Tanggal Akhir</label>
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    dateFormat="dd/MM/yyyy"
+                    className="mt-1 p-2 border rounded w-full"
+                  />
+                </div>
+                <button
+                  onClick={filterDataByDate}
+                  className="btn btn-active btn-neutral">Confirm</button>
+              </div>
+            </div>
             <DataTable
               columns={salesColumns}
               data={currentItems}
