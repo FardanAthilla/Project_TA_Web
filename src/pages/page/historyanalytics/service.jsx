@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import DataTable from 'react-data-table-component';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -17,6 +17,7 @@ const ServiceView = () => {
   const [itemsPerPage] = useState(8);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +27,7 @@ const ServiceView = () => {
 
         const formattedServiceData = result.Data.map((service) => ({
           id: service.service_report_id,
+          rawDate: new Date(service.date), // Save raw date for sorting
           date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
           customer_name: service.name,
           worker_name: service.User.username,
@@ -34,7 +36,7 @@ const ServiceView = () => {
           complaints: service.complaints,
           status: service.Status.status_name,
           worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
-        }));
+        })).sort((a, b) => b.rawDate - a.rawDate); // Sort by date, newest first
 
         setServiceData(formattedServiceData);
         setFilteredData(formattedServiceData);
@@ -50,12 +52,15 @@ const ServiceView = () => {
 
   const filterDataByDate = () => {
     if (startDate && endDate) {
+      const endDateWithTime = new Date(endDate);
+      endDateWithTime.setHours(23, 59, 59, 999); // Set waktu akhir hari
+
       const filtered = serviceData.filter((service) => {
-        const serviceDate = new Date(service.date);
-        return serviceDate >= startDate && serviceDate <= endDate;
+        const serviceDate = new Date(service.rawDate);
+        return serviceDate >= startDate && serviceDate <= endDateWithTime;
       });
       setFilteredData(filtered);
-      setCurrentPage(1); // Reset to the first page when filtering
+      setCurrentPage(1);
     } else {
       setFilteredData(serviceData);
     }
@@ -70,6 +75,10 @@ const ServiceView = () => {
       default:
         return 'border-gray-400';
     }
+  };
+
+  const handleDetailClick = (service) => {
+    navigate('/service/detail', { state: { service } });
   };
 
   const serviceColumns = [
@@ -114,7 +123,14 @@ const ServiceView = () => {
     },
     {
       name: 'Keluhan',
-      selector: row => <Link to={`/service/${row.id}`} className="text-blue-500">Lihat Detail</Link>,
+      selector: row => (
+        <button
+          className="text-blue-500"
+          onClick={() => handleDetailClick(row)}
+        >
+          Lihat Detail
+        </button>
+      ),
       width: '10%',
     },
   ];
