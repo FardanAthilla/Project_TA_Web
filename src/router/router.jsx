@@ -64,7 +64,7 @@ const Router = () => {
         <Route path="/analytics/service" element={<ProtectedRoute element={<AnalyticsService />} />} />
 
         <Route path="/service" element={<ProtectedRoute element={<ServiceView />} />} />
-        <Route path="/service/:id" element={<ProtectedRoute element={<ServiceDetailView />} />} />
+        <Route path="/service/detail" element={<ProtectedRoute element={<ServiceDetailView />} />} />
       </Routes>
     </BrowserRouter>
   );
