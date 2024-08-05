@@ -182,7 +182,7 @@ const ServiceView = () => {
                     startDate={startDate}
                     endDate={endDate}
                     dateFormat="dd/MM/yyyy"
-                    className="mt-1 p-2 border rounded w-full"
+                    className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
                 </div>
                 <div>
@@ -194,7 +194,7 @@ const ServiceView = () => {
                     startDate={startDate}
                     endDate={endDate}
                     dateFormat="dd/MM/yyyy"
-                    className="mt-1 p-2 border rounded w-full"
+                    className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
                 </div>
                 <button

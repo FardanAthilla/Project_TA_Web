@@ -12,7 +12,7 @@ const PenjualanView = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // ubah ke 10
+  const [itemsPerPage] = useState(10);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -24,6 +24,7 @@ const PenjualanView = () => {
 
         const formattedSalesData = result.Data.map((sale) => ({
           id: sale.sales_report_id,
+          rawDate: new Date(sale.date), // Save raw date for filtering
           date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
           total_price: new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -52,9 +53,12 @@ const PenjualanView = () => {
 
   const filterDataByDate = () => {
     if (startDate && endDate) {
+      const endDateWithTime = new Date(endDate);
+      endDateWithTime.setHours(23, 59, 59, 999); // Set end time to the end of the day
+
       const filtered = salesData.filter((sale) => {
-        const saleDate = new Date(sale.date);
-        return saleDate >= startDate && saleDate <= endDate;
+        const saleDate = new Date(sale.rawDate);
+        return saleDate >= startDate && saleDate <= endDateWithTime;
       });
       setFilteredData(filtered);
       setCurrentPage(1); // Reset to the first page when filtering
@@ -135,7 +139,7 @@ const PenjualanView = () => {
                     startDate={startDate}
                     endDate={endDate}
                     dateFormat="dd/MM/yyyy"
-                    className="mt-1 p-2 border rounded w-full"
+                    className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
                 </div>
                 <div>
@@ -147,7 +151,7 @@ const PenjualanView = () => {
                     startDate={startDate}
                     endDate={endDate}
                     dateFormat="dd/MM/yyyy"
-                    className="mt-1 p-2 border rounded w-full"
+                    className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
                 </div>
                 <button
