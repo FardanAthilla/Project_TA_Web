@@ -15,7 +15,7 @@ const ServiceDetail = () => {
           <h1 className="text-3xl font-bold text-black">Detail Service</h1>
           <button
             onClick={() => navigate(-1)}
-            className="btn-primary px-4 py-2 rounded-md"
+            className="px-4 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Kembali
           </button>
