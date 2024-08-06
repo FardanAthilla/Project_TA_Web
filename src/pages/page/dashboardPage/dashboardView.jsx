@@ -1,16 +1,61 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Sidebar from '../../../components/sidebar';
+import { fetchSalesData } from '../../../service/fetchapi';
 
 const DashboardPage = () => {
   const chartRef = useRef(null);
+  const [chartData, setChartData] = useState({ categories: [], seriesData: [] });
 
   useEffect(() => {
-    const handleLoad = () => {
-      // Apex Single Area Chart
-      (function () {
-        buildChart('#hs-single-area-chart', (mode) => ({
+    const handleLoad = async () => {
+      try {
+        const data = await fetchSalesData();
+        console.log('Fetched Data:', data);
+        const processedData = processChartData(data);
+        console.log('Processed Data:', processedData);
+        setChartData(processedData);
+        buildChart(processedData);
+      } catch (error) {
+        console.error('Error loading chart data:', error);
+      }
+    };
+
+    const processChartData = (data) => {
+      if (!Array.isArray(data) || data.length === 0) {
+        return { categories: [], seriesData: [] };
+      }
+    
+      // Get today's date and the last 7 days
+      const today = new Date();
+      const lastSevenDays = Array.from({ length: 7 }).map((_, i) => {
+        const date = new Date();
+        date.setDate(today.getDate() - (6 - i));
+        return date;
+      });
+    
+      const categories = lastSevenDays.map(date => date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+      const seriesData = Array(7).fill(0);
+    
+      data.forEach((entry) => {
+        const entryDate = new Date(entry.date);
+        const index = lastSevenDays.findIndex(date => date.toDateString() === entryDate.toDateString());
+        if (index !== -1) {
+          const totalQuantity = entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0);
+          seriesData[index] = totalQuantity;
+        }
+      });
+    
+      return { categories, seriesData };
+    };
+      
+    
+
+    const buildChart = ({ categories, seriesData }) => {
+      console.log('Building chart with:', { categories, seriesData });
+      if (chartRef.current) {
+        window.ApexCharts && new window.ApexCharts(chartRef.current, {
           chart: {
-            height: 300,
+            height: 600,
             type: 'area',
             toolbar: {
               show: false
@@ -21,8 +66,8 @@ const DashboardPage = () => {
           },
           series: [
             {
-              name: 'Visitors',
-              data: [180, 51, 60, 38, 88, 50, 40, 52, 88, 80, 60, 70]
+              name: 'Penjualan',
+              data: seriesData
             }
           ],
           legend: {
@@ -36,7 +81,7 @@ const DashboardPage = () => {
             width: 2
           },
           grid: {
-            strokeDashArray: 2
+            strokeDashArray: 6
           },
           fill: {
             type: 'gradient',
@@ -50,20 +95,7 @@ const DashboardPage = () => {
           xaxis: {
             type: 'category',
             tickPlacement: 'on',
-            categories: [
-              '25 January 2023',
-              '26 January 2023',
-              '27 January 2023',
-              '28 January 2023',
-              '29 January 2023',
-              '30 January 2023',
-              '31 January 2023',
-              '1 February 2023',
-              '2 February 2023',
-              '3 February 2023',
-              '4 February 2023',
-              '5 February 2023'
-            ],
+            categories: categories,
             axisBorder: {
               show: false
             },
@@ -87,14 +119,6 @@ const DashboardPage = () => {
                 fontSize: '13px',
                 fontFamily: 'Inter, ui-sans-serif',
                 fontWeight: 400
-              },
-              formatter: (title) => {
-                let t = title;
-                if (t) {
-                  const newT = t.split(' ');
-                  t = `${newT[0]} ${newT[1].slice(0, 3)}`;
-                }
-                return t;
               }
             }
           },
@@ -114,24 +138,10 @@ const DashboardPage = () => {
           },
           tooltip: {
             x: {
-              format: 'MMMM yyyy'
-            },  
+              format: 'dd MMM yyyy'
+            },
             y: {
               formatter: (value) => `${value >= 1000 ? `${value / 1000}k` : value}`
-            },
-            custom: function (props) {
-              const { categories } = props.ctx.opts.xaxis;
-              const { dataPointIndex } = props;
-              const title = categories[dataPointIndex].split(' ');
-              const newTitle = `${title[0]} ${title[1]}`;
-              return buildTooltip(props, {
-                title: newTitle,
-                mode,
-                valuePrefix: '',
-                hasTextLabel: true,
-                markerExtClasses: '!rounded-sm',
-                wrapperExtClasses: 'min-w-28'
-              });
             }
           },
           responsive: [{
@@ -166,56 +176,8 @@ const DashboardPage = () => {
               },
             },
           }]
-        }), {
-          colors: ['#2563eb', '#9333ea'],
-          fill: {
-            gradient: {
-              stops: [0, 90, 100]
-            }
-          },
-          xaxis: {
-            labels: {
-              style: {
-                colors: '#9ca3af'
-              }
-            }
-          },
-          yaxis: {
-            labels: {
-              style: {
-                colors: '#9ca3af'
-              }
-            }
-          },
-          grid: {
-            borderColor: '#e5e7eb'
-          }
-        }, {
-          colors: ['#3b82f6', '#a855f7'],
-          fill: {
-            gradient: {
-              stops: [100, 90, 0]
-            }
-          },
-          xaxis: {
-            labels: {
-              style: {
-                colors: '#a3a3a3',
-              }
-            }
-          },
-          yaxis: {
-            labels: {
-              style: {
-                colors: '#a3a3a3'
-              }
-            }
-          },
-          grid: {
-            borderColor: '#404040'
-          }
-        });
-      })();
+        }).render();
+      }
     };
 
     window.addEventListener('load', handleLoad);

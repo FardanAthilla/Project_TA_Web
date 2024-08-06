@@ -286,3 +286,14 @@ export const fetchServiceData = async () => {
   }
 };
  
+
+// Service
+export const fetchSalesData = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/sales/day/last?days=7&months=0&years=0`);
+    return response.data
+  } catch (error) {
+    console.error('Error fetching sales data:', error);
+    throw error;
+  }
+};
