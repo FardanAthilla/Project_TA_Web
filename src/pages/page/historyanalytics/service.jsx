@@ -69,11 +69,11 @@ const ServiceView = () => {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'Belum Selesai':
-        return 'border-red-500';
+        return 'bg-red-500 text-white';
       case 'Sudah Selesai':
-        return 'border-blue-500';
+        return 'bg-blue-500 text-white';
       default:
-        return 'border-gray-400';
+        return 'bg-green-400 text-white';
     }
   };
 
@@ -115,7 +115,7 @@ const ServiceView = () => {
     {
       name: 'Status',
       selector: row => (
-        <div className={`border p-2 rounded ${getStatusStyle(row.status)}`}>
+        <div className={`p-2 rounded ${getStatusStyle(row.status)}`}>
           {row.status}
         </div>
       ),
