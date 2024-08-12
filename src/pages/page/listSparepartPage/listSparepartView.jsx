@@ -281,7 +281,7 @@ const ListSparepart = () => {
                       <td>{index + 1}</td>
                       <td>{sparepart.spare_part_name}</td>
                       <td>{sparepart.Category.category_name}</td>
-                      <td>{sparepart.price}</td>
+                      <td>Rp {sparepart.price.toLocaleString('id-ID')}</td>
                       <td>{sparepart.quantity}</td>
                       <td>
                         <button

@@ -240,15 +240,6 @@ const AddSparepartView = () => {
                         className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
                       >
                         <li key="all">
-                          <a
-                            onClick={() =>
-                              handleChange({
-                                target: { name: "category_id", value: "" },
-                              })
-                            }
-                          >
-                            SEMUA KATEGORI
-                          </a>
                         </li>
                         {categories.map((category) => (
                           <li key={category.category_id}>
