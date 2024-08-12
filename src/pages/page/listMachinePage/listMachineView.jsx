@@ -281,7 +281,7 @@ const ListMachine = () => {
                       <td>{index + 1}</td>
                       <td>{machine.store_items_name}</td>
                       <td>{machine.Category.category_name}</td>
-                      <td>{machine.price}</td>
+                      <td>Rp {machine.price.toLocaleString('id-ID')}</td>
                       <td>{machine.quantity}</td>
                       <td>
                         <button className="btn btn-ghost btn-xs">
