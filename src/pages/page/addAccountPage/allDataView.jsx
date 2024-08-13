@@ -38,17 +38,22 @@ function AllDataView() {
   };
 
   const confirmDelete = async () => {
-    if (selectedUserId) {
-      setLoading(true);
-      const result = await deleteUser(selectedUserId);
-      if (result.success) {
-        await fetchUsers();
-      } else {
-        setError(result.message);
+    setLoading(true);
+    try {
+      await deleteUser(selectedUserId);
+      const updatedUsers = users.filter(
+        (user) => user.user_id !== selectedUserId
+      );
+      const totalPages = Math.ceil(updatedUsers.length / itemsPerPage);
+      setUsers(updatedUsers);
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
       }
+    } catch (error) {
+      setError("Failed to delete user");
+    } finally {
       setLoading(false);
       setIsModalOpen(false);
-      fetchUsers();
     }
   };
 
@@ -255,7 +260,7 @@ function AllDataView() {
               <button
                 onClick={confirmDelete}
                 className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
-                >
+              >
                 Konfirmasi
               </button>
             </div>

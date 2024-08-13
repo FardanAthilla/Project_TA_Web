@@ -52,11 +52,14 @@ const ListCategoryView = () => {
     setLoading(true);
     try {
       await deleteCategory(selectedCategoryId);
-      setCategories(
-        Categories.filter(
-          (category) => category.category_id !== selectedCategoryId
-        )
+      const updatedCategories = Categories.filter(
+        (category) => category.category_id !== selectedCategoryId
       );
+      const totalPages = Math.ceil(updatedCategories.length / itemsPerPage);
+      setCategories(updatedCategories);
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
+      }
     } catch (error) {
       setError("Gagal menghapus kategori");
     } finally {

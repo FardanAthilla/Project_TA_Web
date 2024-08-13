@@ -49,7 +49,7 @@ function LoginPage() {
 
     if (result.success) {
       console.log("Login berhasil:", result.data);
-      Cookies.set("Token", result.data.Token);
+      Cookies.set("Token", result.data.Token, { expires: 7 });
       setSnackbar({
         visible: true,
         message: "Login Berhasil.",

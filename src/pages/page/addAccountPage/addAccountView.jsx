@@ -36,7 +36,7 @@ export default function AddAccount() {
       setSnackbar({
         visible: true,
         message: "Semua Field harus diisi",
-        type: "error",
+        type: result.success ? "success" : "error",
       });
       return;
     }
