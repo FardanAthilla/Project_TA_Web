@@ -76,9 +76,16 @@ const PenjualanView = () => {
     {
       name: 'Barang',
       selector: row => row.items.map((item, index) => (
-        <div key={index}>{item.name} ({item.quantity}x)</div>
+        <div key={index}>{item.name}</div>
       )),
-      width: '40%',
+      width: '30%',
+    },
+    {
+      name: 'Kuantiti',
+      selector: row => row.items.map((item, index) => (
+        <div key={index}>{item.quantity}</div>
+      )),
+      width: '10%',
     },
     {
       name: 'Tanggal',
@@ -91,7 +98,7 @@ const PenjualanView = () => {
       width: '25%',
     },
   ];
-
+  
   const customStyles = {
     headCells: {
       style: {
@@ -128,7 +135,7 @@ const PenjualanView = () => {
         ) : (
           <>
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-3xl font-bold">Analitik Penjualan</h1>
+              <h1 className="text-3xl font-bold">Rekap Penjualan</h1>
               <div className="flex items-end space-x-4">
                 <div>
                   <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
@@ -138,6 +145,7 @@ const PenjualanView = () => {
                     selectsStart
                     startDate={startDate}
                     endDate={endDate}
+                    maxDate={new Date()} // Disable future dates
                     dateFormat="dd/MM/yyyy"
                     className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
@@ -150,6 +158,7 @@ const PenjualanView = () => {
                     selectsEnd
                     startDate={startDate}
                     endDate={endDate}
+                    maxDate={new Date()} // Disable future dates
                     dateFormat="dd/MM/yyyy"
                     className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
