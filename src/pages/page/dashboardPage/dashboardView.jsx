@@ -13,8 +13,8 @@ const DashboardPage = () => {
         console.log('Fetched Sales Data:', salesData);
         console.log('Fetched Service Data:', serviceData);
 
-        const processedSalesData = processChartData(salesData);
-        const processedServiceData = processChartData(serviceData);
+        const processedSalesData = processChartData(salesData, 'sales');
+        const processedServiceData = processChartData(serviceData, 'service');
         console.log('Processed Sales Data:', processedSalesData);
         console.log('Processed Service Data:', processedServiceData);
 
@@ -30,35 +30,38 @@ const DashboardPage = () => {
       }
     };
 
-    const processChartData = (data) => {
+    const processChartData = (data, type) => {
       if (!Array.isArray(data) || data.length === 0) {
         return { categories: [], seriesData: [] };
       }
-    
+
       const today = new Date();
       const lastSevenDays = Array.from({ length: 7 }).map((_, i) => {
         const date = new Date();
         date.setDate(today.getDate() - (6 - i));
         return date;
       });
-    
+
       const categories = lastSevenDays.map(date => date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
       const seriesData = Array(7).fill(0);
-    
+
       data.forEach((entry) => {
         const entryDate = new Date(entry.date);
         const index = lastSevenDays.findIndex(date => date.toDateString() === entryDate.toDateString());
+
         if (index !== -1) {
-          const totalQuantity = Array.isArray(entry.SalesReportItems)
-            ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
-            : 0;
-          seriesData[index] = totalQuantity;
+          const value = type === 'sales'
+            ? Array.isArray(entry.SalesReportItems)
+              ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
+              : 0
+            : 1; // Replace with the relevant field for service data
+          
+          seriesData[index] = value;
         }
       });
-    
+
       return { categories, seriesData };
     };
-    
 
     const buildChart = (categories, salesData, serviceData) => {
       console.log('Building chart with:', { categories, salesData, serviceData });
