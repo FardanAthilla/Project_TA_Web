@@ -1,20 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Sidebar from '../../../components/sidebar';
-import { fetchSalesData } from '../../../service/fetchapi';
+import { fetchSalesData, fetchServiceData } from '../../../service/fetchapi';
 
 const DashboardPage = () => {
   const chartRef = useRef(null);
-  const [chartData, setChartData] = useState({ categories: [], seriesData: [] });
+  const [chartData, setChartData] = useState({ categories: [], salesData: [], serviceData: [] });
 
   useEffect(() => {
     const handleLoad = async () => {
       try {
-        const data = await fetchSalesData();
-        console.log('Fetched Data:', data);
-        const processedData = processChartData(data);
-        console.log('Processed Data:', processedData);
-        setChartData(processedData);
-        buildChart(processedData);
+        const [salesData, serviceData] = await Promise.all([fetchSalesData(), fetchServiceData()]);
+        console.log('Fetched Sales Data:', salesData);
+        console.log('Fetched Service Data:', serviceData);
+
+        const processedSalesData = processChartData(salesData);
+        const processedServiceData = processChartData(serviceData);
+        console.log('Processed Sales Data:', processedSalesData);
+        console.log('Processed Service Data:', processedServiceData);
+
+        setChartData({
+          categories: processedSalesData.categories,
+          salesData: processedSalesData.seriesData,
+          serviceData: processedServiceData.seriesData,
+        });
+
+        buildChart(processedSalesData.categories, processedSalesData.seriesData, processedServiceData.seriesData);
       } catch (error) {
         console.error('Error loading chart data:', error);
       }
@@ -25,7 +35,6 @@ const DashboardPage = () => {
         return { categories: [], seriesData: [] };
       }
     
-      // Get today's date and the last 7 days
       const today = new Date();
       const lastSevenDays = Array.from({ length: 7 }).map((_, i) => {
         const date = new Date();
@@ -40,18 +49,19 @@ const DashboardPage = () => {
         const entryDate = new Date(entry.date);
         const index = lastSevenDays.findIndex(date => date.toDateString() === entryDate.toDateString());
         if (index !== -1) {
-          const totalQuantity = entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0);
+          const totalQuantity = Array.isArray(entry.SalesReportItems)
+            ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
+            : 0;
           seriesData[index] = totalQuantity;
         }
       });
     
       return { categories, seriesData };
     };
-      
     
 
-    const buildChart = ({ categories, seriesData }) => {
-      console.log('Building chart with:', { categories, seriesData });
+    const buildChart = (categories, salesData, serviceData) => {
+      console.log('Building chart with:', { categories, salesData, serviceData });
       if (chartRef.current) {
         window.ApexCharts && new window.ApexCharts(chartRef.current, {
           chart: {
@@ -67,11 +77,15 @@ const DashboardPage = () => {
           series: [
             {
               name: 'Penjualan',
-              data: seriesData
+              data: salesData
+            },
+            {
+              name: 'Service',
+              data: serviceData
             }
           ],
           legend: {
-            show: false
+            show: true
           },
           dataLabels: {
             enabled: false
