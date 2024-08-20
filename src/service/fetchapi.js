@@ -278,7 +278,7 @@ export const updateCategory = async (categoryId) => {
 // Service
 export const fetchServiceData = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/service`);
+    const response = await axios.get(`${baseUrl}/service/day/last?days=7&months=0&years=0`);
     return response.data;
   } catch (error) {
     console.error('Error fetching service data:', error);

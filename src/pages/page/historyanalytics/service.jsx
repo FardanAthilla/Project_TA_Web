@@ -171,7 +171,7 @@ const ServiceView = () => {
         ) : (
           <>
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-3xl font-bold">Analitik Service</h1>
+              <h1 className="text-3xl font-bold">Rekap Service</h1>
               <div className="flex items-end space-x-4">
                 <div>
                   <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
@@ -181,6 +181,7 @@ const ServiceView = () => {
                     selectsStart
                     startDate={startDate}
                     endDate={endDate}
+                    maxDate={new Date()}
                     dateFormat="dd/MM/yyyy"
                     className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
@@ -193,6 +194,7 @@ const ServiceView = () => {
                     selectsEnd
                     startDate={startDate}
                     endDate={endDate}
+                    maxDate={new Date()}
                     dateFormat="dd/MM/yyyy"
                     className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
