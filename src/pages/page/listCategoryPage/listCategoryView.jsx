@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../../components/sidebar";
 import { fetchCategory, deleteCategory } from "../../../service/fetchapi";
 import { Link, useNavigate } from "react-router-dom";
-import { TrashIcon, PencilIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import {
+  TrashIcon,
+  PencilIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/20/solid";
 
 const ListCategoryView = () => {
   const [Categories, setCategories] = useState([]);
@@ -39,11 +44,15 @@ const ListCategoryView = () => {
   const handleDelete = (id, category) => {
     if (category.SparePart.length > 0 || category.StoreItems.length > 0) {
       setIsDeletable(false);
-      setModalMessage("Kategori ini tidak dapat dihapus karena ada barang yang menggunakan kategori ini");
+      setModalMessage(
+        "Kategori ini tidak dapat dihapus karena ada barang yang menggunakan kategori ini"
+      );
     } else {
       setIsDeletable(true);
       setSelectedCategoryId(id);
-      setModalMessage("Apa kamu yakin menghapus data ini? Setelah dihapus, tidak dapat dikembalikan.");
+      setModalMessage(
+        "Apa kamu yakin menghapus data ini? Setelah dihapus, tidak dapat dikembalikan."
+      );
     }
     setIsModalOpen(true);
   };
@@ -130,13 +139,17 @@ const ListCategoryView = () => {
                           </button>
                           <button
                             className="btn btn-ghost btn-xs text-red-600"
-                            onClick={() => handleDelete(category.category_id, category)}
+                            onClick={() =>
+                              handleDelete(category.category_id, category)
+                            }
                           >
                             <TrashIcon className="h-5 w-5" />
                           </button>
                           <button
                             className="btn btn-ghost btn-xs"
-                            onClick={() => toggleExpandCategory(category.category_id)}
+                            onClick={() =>
+                              toggleExpandCategory(category.category_id)
+                            }
                           >
                             {expandedCategory === category.category_id ? (
                               <ChevronUpIcon className="h-5 w-5 text-green-600" />
@@ -150,29 +163,31 @@ const ListCategoryView = () => {
                         <tr>
                           <td colSpan="3">
                             <div className="p-4 bg-gray-100 rounded-md">
-                              <h4 className="font-semibold">Spare Parts:</h4>
-                              {category.SparePart.length > 0 ? (
-                                <ul className="list-disc list-inside">
-                                  {category.SparePart.map((part) => (
-                                    <li key={part.spare_part_id}>
-                                      {part.spare_part_name} - Quantity: {part.quantity}, Price: {part.price}
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <p>Tidak ada spare parts.</p>
-                              )}
-                              <h4 className="font-semibold mt-4">Store Items:</h4>
+                              <h4 className="font-semibold">Mesin:</h4>
                               {category.StoreItems.length > 0 ? (
                                 <ul className="list-disc list-inside">
                                   {category.StoreItems.map((item) => (
                                     <li key={item.store_items_id}>
-                                      {item.store_items_name} - Quantity: {item.quantity}, Price: {item.price}
+                                      {item.store_items_name} - Jumlah:{" "}
+                                      {item.quantity}, Harga: {item.price}
                                     </li>
                                   ))}
                                 </ul>
                               ) : (
-                                <p>Tidak ada store items.</p>
+                                <p>Tidak ada mesin yang tersedia.</p>
+                              )}
+                              <h4 className="font-semibold mt-4">Sparepart:</h4>
+                              {category.SparePart.length > 0 ? (
+                                <ul className="list-disc list-inside">
+                                  {category.SparePart.map((part) => (
+                                    <li key={part.spare_part_id}>
+                                      {part.spare_part_name} - Jumlah:{" "}
+                                      {part.quantity}, Harga: {part.price}
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p>Tidak ada sparepart yang tersedia.</p>
                               )}
                             </div>
                           </td>

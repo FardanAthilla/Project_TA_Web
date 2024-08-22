@@ -89,6 +89,11 @@ export default function EditAccount() {
       }
     }
 
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser && storedUser.user_id === user.user_id) {
+      localStorage.removeItem("user");
+    }
+    
     setSnackbar({
       visible: true,
       message: "Perbarui berhasil!",

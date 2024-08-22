@@ -37,7 +37,6 @@ const ListMachine = () => {
   };
 
   const fetchAllCategories = async () => {
-    setLoading(true);
     setError("");
     try {
       const data = await fetchMachines();
@@ -53,7 +52,6 @@ const ListMachine = () => {
       setError("Gagal mengambil data kategori");
       setAllCategories([]);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -278,7 +276,7 @@ const ListMachine = () => {
                 {(showZeroQuantity ? zeroQuantityItems : currentItems).map(
                   (machine, index) => (
                     <tr key={machine.store_items_id}>
-                      <td>{index + 1}</td>
+                      <td>{indexOfFirstItem + index + 1}</td>
                       <td>{machine.store_items_name}</td>
                       <td>{machine.Category.category_name}</td>
                       <td>Rp {machine.price.toLocaleString('id-ID')}</td>

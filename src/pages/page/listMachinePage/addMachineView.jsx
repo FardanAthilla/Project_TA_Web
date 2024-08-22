@@ -34,19 +34,34 @@ const AddMachineView = () => {
     fetchCategories();
   }, []);
 
+  const formatPrice = (value) => {
+    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setMachineData({
-      ...machineData,
-      [name]: value,
-    });
+    if (name === "price") {
+      setMachineData({
+        ...machineData,
+        [name]: formatPrice(value),
+      });
+    } else {
+      setMachineData({
+        ...machineData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Pengecekan validasi
-    if (!machineData.store_items_name || !machineData.quantity || !machineData.category_id || !machineData.price) {
+
+    if (
+      !machineData.store_items_name ||
+      !machineData.quantity ||
+      !machineData.category_id ||
+      !machineData.price
+    ) {
       setSnackbar({
         visible: true,
         message: "Semua field harus diisi.",
@@ -61,15 +76,17 @@ const AddMachineView = () => {
         ...machineData,
         quantity: parseInt(machineData.quantity, 10),
         category_id: parseInt(machineData.category_id, 10),
-        price: parseInt(machineData.price, 10),
+        price: parseInt(machineData.price.replace(/\./g, ""), 10),
       };
       console.log("Sending data:", dataToSend);
       const result = await addMachine(dataToSend);
       console.log("Result from API:", result);
-      const isSuccess = result.Succes === 'Succes Create Store Items';
+      const isSuccess = result.Succes === "Succes Create Store Items";
       setSnackbar({
         visible: true,
-        message: isSuccess ? "Mesin berhasil ditambahkan!" : result.message || "Gagal menambahkan mesin.",
+        message: isSuccess
+          ? "Mesin berhasil ditambahkan!"
+          : result.message || "Gagal menambahkan mesin.",
         type: isSuccess ? "success" : "error",
       });
       if (isSuccess) {
@@ -232,11 +249,19 @@ const AddMachineView = () => {
                         tabIndex={0}
                         className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
                       >
-                        <li key="all">
-                        </li>
+                        <li key="all"></li>
                         {categories.map((category) => (
                           <li key={category.category_id}>
-                            <a onClick={() => handleChange({target: {name: "category_id", value: category.category_id}})}>
+                            <a
+                              onClick={() =>
+                                handleChange({
+                                  target: {
+                                    name: "category_id",
+                                    value: category.category_id,
+                                  },
+                                })
+                              }
+                            >
                               {category.category_name}
                             </a>
                           </li>
@@ -253,9 +278,10 @@ const AddMachineView = () => {
                   >
                     Harga
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center">
+                    <span className="mr-2 text-sm text-gray-500">Rp</span>
                     <input
-                      type="number"
+                      type="text"
                       name="price"
                       id="price"
                       value={machineData.price}

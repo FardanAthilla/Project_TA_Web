@@ -1,3 +1,7 @@
+.btn.active {
+  background-color: #2563eb;
+  color: white;
+} 
 @keyframes twinkle {
     0%, 100% { opacity: 0.8; }
     50% { opacity: 0.2; }
