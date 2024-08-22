@@ -75,25 +75,6 @@ const ServiceDetail = () => {
 
             <div className="sm:col-span-4 mb-4">
               <label
-                htmlFor="machine_number"
-                className="block text-md font-medium leading-6"
-              >
-                Nomor Mesin
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="machine_number"
-                  id="machine_number"
-                  value={service.machine_number}
-                  readOnly
-                  className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-md sm:leading-6"
-                />
-              </div>
-            </div>
-
-            <div className="sm:col-span-4 mb-4">
-              <label
                 htmlFor="complaints"
                 className="block text-md font-medium leading-6"
               >

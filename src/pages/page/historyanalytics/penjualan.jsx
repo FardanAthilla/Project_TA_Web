@@ -12,7 +12,7 @@ const PenjualanView = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -98,7 +98,7 @@ const PenjualanView = () => {
       width: '25%',
     },
   ];
-  
+
   const customStyles = {
     headCells: {
       style: {
@@ -109,6 +109,7 @@ const PenjualanView = () => {
     },
     cells: {
       style: {
+        padding: '12px 16px', // Menambahkan padding atas-bawah dan kiri-kanan
         whiteSpace: 'normal',
         wordWrap: 'break-word',
       },
@@ -119,10 +120,19 @@ const PenjualanView = () => {
     setCurrentPage(pageNumber);
   };
 
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const maxVisiblePages = 5; // Maximum number of visible pages
+
+  // Calculate the start and end page numbers
+  const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+  // Adjust start page if the current end page is less than maxVisiblePages
+  const adjustedStartPage = Math.max(1, endPage - maxVisiblePages + 1);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   return (
     <div className="h-screen flex bg-white">
@@ -183,8 +193,8 @@ const PenjualanView = () => {
                 >
                   «
                 </button>
-                {Array.from({ length: totalPages }).map((_, index) => {
-                  const pageNumber = index + 1;
+                {Array.from({ length: endPage - adjustedStartPage + 1 }).map((_, index) => {
+                  const pageNumber = adjustedStartPage + index;
                   return (
                     <button
                       key={index}
