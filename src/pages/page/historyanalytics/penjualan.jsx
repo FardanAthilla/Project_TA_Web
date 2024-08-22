@@ -66,7 +66,6 @@ const PenjualanView = () => {
       setFilteredData(salesData);
     }
   };
-
   const salesColumns = [
     {
       name: 'No',
@@ -74,31 +73,27 @@ const PenjualanView = () => {
       width: '10%',
     },
     {
-      name: 'Barang',
+      name: 'Barang & Kuantiti',
       selector: row => row.items.map((item, index) => (
-        <div key={index}>{item.name}</div>
+        <div key={index}>
+          {item.name} {item.quantity > 0 ? `-${item.quantity}` : item.quantity}
+        </div>
       )),
-      width: '30%',
-    },
-    {
-      name: 'Kuantiti',
-      selector: row => row.items.map((item, index) => (
-        <div key={index}>{item.quantity}</div>
-      )),
-      width: '10%',
+      width: '40%', // Reduced from 65% to 50%
     },
     {
       name: 'Tanggal',
       selector: row => row.date,
-      width: '25%',
+      width: '20%', // Increased from 15% to 20%
     },
     {
       name: 'Total Harga',
       selector: row => row.total_price,
-      width: '25%',
+      width: '20%', // Increased from 10% to 20%
     },
   ];
-
+  
+  
   const customStyles = {
     headCells: {
       style: {

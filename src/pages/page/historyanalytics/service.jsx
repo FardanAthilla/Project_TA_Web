@@ -36,6 +36,7 @@ const ServiceView = () => {
           complaints: service.complaints,
           status: service.Status.status_name,
           worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
+          laporan_image: service.image,
         })).sort((a, b) => b.rawDate - a.rawDate);
 
         setServiceData(formattedServiceData);
