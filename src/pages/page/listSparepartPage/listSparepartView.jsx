@@ -37,7 +37,6 @@ const ListSparepart = () => {
   };
 
   const fetchAllCategories = async () => {
-    setLoading(true);
     setError("");
     try {
       const data = await fetchSparepart();
@@ -53,7 +52,6 @@ const ListSparepart = () => {
       setError("Gagal mengambil data kategori");
       setAllCategories([]);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -252,16 +250,16 @@ const ListSparepart = () => {
           </div>
         </div>
         {loading ? (
-        <div className="text-center">
-          <span className="loading loading-dots loading-lg"></span>
-        </div>
-      ) : error ? (
-        <p className="text-center">{error}</p>
-      ) : (showZeroQuantity && zeroQuantityItems.length === 0) ? (
-        <p className="text-center">Sparepart tidak ditemukan</p>
-      ) : spareparts.length === 0 ? (
-        <p className="text-center">Sparepart tidak ditemukan</p>
-      ) : (
+          <div className="text-center">
+            <span className="loading loading-dots loading-lg"></span>
+          </div>
+        ) : error ? (
+          <p className="text-center">{error}</p>
+        ) : showZeroQuantity && zeroQuantityItems.length === 0 ? (
+          <p className="text-center">Sparepart tidak ditemukan</p>
+        ) : spareparts.length === 0 ? (
+          <p className="text-center">Sparepart tidak ditemukan</p>
+        ) : (
           <>
             <table className="table mt-4">
               <thead>
@@ -278,10 +276,10 @@ const ListSparepart = () => {
                 {(showZeroQuantity ? zeroQuantityItems : currentItems).map(
                   (sparepart, index) => (
                     <tr key={sparepart.spare_part_id}>
-                      <td>{index + 1}</td>
+                      <td>{indexOfFirstItem + index + 1}</td>
                       <td>{sparepart.spare_part_name}</td>
                       <td>{sparepart.Category.category_name}</td>
-                      <td>Rp {sparepart.price.toLocaleString('id-ID')}</td>
+                      <td>Rp {sparepart.price.toLocaleString("id-ID")}</td>
                       <td>{sparepart.quantity}</td>
                       <td>
                         <button
