@@ -34,18 +34,27 @@ const AddSparepartView = () => {
     fetchCategories();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setSparepartData({
-      ...sparepartData,
-      [name]: value,
-    });
+  const formatPrice = (value) => {
+    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "price") {
+      setSparepartData({
+        ...sparepartData,
+        [name]: formatPrice(value),
+      });
+    } else {
+      setSparepartData({
+        ...sparepartData,
+        [name]: value,
+      });
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Pengecekan validasi
     if (
       !sparepartData.spare_part_name ||
       !sparepartData.quantity ||
@@ -66,7 +75,7 @@ const AddSparepartView = () => {
         ...sparepartData,
         quantity: parseInt(sparepartData.quantity, 10),
         category_id: parseInt(sparepartData.category_id, 10),
-        price: parseInt(sparepartData.price, 10),
+        price: parseInt(sparepartData.price.replace(/\./g, ""), 10),
       };
       console.log("Sending data:", dataToSend);
       const result = await addSparepart(dataToSend);
@@ -269,9 +278,10 @@ const AddSparepartView = () => {
                   >
                     Harga Sparepart
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center">
+                  <span className="mr-2 text-sm text-gray-500">Rp</span>
                     <input
-                      type="number"
+                      type="text"
                       name="price"
                       id="price"
                       value={sparepartData.price}

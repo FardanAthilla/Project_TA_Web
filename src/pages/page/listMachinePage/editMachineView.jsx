@@ -9,7 +9,7 @@ const EditMachinePage = () => {
   const machine = location.state.machine;
 
   const [name, setName] = useState(machine.store_items_name);
-  const [price, setPrice] = useState(machine.price);
+  const [price, setPrice] = useState(machine.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
   const [quantity, setQuantity] = useState(machine.quantity);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
@@ -20,6 +20,15 @@ const EditMachinePage = () => {
   const [fade, setFade] = useState(false);
 
   const navigate = useNavigate();
+
+  const formatPrice = (value) => {
+    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const handlePriceChange = (e) => {
+    const formattedPrice = formatPrice(e.target.value);
+    setPrice(formattedPrice);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +46,7 @@ const EditMachinePage = () => {
     const machineData = {
       store_items_id: machine.store_items_id,
       store_items_name: name,
-      price: parseInt(price, 10),
+      price: parseInt(price.replace(/\./g, ""), 10), // Remove dots before sending
       quantity: parseInt(quantity, 10),
     };
 
@@ -156,13 +165,14 @@ const EditMachinePage = () => {
                   >
                     Harga
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center">
+                    <span className="mr-2 text-sm text-gray-500">Rp</span>
                     <input
-                      type="number"
+                      type="text"
                       name="price"
                       id="price"
                       value={price}
-                      onChange={(e) => setPrice(e.target.value)}
+                      onChange={handlePriceChange}
                       autoComplete="price"
                       className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
@@ -192,7 +202,7 @@ const EditMachinePage = () => {
             </div>
 
             <div className="mt-6 flex items-center justify-end gap-x-4">
-            <button
+              <button
                 type="submit"
                 className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
               >
