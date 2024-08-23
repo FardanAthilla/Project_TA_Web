@@ -275,23 +275,22 @@ export const updateCategory = async (categoryId) => {
   }
 };
 
-// Service
-export const fetchServiceData = async () => {
+//service
+export const fetchServiceData = async (days, months, years) => {
   try {
-    const response = await axios.get(`${baseUrl}/service/day/last?days=7&months=0&years=0`);
+    const response = await axios.get(`${baseUrl}/service/day/last?days=${days}&months=${months}&years=${years}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching service data:', error);
     throw error;
   }
 };
- 
 
-// Service
-export const fetchSalesData = async () => {
+//sales
+export const fetchSalesData = async (days, months, years) => {
   try {
-    const response = await axios.get(`${baseUrl}/sales/day/last?days=7&months=0&years=0`);
-    return response.data
+    const response = await axios.get(`${baseUrl}/sales/day/last?days=${days}&months=${months}&years=${years}`);
+    return response.data;
   } catch (error) {
     console.error('Error fetching sales data:', error);
     throw error;

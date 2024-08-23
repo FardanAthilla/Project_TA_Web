@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import DataTable from 'react-data-table-component';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -14,7 +14,7 @@ const ServiceView = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8);
+  const [itemsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const ServiceView = () => {
 
         const formattedServiceData = result.Data.map((service) => ({
           id: service.service_report_id,
-          rawDate: new Date(service.date), // Save raw date for sorting
+          rawDate: new Date(service.date),
           date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
           customer_name: service.name,
           worker_name: service.User.username,
@@ -36,7 +36,8 @@ const ServiceView = () => {
           complaints: service.complaints,
           status: service.Status.status_name,
           worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
-        })).sort((a, b) => b.rawDate - a.rawDate); // Sort by date, newest first
+          laporan_image: service.image,
+        })).sort((a, b) => b.rawDate - a.rawDate);
 
         setServiceData(formattedServiceData);
         setFilteredData(formattedServiceData);
@@ -53,7 +54,7 @@ const ServiceView = () => {
   const filterDataByDate = () => {
     if (startDate && endDate) {
       const endDateWithTime = new Date(endDate);
-      endDateWithTime.setHours(23, 59, 59, 999); // Set waktu akhir hari
+      endDateWithTime.setHours(23, 59, 59, 999);
 
       const filtered = serviceData.filter((service) => {
         const serviceDate = new Date(service.rawDate);
@@ -145,12 +146,13 @@ const ServiceView = () => {
     },
     cells: {
       style: {
+        padding: '12px 16px',
         whiteSpace: 'normal',
         wordWrap: 'break-word',
       },
     },
   };
-
+  
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -159,6 +161,27 @@ const ServiceView = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const getPageNumbers = () => {
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+
+    if (totalPages <= maxVisiblePages) {
+      startPage = 1;
+      endPage = totalPages;
+    } else if (currentPage <= Math.ceil(maxVisiblePages / 2)) {
+      startPage = 1;
+      endPage = maxVisiblePages;
+    } else if (currentPage + Math.floor(maxVisiblePages / 2) >= totalPages) {
+      startPage = totalPages - maxVisiblePages + 1;
+      endPage = totalPages;
+    } else {
+      startPage = currentPage - Math.floor(maxVisiblePages / 2);
+      endPage = currentPage + Math.floor(maxVisiblePages / 2);
+    }
+
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
 
   return (
     <div className="h-screen flex bg-white">
@@ -219,18 +242,15 @@ const ServiceView = () => {
                 >
                   «
                 </button>
-                {Array.from({ length: totalPages }).map((_, index) => {
-                  const pageNumber = index + 1;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => paginate(pageNumber)}
-                      className={`join-item btn ${pageNumber === currentPage ? "active" : ""}`}
-                    >
-                      {pageNumber}
-                    </button>
-                  );
-                })}
+                {getPageNumbers().map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    onClick={() => paginate(pageNumber)}
+                    className={`join-item btn ${pageNumber === currentPage ? "active" : ""}`}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
                 <button
                   className="join-item btn"
                   onClick={() => paginate(currentPage + 1)}

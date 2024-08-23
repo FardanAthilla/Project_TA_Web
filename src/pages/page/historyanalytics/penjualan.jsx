@@ -12,7 +12,7 @@ const PenjualanView = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -66,7 +66,6 @@ const PenjualanView = () => {
       setFilteredData(salesData);
     }
   };
-
   const salesColumns = [
     {
       name: 'No',
@@ -74,30 +73,26 @@ const PenjualanView = () => {
       width: '10%',
     },
     {
-      name: 'Barang',
+      name: 'Barang & Kuantiti',
       selector: row => row.items.map((item, index) => (
-        <div key={index}>{item.name}</div>
+        <div key={index}>
+          {item.name} {item.quantity > 0 ? `-${item.quantity}` : item.quantity}
+        </div>
       )),
-      width: '30%',
-    },
-    {
-      name: 'Kuantiti',
-      selector: row => row.items.map((item, index) => (
-        <div key={index}>{item.quantity}</div>
-      )),
-      width: '10%',
+      width: '40%', // Reduced from 65% to 50%
     },
     {
       name: 'Tanggal',
       selector: row => row.date,
-      width: '25%',
+      width: '20%', // Increased from 15% to 20%
     },
     {
       name: 'Total Harga',
       selector: row => row.total_price,
-      width: '25%',
+      width: '20%', // Increased from 10% to 20%
     },
   ];
+  
   
   const customStyles = {
     headCells: {
@@ -109,6 +104,7 @@ const PenjualanView = () => {
     },
     cells: {
       style: {
+        padding: '12px 16px', // Menambahkan padding atas-bawah dan kiri-kanan
         whiteSpace: 'normal',
         wordWrap: 'break-word',
       },
@@ -119,10 +115,19 @@ const PenjualanView = () => {
     setCurrentPage(pageNumber);
   };
 
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const maxVisiblePages = 5; // Maximum number of visible pages
+
+  // Calculate the start and end page numbers
+  const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+  // Adjust start page if the current end page is less than maxVisiblePages
+  const adjustedStartPage = Math.max(1, endPage - maxVisiblePages + 1);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   return (
     <div className="h-screen flex bg-white">
@@ -183,8 +188,8 @@ const PenjualanView = () => {
                 >
                   «
                 </button>
-                {Array.from({ length: totalPages }).map((_, index) => {
-                  const pageNumber = index + 1;
+                {Array.from({ length: endPage - adjustedStartPage + 1 }).map((_, index) => {
+                  const pageNumber = adjustedStartPage + index;
                   return (
                     <button
                       key={index}

@@ -74,7 +74,7 @@ function Sidebar() {
       path: "/",
     },
     {
-      name: "Rekapan",
+      name: "Rekap",
       icon: ChartPieIcon,
       path: "/analytics",
       subMenu: [
