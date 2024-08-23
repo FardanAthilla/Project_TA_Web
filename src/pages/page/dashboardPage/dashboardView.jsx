@@ -10,36 +10,30 @@ const DashboardPage = () => {
   useEffect(() => {
     const handleLoad = async () => {
       try {
-        console.log('Selected Range:', selectedRange);
         const { days, months, years } = getRangeParams(selectedRange);
-        console.log('Params:', { days, months, years });
-  
         const [salesData, serviceData] = await Promise.all([
           fetchSalesData(days, months, years),
           fetchServiceData(days, months, years),
         ]);
-  
-        console.log('Sales Data:', salesData);
-        console.log('Service Data:', serviceData);
-  
+
         const processedSalesData = processChartData(salesData, 'sales');
         const processedServiceData = processChartData(serviceData, 'service');
-  
+
         setChartData({
           categories: processedSalesData.categories,
           salesData: processedSalesData.seriesData,
           serviceData: processedServiceData.seriesData,
         });
-  
+
         buildChart(processedSalesData.categories, processedSalesData.seriesData, processedServiceData.seriesData);
       } catch (error) {
         console.error('Error loading chart data:', error);
       }
     };
-  
+
     handleLoad();
   }, [selectedRange]);
-  
+
   const getRangeParams = (range) => {
     switch (range) {
       case '7d': return { days: 7, months: 0, years: 0 };
@@ -57,9 +51,9 @@ const DashboardPage = () => {
     if (!Array.isArray(data) || data.length === 0) {
       return { categories: [], seriesData: [] };
     }
-  
+
     let categories, seriesData;
-  
+
     if (selectedRange === '7d') {
       const today = new Date();
       const lastSevenDays = Array.from({ length: 7 }).map((_, i) => {
@@ -67,14 +61,14 @@ const DashboardPage = () => {
         date.setDate(today.getDate() - (6 - i));
         return date;
       });
-  
+
       categories = lastSevenDays.map(date => date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
       seriesData = Array(7).fill(0);
-  
+
       data.forEach((entry) => {
         const entryDate = new Date(entry.date);
         const index = lastSevenDays.findIndex(date => date.toDateString() === entryDate.toDateString());
-  
+
         if (index !== -1) {
           const value = type === 'sales'
             ? Array.isArray(entry.SalesReportItems)
@@ -93,17 +87,17 @@ const DashboardPage = () => {
         date.setMonth(today.getMonth() - (months - 1 - i));
         return date;
       });
-  
+
       categories = lastMonths.map(date => date.toLocaleDateString('id-ID', { month: 'short' }));
       seriesData = Array(months).fill(0);
-  
+
       data.forEach((entry) => {
         const entryDate = new Date(entry.date);
         const index = lastMonths.findIndex(date => 
           date.getFullYear() === entryDate.getFullYear() && 
           date.getMonth() === entryDate.getMonth()
         );
-  
+
         if (index !== -1) {
           const value = type === 'sales'
             ? Array.isArray(entry.SalesReportItems)
@@ -115,12 +109,18 @@ const DashboardPage = () => {
         }
       });
     }
-  
+
     return { categories, seriesData };
   };
-  
 
   const buildChart = (categories, salesData, serviceData) => {
+    const is7Days = selectedRange === '7d';
+    const maxDataValue = Math.max(...[...salesData, ...serviceData]);
+
+    const maxYAxisValue = is7Days
+      ? maxDataValue <= 7 ? 7 : Math.ceil(maxDataValue / 7) * 7
+      : Math.ceil(maxDataValue / 7) * 7;
+
     if (chartRef.current) {
       window.ApexCharts && new window.ApexCharts(chartRef.current, {
         chart: {
@@ -164,6 +164,10 @@ const DashboardPage = () => {
           }
         },
         yaxis: {
+          min: 0,
+          max: maxYAxisValue, // Dynamic max value based on data
+          tickAmount: 7, // Always show 7 ticks
+          forceNiceScale: true,
           labels: {
             align: 'left',
             style: {
@@ -172,12 +176,12 @@ const DashboardPage = () => {
               fontFamily: 'Inter, ui-sans-serif',
               fontWeight: 400
             },
-            formatter: (value) => value >= 1000 ? `${value / 1000}k` : value
+            formatter: (value) => Math.round(value), // Ensure only whole numbers are shown
           }
         },
         tooltip: {
           x: { format: 'dd MMM yyyy' },
-          y: { formatter: (value) => `${value >= 1000 ? `${value / 1000}k` : value}` }
+          y: { formatter: (value) => value >= 1000 ? `${value / 1000}k` : value }
         },
         responsive: [{
           breakpoint: 568,
