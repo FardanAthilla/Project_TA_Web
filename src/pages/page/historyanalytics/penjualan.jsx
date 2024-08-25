@@ -66,6 +66,7 @@ const PenjualanView = () => {
       setFilteredData(salesData);
     }
   };
+
   const salesColumns = [
     {
       name: 'No',
@@ -79,20 +80,19 @@ const PenjualanView = () => {
           {item.name} {item.quantity > 0 ? `-${item.quantity}` : item.quantity}
         </div>
       )),
-      width: '40%', // Reduced from 65% to 50%
+      width: '40%', 
     },
     {
       name: 'Tanggal',
       selector: row => row.date,
-      width: '20%', // Increased from 15% to 20%
+      width: '25%', 
     },
     {
       name: 'Total Harga',
       selector: row => row.total_price,
-      width: '20%', // Increased from 10% to 20%
+      width: '25%', 
     },
   ];
-  
   
   const customStyles = {
     headCells: {
@@ -104,7 +104,7 @@ const PenjualanView = () => {
     },
     cells: {
       style: {
-        padding: '12px 16px', // Menambahkan padding atas-bawah dan kiri-kanan
+        padding: '12px 16px',
         whiteSpace: 'normal',
         wordWrap: 'break-word',
       },
@@ -179,36 +179,38 @@ const PenjualanView = () => {
               customStyles={customStyles}
               pagination={false}
             />
-            <div className="flex justify-center mt-4">
-              <div className="join pt-5">
-                <button
-                  className="join-item btn"
-                  onClick={() => paginate(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  «
-                </button>
-                {Array.from({ length: endPage - adjustedStartPage + 1 }).map((_, index) => {
-                  const pageNumber = adjustedStartPage + index;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => paginate(pageNumber)}
-                      className={`join-item btn ${pageNumber === currentPage ? "active" : ""}`}
-                    >
-                      {pageNumber}
-                    </button>
-                  );
-                })}
-                <button
-                  className="join-item btn"
-                  onClick={() => paginate(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  »
-                </button>
+            {currentItems.length > 0 && (
+              <div className="flex justify-center mt-4">
+                <div className="join pt-5">
+                  <button
+                    className="join-item btn"
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    «
+                  </button>
+                  {Array.from({ length: endPage - adjustedStartPage + 1 }).map((_, index) => {
+                    const pageNumber = adjustedStartPage + index;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => paginate(pageNumber)}
+                        className={`join-item btn ${pageNumber === currentPage ? "active" : ""}`}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  })}
+                  <button
+                    className="join-item btn"
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    »
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>

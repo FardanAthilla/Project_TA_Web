@@ -71,8 +71,8 @@ const ServiceView = () => {
     switch (status) {
       case 'Belum Selesai':
         return 'bg-red-500 text-white';
-      case 'Sudah Selesai':
-        return 'bg-blue-500 text-white';
+      case 'Selesai':
+        return 'bg-green-500 text-white';
       default:
         return 'bg-green-400 text-white';
     }
@@ -233,33 +233,35 @@ const ServiceView = () => {
               customStyles={customStyles}
               pagination={false}
             />
-            <div className="flex justify-center mt-4">
-              <div className="join pt-5">
-                <button
-                  className="join-item btn"
-                  onClick={() => paginate(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  «
-                </button>
-                {getPageNumbers().map((pageNumber) => (
+            {filteredData.length > 0 && ( // Conditionally render pagination
+              <div className="flex justify-center mt-4">
+                <div className="join pt-5">
                   <button
-                    key={pageNumber}
-                    onClick={() => paginate(pageNumber)}
-                    className={`join-item btn ${pageNumber === currentPage ? "active" : ""}`}
+                    className="join-item btn"
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
                   >
-                    {pageNumber}
+                    «
                   </button>
-                ))}
-                <button
-                  className="join-item btn"
-                  onClick={() => paginate(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  »
-                </button>
+                  {getPageNumbers().map((pageNumber) => (
+                    <button
+                      key={pageNumber}
+                      onClick={() => paginate(pageNumber)}
+                      className={`join-item btn ${pageNumber === currentPage ? "active" : ""}`}
+                    >
+                      {pageNumber}
+                    </button>
+                  ))}
+                  <button
+                    className="join-item btn"
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    »
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>

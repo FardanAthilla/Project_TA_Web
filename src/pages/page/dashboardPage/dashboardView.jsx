@@ -6,10 +6,13 @@ const DashboardPage = () => {
   const chartRef = useRef(null);
   const [chartData, setChartData] = useState({ categories: [], salesData: [], serviceData: [] });
   const [selectedRange, setSelectedRange] = useState('7d');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleLoad = async () => {
+      setIsLoading(true);
       try {
+        console.log('Loading data for range:', selectedRange);
         const { days, months, years } = getRangeParams(selectedRange);
         const [salesData, serviceData] = await Promise.all([
           fetchSalesData(days, months, years),
@@ -24,35 +27,45 @@ const DashboardPage = () => {
           salesData: processedSalesData.seriesData,
           serviceData: processedServiceData.seriesData,
         });
-
-        buildChart(processedSalesData.categories, processedSalesData.seriesData, processedServiceData.seriesData);
       } catch (error) {
         console.error('Error loading chart data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     handleLoad();
   }, [selectedRange]);
 
+  useEffect(() => {
+    if (!isLoading && chartData.categories.length) {
+      buildChart(chartData.categories, chartData.salesData, chartData.serviceData);
+    }
+  }, [chartData, isLoading]);
+
   const getRangeParams = (range) => {
+    console.log('Selected range:', range);
     switch (range) {
       case '7d': return { days: 7, months: 0, years: 0 };
-      case '6m': return { days: 0, months: 6, years: 0 };
+      case '1m': return { days: 0, months: 1, years: 0 };
       case '12m': return { days: 0, months: 12, years: 0 };
       default: return { days: 7, months: 0, years: 0 };
     }
   };
 
-  const handleRangeChange = (event) => {
-    setSelectedRange(event.target.value);
+  const handleRangeChange = (range) => {
+    console.log('Range changed to:', range);
+    setSelectedRange(range);
   };
+
 
   const processChartData = (data, type) => {
     if (!Array.isArray(data) || data.length === 0) {
       return { categories: [], seriesData: [] };
     }
 
-    let categories, seriesData;
+    let categories = [];
+    let seriesData = [];
 
     if (selectedRange === '7d') {
       const today = new Date();
@@ -75,27 +88,35 @@ const DashboardPage = () => {
               ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
               : 0
             : 1; // Replace with the relevant field for service data
-          
-          seriesData[index] = value;
+
+          seriesData[index] += value;
         }
       });
-    } else {
-      const months = selectedRange === '6m' ? 6 : 12;
+    } else if (selectedRange === '1m') {
       const today = new Date();
-      const lastMonths = Array.from({ length: months }).map((_, i) => {
-        const date = new Date();
-        date.setMonth(today.getMonth() - (months - 1 - i));
-        return date;
+      const weeksInMonth = 4;
+
+      // Get the start date of the last 4 weeks
+      const startDate = new Date();
+      startDate.setDate(today.getDate() - 27);
+
+      // Create 4 weekly intervals
+      const lastFourWeeks = Array.from({ length: weeksInMonth }).map((_, i) => {
+        const weekStart = new Date(startDate);
+        weekStart.setDate(startDate.getDate() + (i * 7));
+        return weekStart;
       });
 
-      categories = lastMonths.map(date => date.toLocaleDateString('id-ID', { month: 'short' }));
-      seriesData = Array(months).fill(0);
+      categories = lastFourWeeks.map(date =>
+        `${date.getDate()}-${date.getDate() + 6} ${date.toLocaleDateString('id-ID', { month: 'short' })}`
+      );
+
+      seriesData = Array(weeksInMonth).fill(0);
 
       data.forEach((entry) => {
         const entryDate = new Date(entry.date);
-        const index = lastMonths.findIndex(date => 
-          date.getFullYear() === entryDate.getFullYear() && 
-          date.getMonth() === entryDate.getMonth()
+        const index = lastFourWeeks.findIndex((start) =>
+          entryDate >= start && entryDate < new Date(start.getTime() + (7 * 24 * 60 * 60 * 1000))
         );
 
         if (index !== -1) {
@@ -104,8 +125,40 @@ const DashboardPage = () => {
               ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
               : 0
             : 1; // Replace with the relevant field for service data
-          
-          seriesData[index] += value;  // Sum up the values for each month
+
+          seriesData[index] += value;
+        }
+      });
+    } else if (selectedRange === '12m') {
+      // Add the new code to handle the '12m' range here
+      const monthsInYear = 12;
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth(); // 0-based month index
+
+      // Create categories for each month in the past 12 months
+      categories = Array.from({ length: monthsInYear }).map((_, i) => {
+        const monthIndex = (currentMonth - i + 12) % 12; // Wrap around to get the month index
+        const year = currentYear - Math.floor((i + 12 - currentMonth) / 12); // Adjust year if month index is negative
+        return new Date(year, monthIndex, 1).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+      }).reverse(); // Reverse to have the most recent month last
+
+      seriesData = Array(monthsInYear).fill(0);
+
+      data.forEach((entry) => {
+        const entryDate = new Date(entry.date);
+        const index = categories.findIndex(category => {
+          const [month, year] = category.split(' ');
+          return entryDate.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) === `${month} ${year}`;
+        });
+
+        if (index !== -1) {
+          const value = type === 'sales'
+            ? Array.isArray(entry.SalesReportItems)
+              ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
+              : 0
+            : 1; // Replace with the relevant field for service data
+
+          seriesData[index] += value;
         }
       });
     }
@@ -221,12 +274,27 @@ const DashboardPage = () => {
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
         <h1 className="text-2xl font-semibold mb-4">Grafik Penjualan dan Service UD Mojopahit</h1>
         <div className="mb-4">
-          <label htmlFor="dateRange" className="mr-2">Pilih Rentang Waktu:</label>
-          <select id="dateRange" value={selectedRange} onChange={handleRangeChange} className="border p-2 rounded">
-            <option value="7d">7 Hari Terakhir</option>
-            <option value="6m">6 Bulan Terakhir</option>
-            <option value="12m">12 Bulan Terakhir</option>
-          </select>
+          <div className="filter-buttons">
+            <button
+              className={`py-1 px-4 rounded-lg ${selectedRange === '7d' ? 'bg-[#1450A3] text-white border border-[#ffffff]' : 'bg-white text-[#1450A3] border border-[#1450A3]'}`}
+              onClick={() => handleRangeChange('7d')}
+            >
+              7 Hari Terakhir
+            </button>
+            <button
+              className={`ml-2 py-1 px-4 rounded-lg ${selectedRange === '1m' ? 'bg-[#1450A3] text-white border border-gray-600' : 'bg-white text-[#1450A3] border border-[#1450A3]'}`}
+              onClick={() => handleRangeChange('1m')}
+            >
+              1 Bulan Terakhir
+            </button>
+            <button
+              className={`ml-2 py-1 px-4 rounded-lg ${selectedRange === '12m' ? 'bg-[#1450A3] text-white border border-gray-600' : 'bg-white text-[#1450A3] border border-[#1450A3]'}`}
+              onClick={() => handleRangeChange('12m')}
+            >
+              12 Bulan Terakhir
+            </button>
+
+          </div>
         </div>
         <div id="hs-single-area-chart" ref={chartRef}></div>
       </div>
