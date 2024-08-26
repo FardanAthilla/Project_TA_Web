@@ -24,7 +24,7 @@ const ServiceView = () => {
       try {
         const response = await axios.get('https://rdo-app-o955y.ondigitalocean.app/service');
         const result = response.data;
-
+  
         const formattedServiceData = result.Data.map((service) => ({
           id: service.service_report_id,
           rawDate: new Date(service.date),
@@ -37,20 +37,27 @@ const ServiceView = () => {
           status: service.Status.status_name,
           worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
           laporan_image: service.image,
+          serviceItems: service.ServiceReportsItems.map(item => ({
+            itemName: item.item_name,
+            quantity: item.quantity,
+            price: item.price,
+          }))
         })).sort((a, b) => b.rawDate - a.rawDate);
-
+  
         setServiceData(formattedServiceData);
         setFilteredData(formattedServiceData);
+        console.log(service.serviceItems);
+
       } catch (error) {
         console.error('Error fetching data: ', error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
-
+  
   const filterDataByDate = () => {
     if (startDate && endDate) {
       const endDateWithTime = new Date(endDate);
@@ -113,15 +120,24 @@ const ServiceView = () => {
       selector: row => row.machine_name,
       width: '23%',
     },
-    {
-      name: 'Status',
-      selector: row => (
-        <div className={`p-2 rounded ${getStatusStyle(row.status)}`}>
-          {row.status}
-        </div>
-      ),
-      width: '15%',
-    },
+   {
+  name: 'Status',
+  selector: row => (
+    <div className="flex items-center gap-2">
+    {row.status === 'Selesai' ? (
+      <div className="w-22 h-5 px-2 py-3 bg-green-200 rounded-md border border-green-800 flex justify-center items-center gap-2.5">
+        <div className="text-green-700 text-xs font-medium">Selesai</div>
+      </div>
+    ) : (
+      <div className="w-22 h-5 px-2 py-3 bg-red-200 rounded-md border border-red-500 flex justify-center items-center gap-2.5">
+        <div className="text-red-500 text-xs font-medium">Belum Selesai</div>
+      </div>
+    )}
+  </div>
+  ),
+  width: '15%',
+},
+
     {
       name: 'Keluhan',
       selector: row => (

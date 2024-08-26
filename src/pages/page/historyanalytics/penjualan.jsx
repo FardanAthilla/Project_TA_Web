@@ -77,13 +77,16 @@ const PenjualanView = () => {
       name: 'Barang & Kuantiti',
       selector: row => row.items.map((item, index) => (
         <div key={index}>
-          {item.name} {item.quantity > 0 ? `-${item.quantity}` : item.quantity}
+          {item.name}{" "}
+          <span style={{ color: 'blue', fontWeight: 'medium' }}>
+            {item.quantity > 0 ? `${item.quantity}x` : item.quantity}
+          </span>
         </div>
       )),
       width: '40%', 
     },
     {
-      name: 'Tanggal',
+      name: 'Tanggal',  
       selector: row => row.date,
       width: '25%', 
     },
@@ -93,6 +96,7 @@ const PenjualanView = () => {
       width: '25%', 
     },
   ];
+  
   
   const customStyles = {
     headCells: {
