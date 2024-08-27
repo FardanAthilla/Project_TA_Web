@@ -63,10 +63,10 @@ const DashboardPage = () => {
     if (!Array.isArray(data) || data.length === 0) {
       return { categories: [], seriesData: [] };
     }
-  
+
     let categories = [];
     let seriesData = [];
-  
+
     if (selectedRange === '7d') {
       const today = new Date();
       const lastSevenDays = Array.from({ length: 7 }).map((_, i) => {
@@ -74,102 +74,98 @@ const DashboardPage = () => {
         date.setDate(today.getDate() - (6 - i));
         return date;
       });
-  
+
       categories = lastSevenDays.map(date => date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
       seriesData = Array(7).fill(0);
-  
+
       data.forEach((entry) => {
         const entryDate = new Date(entry.date);
         const index = lastSevenDays.findIndex(date => date.toDateString() === entryDate.toDateString());
-  
+
         if (index !== -1) {
           const value = type === 'sales'
             ? Array.isArray(entry.SalesReportItems)
               ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
               : 0
             : 1; // Replace with the relevant field for service data
-  
+
           seriesData[index] += value;
-  
-          // Add console log for debugging
-          console.log(`Processing ${type} data for ${entryDate.toLocaleDateString('id-ID')} with value: ${value}`);
         }
       });
     } else if (selectedRange === '1m') {
       const today = new Date();
       const weeksInMonth = 4;
+
+      // Get the start date of the last 4 weeks
       const startDate = new Date();
       startDate.setDate(today.getDate() - 27);
-  
+
+      // Create 4 weekly intervals
       const lastFourWeeks = Array.from({ length: weeksInMonth }).map((_, i) => {
         const weekStart = new Date(startDate);
         weekStart.setDate(startDate.getDate() + (i * 7));
         return weekStart;
       });
-  
+
       categories = lastFourWeeks.map(date =>
         `${date.getDate()}-${date.getDate() + 6} ${date.toLocaleDateString('id-ID', { month: 'short' })}`
       );
-  
+
       seriesData = Array(weeksInMonth).fill(0);
-  
+
       data.forEach((entry) => {
         const entryDate = new Date(entry.date);
         const index = lastFourWeeks.findIndex((start) =>
           entryDate >= start && entryDate < new Date(start.getTime() + (7 * 24 * 60 * 60 * 1000))
         );
-  
+
         if (index !== -1) {
           const value = type === 'sales'
             ? Array.isArray(entry.SalesReportItems)
               ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
               : 0
-            : 1;
-  
+            : 1; // Replace with the relevant field for service data
+
           seriesData[index] += value;
-  
-          // Add console log for debugging
-          console.log(`Processing ${type} data for ${entryDate.toLocaleDateString('id-ID')} with value: ${value}`);
         }
       });
     } else if (selectedRange === '12m') {
+      // Add the new code to handle the '12m' range here
       const monthsInYear = 12;
       const currentYear = new Date().getFullYear();
-      const currentMonth = new Date().getMonth();
-  
+      const currentMonth = new Date().getMonth(); // 0-based month index
+
+      // Create categories for each month in the past 12 months
       categories = Array.from({ length: monthsInYear }).map((_, i) => {
-        const monthIndex = (currentMonth - i + 12) % 12;
-        const year = currentYear - Math.floor((i + 12 - currentMonth) / 12);
+        const monthIndex = (currentMonth - i + 12) % 12; // Wrap around to get the month index
+        const year = currentYear - Math.floor((i + 12 - currentMonth) / 12); // Adjust year if month index is negative
         return new Date(year, monthIndex, 1).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
-      }).reverse();
-  
+      }).reverse(); // Reverse to have the most recent month last
+
       seriesData = Array(monthsInYear).fill(0);
-  
+
       data.forEach((entry) => {
         const entryDate = new Date(entry.date);
         const index = categories.findIndex(category => {
           const [month, year] = category.split(' ');
           return entryDate.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) === `${month} ${year}`;
         });
-  
+
         if (index !== -1) {
           const value = type === 'sales'
             ? Array.isArray(entry.SalesReportItems)
               ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
               : 0
-            : 1;
-  
+            : 1; // Replace with the relevant field for service data
+
           seriesData[index] += value;
-  
-          // Add console log for debugging
-          console.log(`Processing ${type} data for ${entryDate.toLocaleDateString('id-ID')} with value: ${value}`);
         }
       });
     }
-  
+
     return { categories, seriesData };
   };
-  
+
   const buildChart = (categories, salesData, serviceData) => {
     const is7Days = selectedRange === '7d';
     const maxDataValue = Math.max(...[...salesData, ...serviceData]);
@@ -181,8 +177,7 @@ const DashboardPage = () => {
     if (chartRef.current) {
       window.ApexCharts && new window.ApexCharts(chartRef.current, {
         chart: {
-          height: 550,
-          width: 700,
+          height: 600,
           type: 'area',
           toolbar: { show: false },
           zoom: { enabled: false }
