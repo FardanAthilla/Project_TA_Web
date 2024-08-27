@@ -300,7 +300,7 @@ const AddMachineView = () => {
                 onClick={handleCancel}
                 className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
               >
-                Batal
+                Hapus
               </button>
 
               <button
