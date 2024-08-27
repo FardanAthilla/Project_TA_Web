@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Sidebar from '../../../components/sidebar';
-import { fetchSalesData, fetchServiceData } from '../../../service/fetchapi';
+// import Sidebar from '../../../components/sidebar';
+import Layout from '../../../components/layout';
+
 
 const DashboardPage = () => {
   const chartRef = useRef(null);
@@ -44,7 +45,6 @@ const DashboardPage = () => {
   }, [chartData, isLoading]);
 
   const getRangeParams = (range) => {
-    console.log('Selected range:', range);
     switch (range) {
       case '7d': return { days: 7, months: 0, years: 0 };
       case '1m': return { days: 0, months: 1, years: 0 };
@@ -54,10 +54,8 @@ const DashboardPage = () => {
   };
 
   const handleRangeChange = (range) => {
-    console.log('Range changed to:', range);
     setSelectedRange(range);
   };
-
 
   const processChartData = (data, type) => {
     if (!Array.isArray(data) || data.length === 0) {
@@ -95,12 +93,9 @@ const DashboardPage = () => {
     } else if (selectedRange === '1m') {
       const today = new Date();
       const weeksInMonth = 4;
-
-      // Get the start date of the last 4 weeks
       const startDate = new Date();
       startDate.setDate(today.getDate() - 27);
 
-      // Create 4 weekly intervals
       const lastFourWeeks = Array.from({ length: weeksInMonth }).map((_, i) => {
         const weekStart = new Date(startDate);
         weekStart.setDate(startDate.getDate() + (i * 7));
@@ -124,23 +119,21 @@ const DashboardPage = () => {
             ? Array.isArray(entry.SalesReportItems)
               ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
               : 0
-            : 1; // Replace with the relevant field for service data
+            : 1;
 
           seriesData[index] += value;
         }
       });
     } else if (selectedRange === '12m') {
-      // Add the new code to handle the '12m' range here
       const monthsInYear = 12;
       const currentYear = new Date().getFullYear();
-      const currentMonth = new Date().getMonth(); // 0-based month index
+      const currentMonth = new Date().getMonth();
 
-      // Create categories for each month in the past 12 months
       categories = Array.from({ length: monthsInYear }).map((_, i) => {
-        const monthIndex = (currentMonth - i + 12) % 12; // Wrap around to get the month index
-        const year = currentYear - Math.floor((i + 12 - currentMonth) / 12); // Adjust year if month index is negative
+        const monthIndex = (currentMonth - i + 12) % 12;
+        const year = currentYear - Math.floor((i + 12 - currentMonth) / 12);
         return new Date(year, monthIndex, 1).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
-      }).reverse(); // Reverse to have the most recent month last
+      }).reverse();
 
       seriesData = Array(monthsInYear).fill(0);
 
@@ -156,7 +149,7 @@ const DashboardPage = () => {
             ? Array.isArray(entry.SalesReportItems)
               ? entry.SalesReportItems.reduce((sum, item) => sum + item.quantity, 0)
               : 0
-            : 1; // Replace with the relevant field for service data
+            : 1;
 
           seriesData[index] += value;
         }
@@ -177,7 +170,8 @@ const DashboardPage = () => {
     if (chartRef.current) {
       window.ApexCharts && new window.ApexCharts(chartRef.current, {
         chart: {
-          height: 600,
+          height: 550,
+          width: 700,
           type: 'area',
           toolbar: { show: false },
           zoom: { enabled: false }
@@ -247,58 +241,74 @@ const DashboardPage = () => {
                 fontFamily: 'Inter, ui-sans-serif',
                 fontWeight: 400
               },
-              offsetX: -2,
-              formatter: (title) => title.slice(0, 3)
             },
-            yaxis: {
-              labels: {
-                align: 'left',
-                style: {
-                  colors: '#9ca3af',
-                  fontSize: '11px',
-                  fontFamily: 'Inter, ui-sans-serif',
-                  fontWeight: 400
-                },
-                formatter: (value) => value >= 1000 ? `${value / 1000}k` : value
-              }
-            },
-          },
+            legend: { show: false }
+          }
         }]
       }).render();
     }
   };
 
-  return (
-    <div className="container-fluid flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
-        <h1 className="text-2xl font-semibold mb-4">Grafik Penjualan dan Service UD Mojopahit</h1>
-        <div className="mb-4">
-          <div className="filter-buttons">
-            <button
-              className={`py-1 px-4 rounded-lg ${selectedRange === '7d' ? 'bg-[#1450A3] text-white border border-[#ffffff]' : 'bg-white text-[#1450A3] border border-[#1450A3]'}`}
-              onClick={() => handleRangeChange('7d')}
-            >
-              7 Hari Terakhir
-            </button>
-            <button
-              className={`ml-2 py-1 px-4 rounded-lg ${selectedRange === '1m' ? 'bg-[#1450A3] text-white border border-gray-600' : 'bg-white text-[#1450A3] border border-[#1450A3]'}`}
-              onClick={() => handleRangeChange('1m')}
-            >
-              1 Bulan Terakhir
-            </button>
-            <button
-              className={`ml-2 py-1 px-4 rounded-lg ${selectedRange === '12m' ? 'bg-[#1450A3] text-white border border-gray-600' : 'bg-white text-[#1450A3] border border-[#1450A3]'}`}
-              onClick={() => handleRangeChange('12m')}
-            >
-              12 Bulan Terakhir
-            </button>
+  const fetchSalesData = async (days, months, years) => {
+    try {
+      const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
+      const result = await response.json();
+      return result.Data; // Assuming 'Data' contains the array of sales report objects
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+      return [];
+    }
+  };
 
+  const fetchServiceData = async (days, months, years) => {
+    try {
+      const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/service');
+      const result = await response.json();
+      return result.Data; // Assuming 'Data' contains the array of service report objects
+    } catch (error) {
+      console.error('Error fetching service data:', error);
+      return [];
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="flex flex-wrap">
+        <div className="w-full lg:w-12/12 px-4">
+          <div className="relative flex flex-col min-w-0 break-words w-full mb-6">
+            <h1 className="text-2xl font-semibold mb-4">Grafik Penjualan dan Service UD Mojopahit</h1>
+            <div className="mb-0 px-4 py-3">
+              <div className="flex flex-wrap items-center">
+                <div className="relative w-full px-4 max-w-full flex-grow flex-1">
+                </div>
+              </div>
+            </div>
+            <div className="block w-full">
+              <div className="relative">
+                <div className="absolute right-0 mr-6 mt-2">
+                  <select
+                    value={selectedRange}
+                    onChange={(e) => handleRangeChange(e.target.value)}
+                    className="text-sm border-gray-300 rounded-md shadow-sm"
+                  >
+                    <option value="7d">7 Hari</option>
+                    <option value="1m">1 Bulan</option>
+                    <option value="12m">12 Bulan</option>
+                  </select>
+                </div>
+                <div className="p-4">
+                  {isLoading ? (
+                    <p>Loading...</p>
+                  ) : (
+                    <div ref={chartRef} />
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div id="hs-single-area-chart" ref={chartRef}></div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
