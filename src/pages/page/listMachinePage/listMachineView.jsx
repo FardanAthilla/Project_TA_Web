@@ -279,7 +279,7 @@ const ListMachine = () => {
                       <td>{indexOfFirstItem + index + 1}</td>
                       <td>{machine.store_items_name}</td>
                       <td>{machine.Category.category_name}</td>
-                      <td>Rp {machine.price.toLocaleString('id-ID')}</td>
+                      <td>Rp {machine.price.toLocaleString("id-ID")}</td>
                       <td>{machine.quantity}</td>
                       <td>
                         <button className="btn btn-ghost btn-xs">
@@ -346,14 +346,6 @@ const ListMachine = () => {
                 </div>
               </div>
             )}
-
-            <div className="inline-block">
-              <Link to="/AddMachine">
-                <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
-                  Tambah Data
-                </button>
-              </Link>
-            </div>
           </>
         )}
         {isModalOpen && (
@@ -411,6 +403,13 @@ const ListMachine = () => {
             </div>
           </div>
         )}
+        <div className="inline-block">
+          <Link to="/AddMachine">
+            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+              Tambah Data
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );
