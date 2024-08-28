@@ -1,19 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
-// import Sidebar from '../../../components/sidebar';
 import Layout from '../../../components/layout';
-
 
 const DashboardPage = () => {
   const chartRef = useRef(null);
   const [chartData, setChartData] = useState({ categories: [], salesData: [], serviceData: [] });
   const [selectedRange, setSelectedRange] = useState('7d');
   const [isLoading, setIsLoading] = useState(false);
+  const [dropdownLabel, setDropdownLabel] = useState('hahahahahhaaaaaaaaaaaaaay'); // Initial label
+
+  // Prevent scrolling when component mounts and allow scrolling when unmounts
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';  // Disable scrolling
+
+    return () => {
+      document.body.style.overflow = 'auto';  // Enable scrolling when component unmounts
+    };
+  }, []);
 
   useEffect(() => {
     const handleLoad = async () => {
       setIsLoading(true);
       try {
-        console.log('Loading data for range:', selectedRange);
         const { days, months, years } = getRangeParams(selectedRange);
         const [salesData, serviceData] = await Promise.all([
           fetchSalesData(days, months, years),
@@ -53,8 +60,9 @@ const DashboardPage = () => {
     }
   };
 
-  const handleRangeChange = (range) => {
+  const handleRangeChange = (range, label) => {
     setSelectedRange(range);
+    setDropdownLabel(label);
   };
 
   const processChartData = (data, type) => {
@@ -171,7 +179,7 @@ const DashboardPage = () => {
       window.ApexCharts && new window.ApexCharts(chartRef.current, {
         chart: {
           height: 550,
-          width: 700,
+          width: 1100,
           type: 'area',
           toolbar: { show: false },
           zoom: { enabled: false }
@@ -231,7 +239,7 @@ const DashboardPage = () => {
           y: { formatter: (value) => value >= 1000 ? `${value / 1000}k` : value }
         },
         responsive: [{
-          breakpoint: 568,
+          breakpoint: 480,
           options: {
             chart: { height: 300 },
             labels: {
@@ -253,7 +261,7 @@ const DashboardPage = () => {
     try {
       const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
       const result = await response.json();
-      return result.Data; // Assuming 'Data' contains the array of sales report objects
+      return result.Data; 
     } catch (error) {
       console.error('Error fetching sales data:', error);
       return [];
@@ -264,7 +272,7 @@ const DashboardPage = () => {
     try {
       const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/service');
       const result = await response.json();
-      return result.Data; // Assuming 'Data' contains the array of service report objects
+      return result.Data;
     } catch (error) {
       console.error('Error fetching service data:', error);
       return [];
@@ -276,29 +284,49 @@ const DashboardPage = () => {
       <div className="flex flex-wrap">
         <div className="w-full lg:w-12/12 px-4">
           <div className="relative flex flex-col min-w-0 break-words w-full mb-6">
-            <h1 className="text-2xl font-semibold mb-4">Grafik Penjualan dan Service UD Mojopahit</h1>
-            <div className="mb-0 px-4 py-3">
-              <div className="flex flex-wrap items-center">
-                <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-                </div>
+            <h1 className="text-2xl font-semibold mb-4">
+              Grafik Penjualan dan Service UD Mojopahit
+            </h1>
+            {/* Custom Dropdown menu below the title */}
+            <div className="dropdown">
+              <div tabIndex={0} role="button" className="btn m-1">
+                {dropdownLabel}
               </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+              >
+                <li>
+                  <a
+                    onClick={() => handleRangeChange('7d', '7 Hari Terakhir')}
+                    className="hover:bg-blue-100"
+                  >
+                    7 Hari Terakhir
+                  </a>
+                </li>
+                <li>
+                  <a
+                    onClick={() => handleRangeChange('1m', '1 Bulan Terakhir')}
+                    className="hover:bg-blue-100"
+                  >
+                    1 Bulan Terakhir
+                  </a>
+                </li>
+                <li>
+                  <a
+                    onClick={() => handleRangeChange('12m', '12 Bulan Terakhir')}
+                    className="hover:bg-blue-100"
+                  >
+                    12 Bulan Terakhir
+                  </a>
+                </li>
+              </ul>
             </div>
             <div className="block w-full">
               <div className="relative">
-                <div className="absolute right-0 mr-6 mt-2">
-                  <select
-                    value={selectedRange}
-                    onChange={(e) => handleRangeChange(e.target.value)}
-                    className="text-sm border-gray-300 rounded-md shadow-sm"
-                  >
-                    <option value="7d">7 Hari</option>
-                    <option value="1m">1 Bulan</option>
-                    <option value="12m">12 Bulan</option>
-                  </select>
-                </div>
                 <div className="p-4">
                   {isLoading ? (
-                    <p>Loading...</p>
+                    <p>Loaadedae</p>
                   ) : (
                     <div ref={chartRef} />
                   )}
