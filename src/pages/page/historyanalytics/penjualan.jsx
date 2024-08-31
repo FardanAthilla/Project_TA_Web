@@ -6,6 +6,7 @@ import DataTable from 'react-data-table-component';
 import ClipLoader from 'react-spinners/ClipLoader';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { fetchSalesByOrderId } from '../../../service/fetchapi';
 
 const PenjualanView = () => {
   const [salesData, setSalesData] = useState([]);
@@ -15,6 +16,7 @@ const PenjualanView = () => {
   const [itemsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,36 +70,43 @@ const PenjualanView = () => {
   };
 
   const salesColumns = [
+
     {
       name: 'No',
       selector: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
       width: '10%',
     },
     {
-      name: 'Barang & Kuantiti',
+      name: 'ID',
+      selector: row => row.id,
+      width: '10%',
+    },
+    {
+      name: 'Barang & kuantitas',
       selector: row => row.items.map((item, index) => (
         <div key={index}>
           {item.name}{" "}
           <span style={{ color: 'blue', fontWeight: 'medium' }}>
-            {item.quantity > 0 ? `${item.quantity}x` : item.quantity}
+            {item.quantity > 0 ? `(${item.quantity}) pcs` : item.quantity}
           </span>
         </div>
       )),
-      width: '40%', 
+      width: '30%',
     },
     {
-      name: 'Tanggal',  
+      name: 'Tanggal',
       selector: row => row.date,
-      width: '25%', 
+      width: '25%',
     },
     {
       name: 'Total Harga',
       selector: row => row.total_price,
-      width: '25%', 
+      width: '25%',
     },
   ];
   
-  
+
+
   const customStyles = {
     headCells: {
       style: {
@@ -146,6 +155,82 @@ const PenjualanView = () => {
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-3xl font-bold">Rekap Penjualan</h1>
               <div className="flex items-end space-x-4">
+                <div className="flex items-end space-x-4">
+                  <label className="relative flex items-center w-80">
+                    <input
+                      type="number"
+                      inputMode="none"
+                      value={searchQuery}
+                      placeholder="Cari Barang by ID"
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onSubmit={() => {
+                        fetchSalesByOrderId(searchQuery)
+                      }}
+                      className="p-2 border rounded w-full border-gray-500"
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      className="w-4 h-4 opacity-70 cursor-pointer absolute right-3"
+                      onClick={async () => {
+                        if (searchQuery != 0) {
+                          const response = await fetchSalesByOrderId(searchQuery);
+                          console.log(response)
+                          const formattedSalesData = response.map((sale) => ({
+                            id: sale.sales_report_id,
+                            rawDate: new Date(sale.date),
+                            date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+                            total_price: new Intl.NumberFormat('id-ID', {
+                              style: 'currency',
+                              currency: 'IDR',
+                              minimumFractionDigits: 0,
+                            }).format(sale.total_price),
+                            items: sale.SalesReportItems.map((item) => ({
+                              name: item.item_name,
+                              quantity: item.quantity,
+                              price: item.price,
+                              category: item.category,
+                            })),
+                          }));
+  
+                          setSalesData(formattedSalesData);
+                          setFilteredData(formattedSalesData);
+                        } else {
+                          const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
+                          const result = await response.json();
+                  
+                          const formattedSalesData = result.Data.map((sale) => ({
+                            id: sale.sales_report_id,
+                            rawDate: new Date(sale.date), // Save raw date for filtering
+                            date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+                            total_price: new Intl.NumberFormat('id-ID', {
+                              style: 'currency',
+                              currency: 'IDR',
+                              minimumFractionDigits: 0,
+                            }).format(sale.total_price),
+                            items: sale.SalesReportItems.map((item) => ({
+                              name: item.item_name,
+                              quantity: item.quantity,
+                              price: item.price,
+                              category: item.category,
+                            })),
+                          }));
+                  
+                          setSalesData(formattedSalesData);
+                          setFilteredData(formattedSalesData);
+                        }
+
+                      }}
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </label>
+                </div>
                 <div>
                   <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
                   <DatePicker
@@ -177,6 +262,7 @@ const PenjualanView = () => {
                   className="btn btn-active btn-neutral">Confirm</button>
               </div>
             </div>
+
             <DataTable
               columns={salesColumns}
               data={currentItems}
