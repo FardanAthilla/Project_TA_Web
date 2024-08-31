@@ -6,7 +6,7 @@ const DashboardPage = () => {
   const [chartData, setChartData] = useState({ categories: [], salesData: [], serviceData: [] });
   const [selectedRange, setSelectedRange] = useState('7d');
   const [isLoading, setIsLoading] = useState(false);
-  const [dropdownLabel, setDropdownLabel] = useState('hahahahahhaaaaaaaaaaaaaay'); // Initial label
+  const [dropdownLabel, setDropdownLabel] = useState('7 Hari terakhir'); // Initial label
 
   // Prevent scrolling when component mounts and allow scrolling when unmounts
   useEffect(() => {
