@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
-import { getAllUsers, deleteUser } from "../../../service/fetchapi";
+import { getAllUsers, deleteUser, getUser } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
 import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
 
@@ -14,23 +14,51 @@ function AllDataView() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const navigate = useNavigate();
+  const [user, setUser] = useState({});
   const baseUrl = "https://rdo-app-o955y.ondigitalocean.app";
+  const activeUserId = user.user_id;
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = Cookies.get("Token");
+      if (token) {
+        const result = await getUser(token);
+        if (result.success) {
+          setUser(result.data);
+          localStorage.setItem("user", JSON.stringify(result.data));
+        }
+      }
+    };
+  
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser)); 
+    } else {
+      fetchUserData();
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (user.user_id) {
+      fetchUsers();
+    }
+  }, [user]);
+  
   const fetchUsers = async () => {
     setLoading(true);
     const result = await getAllUsers();
     if (result.success) {
       console.log("Fetched users:", result.data);
-      setUsers(result.data);
+      const filteredUsers = result.data.filter(
+        (user) => user.user_id !== activeUserId
+      );
+      setUsers(filteredUsers);
     } else {
       setError(result.message);
     }
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const handleDelete = (userId) => {
     setSelectedUserId(userId);
@@ -253,15 +281,15 @@ function AllDataView() {
             <div className=" p-4 border-t dark:border-gray-600 flex items-center justify-end gap-x-4">
               <button
                 onClick={closeModal}
-                className="px-6 py-3 mt-5 bg-red-600 hover:bg-red-700 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110"
+                className="bg-gray-500 text-white hover:bg-gray-600 px-4 py-2 rounded"
               >
                 Batal
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110 glow-button"
+                className="bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded"
               >
-                Konfirmasi
+                Hapus
               </button>
             </div>
           </div>
