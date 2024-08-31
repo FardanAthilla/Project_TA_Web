@@ -41,7 +41,6 @@ function Sidebar() {
       fetchUserData();
     }
 
-    // Set active menu based on current path
     const currentPath = window.location.pathname;
     setActiveMenu(currentPath);
     if (currentPath.startsWith("/analytics")) {
