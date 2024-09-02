@@ -152,7 +152,7 @@ const ListMachine = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Jumlah Semua Barang
+                Total Semua Barang
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {machines.length}
@@ -186,7 +186,7 @@ const ListMachine = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Jumlah Barang Kosong
+                Total Barang Kosong
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {zeroQuantityItems.length}
@@ -268,7 +268,7 @@ const ListMachine = () => {
                   <th>Nama</th>
                   <th>Kategori</th>
                   <th>Harga</th>
-                  <th>Jumlah</th>
+                  <th>Stok</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
@@ -280,7 +280,7 @@ const ListMachine = () => {
                       <td>{machine.store_items_name}</td>
                       <td>{machine.Category.category_name}</td>
                       <td>Rp {machine.price.toLocaleString("id-ID")}</td>
-                      <td>{machine.quantity}</td>
+                      <td>{machine.quantity} Pcs</td>
                       <td>
                         <button className="btn btn-ghost btn-xs">
                           <PencilIcon
