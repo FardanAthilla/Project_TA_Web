@@ -8,6 +8,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { fetchServiceByOrderId } from '../../../service/fetchapi';
 
 const ServiceView = () => {
   const [serviceData, setServiceData] = useState([]);
@@ -17,6 +18,7 @@ const ServiceView = () => {
   const [itemsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,7 +48,6 @@ const ServiceView = () => {
   
         setServiceData(formattedServiceData);
         setFilteredData(formattedServiceData);
-        console.log(service.serviceItems);
 
       } catch (error) {
         console.error('Error fetching data: ', error);
@@ -96,6 +97,11 @@ const ServiceView = () => {
       width: '5%',
     },
     {
+      name: 'ID',
+      selector: row => row.id,
+      width: '5%',
+    },
+    {
       name: 'Pekerja',
       selector: row => (
         <div className="flex items-center">
@@ -113,7 +119,7 @@ const ServiceView = () => {
     {
       name: 'Nama Pelanggan',
       selector: row => row.customer_name,
-      width: '20%',
+      width: '15%',
     },
     {
       name: 'Nama Mesin',
@@ -212,6 +218,87 @@ const ServiceView = () => {
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-3xl font-bold">Rekap Service</h1>
               <div className="flex items-end space-x-4">
+              <div className="flex items-end space-x-4">
+                  <label className="relative flex items-center w-80">
+                    <input
+                      type="number"
+                      inputMode="none"
+                      value={searchQuery}
+                      placeholder="Cari Barang by ID"
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onSubmit={() => {
+                        fetchServiceByOrderId(searchQuery)
+                      }}
+                      className="p-2 border rounded w-full border-gray-500"
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      className="w-4 h-4 opacity-70 cursor-pointer absolute right-3"
+                      onClick={async () => {
+                        console.log(searchQuery)
+                        if (searchQuery != 0) {
+                          const response = await fetchServiceByOrderId(searchQuery);
+                          console.log(response)
+                          const formattedServiceData = response.map((service) => ({
+                            id: service.service_report_id,
+                            rawDate: new Date(service.date),
+                            date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
+                            customer_name: service.name,
+                            worker_name: service.User.username,
+                            machine_number: service.machine_number,
+                            machine_name: service.machine_name,
+                            complaints: service.complaints,
+                            status: service.Status.status_name,
+                            worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
+                            laporan_image: service.image,
+                            serviceItems: service.ServiceReportsItems.map(item => ({
+                              itemName: item.item_name,
+                              quantity: item.quantity,
+                              price: item.price,
+                            }))
+                          })).sort((a, b) => b.rawDate - a.rawDate);
+                    
+                          setServiceData(formattedServiceData);
+                          setFilteredData(formattedServiceData);
+                        } else {
+                          const response = await axios.get('https://rdo-app-o955y.ondigitalocean.app/service');
+                          const result = response.data;
+                    
+                          const formattedServiceData = result.Data.map((service) => ({
+                            id: service.service_report_id,
+                            rawDate: new Date(service.date),
+                            date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
+                            customer_name: service.name,
+                            worker_name: service.User.username,
+                            machine_number: service.machine_number,
+                            machine_name: service.machine_name,
+                            complaints: service.complaints,
+                            status: service.Status.status_name,
+                            worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
+                            laporan_image: service.image,
+                            serviceItems: service.ServiceReportsItems.map(item => ({
+                              itemName: item.item_name,
+                              quantity: item.quantity,
+                              price: item.price,
+                            }))
+                          })).sort((a, b) => b.rawDate - a.rawDate);
+                    
+                          setServiceData(formattedServiceData);
+                          setFilteredData(formattedServiceData);
+                        }
+
+                      }}
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </label>
+                </div>
                 <div>
                   <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
                   <DatePicker

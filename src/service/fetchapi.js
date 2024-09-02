@@ -213,6 +213,19 @@ export const fetchSalesByOrderId = async (orderId) => {
     throw error;
   }
 };
+// Service by Order ID
+export const fetchServiceByOrderId = async (orderId) => {
+  try {
+    const url = `${baseUrl}/search/service`;
+
+    const response = await axios.get(`${url}?order_id=` + orderId);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching sales by order ID:", error);
+    throw error;
+  }
+};
+
 
 export const deleteSparepart = async (sparepartId) => {
   try {
