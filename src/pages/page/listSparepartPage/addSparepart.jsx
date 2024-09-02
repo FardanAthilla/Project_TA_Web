@@ -206,7 +206,7 @@ const AddSparepartView = () => {
                     htmlFor="quantity"
                     className="block text-sm font-medium leading-6"
                   >
-                    Jumlah
+                    Jumlah Stok
                   </label>
                   <div className="mt-2">
                     <input

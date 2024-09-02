@@ -290,7 +290,7 @@ export default function AddAccount() {
                   </label>
                   <div className="dropdown dropdown-hover mt-2 w-full">
                     <div tabIndex={0} role="button" className="btn w-full">
-                      {role === "1" ? "Owner" : "Member"}
+                      {role === "1" ? "Owner" : "Staff"}
                     </div>
                     <ul
                       tabIndex={0}
@@ -300,7 +300,7 @@ export default function AddAccount() {
                         <a onClick={() => setRole("1")}>Owner</a>
                       </li>
                       <li key="2">
-                        <a onClick={() => setRole("2")}>Member</a>
+                        <a onClick={() => setRole("2")}>Staff</a>
                       </li>
                     </ul>
                   </div>
