@@ -146,7 +146,7 @@ const PenjualanView = () => {
   };
 
   const handleKeyDown = async (e) => {
-    if (e.key === 'Enter' && /^\d+$/.test(searchQuery)) {
+    if (e.key === 'Enter' && searchQuery != "") {
       e.preventDefault(); // Mencegah form submit secara default
       const response = await fetchSalesByOrderId(searchQuery);
       console.log(response);
@@ -169,6 +169,79 @@ const PenjualanView = () => {
 
       setSalesData(formattedSalesData);
       setFilteredData(formattedSalesData);
+    } else if (e.key === 'Enter') {
+      const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
+  const result = await response.json();
+
+  const formattedSalesData = result.Data.map((sale) => ({
+    id: sale.sales_report_id,
+    rawDate: new Date(sale.date), // Save raw date for filtering
+    date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+    total_price: new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(sale.total_price),
+    items: sale.SalesReportItems.map((item) => ({
+      name: item.item_name,
+      quantity: item.quantity,
+      price: item.price,
+      category: item.category,
+    })),
+  }));
+
+  setSalesData(formattedSalesData);
+  setFilteredData(formattedSalesData);
+    }
+  };
+
+  const handleKey = async (e) => {
+    console.log(searchQuery)
+    if (searchQuery != "") {
+      const response = await fetchSalesByOrderId(searchQuery);
+      console.log(response);
+      const formattedSalesData = response.map((sale) => ({
+        id: sale.sales_report_id,
+        rawDate: new Date(sale.date),
+        date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+        total_price: new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+        }).format(sale.total_price),
+        items: sale.SalesReportItems.map((item) => ({
+          name: item.item_name,
+          quantity: item.quantity,
+          price: item.price,
+          category: item.category,
+        })),
+      }));
+
+      setSalesData(formattedSalesData);
+      setFilteredData(formattedSalesData);
+    } else {
+      const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
+  const result = await response.json();
+
+  const formattedSalesData = result.Data.map((sale) => ({
+    id: sale.sales_report_id,
+    rawDate: new Date(sale.date), // Save raw date for filtering
+    date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+    total_price: new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(sale.total_price),
+    items: sale.SalesReportItems.map((item) => ({
+      name: item.item_name,
+      quantity: item.quantity,
+      price: item.price,
+      category: item.category,
+    })),
+  }));
+
+  setSalesData(formattedSalesData);
+  setFilteredData(formattedSalesData);
     }
   };
 
@@ -216,7 +289,7 @@ const PenjualanView = () => {
                       viewBox="0 0 16 16"
                       fill="currentColor"
                       className="w-4 h-4 opacity-70 cursor-pointer absolute right-3"
-                      onClick={handleKeyDown}
+                      onClick={handleKey}
                     >
                       <path
                         fillRule="evenodd"

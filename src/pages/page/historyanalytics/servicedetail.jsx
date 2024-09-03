@@ -9,18 +9,9 @@ const ServiceDetail = () => {
   const { service } = location.state;
   const navigate = useNavigate();
   console.log(service.serviceItems);
+  console.log(service);
 
   // Function to format date range
-  const formatDateRange = (startDate, endDate) => {
-    const formattedStartDate = format(new Date(startDate), 'eeee, dd MMMM yyyy', { locale: id });
-    const formattedEndDate = format(new Date(endDate), 'eeee, dd MMMM yyyy', { locale: id });
-    return `${formattedStartDate} - ${formattedEndDate}`;
-  };
-
-  // Determine the display duration or date range
-  const duration = service.date_end
-    ? formatDateRange(service.rawDate, service.date_end)
-    : "N/A";
 
   return (
     <div className="h-screen flex bg-white">
@@ -140,7 +131,7 @@ const ServiceDetail = () => {
                       type="text"
                       name="duration"
                       id="duration"
-                      value={duration}
+                      value={`${service.date} - ${service.date_end ? service.date_end : 'Belum Selesai'}`}
                       readOnly
                       className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-md sm:leading-6"
                     />
