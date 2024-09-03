@@ -324,13 +324,14 @@ const DashboardPage = () => {
             </div>
             <div className="block w-full">
               <div className="relative">
-                <div className="p-4">
-                  {isLoading ? (
-                    <p>Loaadedae</p>
-                  ) : (
-                    <div ref={chartRef} />
-                  )}
-                </div>
+              <div className="flex justify-center items-center">
+  {isLoading ? (
+    <span className="loading loading-dots loading-lg"></span>
+  ) : (
+    <div ref={chartRef} className="chart-container" />
+  )}
+</div>
+
               </div>
             </div>
           </div>

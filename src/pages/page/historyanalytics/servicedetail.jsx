@@ -133,7 +133,7 @@ const ServiceDetail = () => {
                     htmlFor="duration"
                     className="block text-md font-medium leading-6"
                   >
-                    Lama Pengerjaan
+                    Durasi Pengerjaan
                   </label>
                   <div className="mt-2">
                     <input

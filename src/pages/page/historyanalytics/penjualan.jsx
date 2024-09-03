@@ -15,6 +15,7 @@ const PenjualanView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [endDate, setEndDate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -91,20 +92,36 @@ const PenjualanView = () => {
           </span>
         </div>
       )),
-      width: '30%',
+      width: '20%',
     },
     {
       name: 'Tanggal',
       selector: row => row.date,
-      width: '25%',
+      width: '20%',
     },
+    {
+      name: 'Harga',
+      selector: row => row.items.map((item, index) => (
+        <div key={index}>
+          <span style={{ fontWeight: 'medium' }}>
+            {new Intl.NumberFormat('id-ID', {
+              style: 'currency',
+              currency: 'IDR',
+              minimumFractionDigits: 0,
+            }).format(item.price)}/pcs
+          </span>
+        </div>
+      )),
+      width: '20%',
+    },
+    
     {
       name: 'Total Harga',
       selector: row => row.total_price,
-      width: '25%',
+      width: '20%',
     },
   ];
-  
+
 
 
   const customStyles = {
@@ -127,6 +144,34 @@ const PenjualanView = () => {
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  const handleKeyDown = async (e) => {
+    if (e.key === 'Enter' && /^\d+$/.test(searchQuery)) {
+      e.preventDefault(); // Mencegah form submit secara default
+      const response = await fetchSalesByOrderId(searchQuery);
+      console.log(response);
+      const formattedSalesData = response.map((sale) => ({
+        id: sale.sales_report_id,
+        rawDate: new Date(sale.date),
+        date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+        total_price: new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+        }).format(sale.total_price),
+        items: sale.SalesReportItems.map((item) => ({
+          name: item.item_name,
+          quantity: item.quantity,
+          price: item.price,
+          category: item.category,
+        })),
+      }));
+
+      setSalesData(formattedSalesData);
+      setFilteredData(formattedSalesData);
+    }
+  };
+
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const maxVisiblePages = 5; // Maximum number of visible pages
@@ -156,16 +201,14 @@ const PenjualanView = () => {
               <h1 className="text-3xl font-bold">Rekap Penjualan</h1>
               <div className="flex items-end space-x-4">
                 <div className="flex items-end space-x-4">
-                  <label className="relative flex items-center w-80">
+                 <label className="relative flex items-center w-80">
                     <input
                       type="number"
-                      inputMode="none"
+                      inputMode="numeric"
                       value={searchQuery}
-                      placeholder="Cari Barang by ID"
+                      placeholder="Cari Penjualan by ID"
+                      onKeyDown={handleKeyDown}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      onSubmit={() => {
-                        fetchSalesByOrderId(searchQuery)
-                      }}
                       className="p-2 border rounded w-full border-gray-500"
                     />
                     <svg
@@ -173,55 +216,7 @@ const PenjualanView = () => {
                       viewBox="0 0 16 16"
                       fill="currentColor"
                       className="w-4 h-4 opacity-70 cursor-pointer absolute right-3"
-                      onClick={async () => {
-                        if (searchQuery != 0) {
-                          const response = await fetchSalesByOrderId(searchQuery);
-                          console.log(response)
-                          const formattedSalesData = response.map((sale) => ({
-                            id: sale.sales_report_id,
-                            rawDate: new Date(sale.date),
-                            date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
-                            total_price: new Intl.NumberFormat('id-ID', {
-                              style: 'currency',
-                              currency: 'IDR',
-                              minimumFractionDigits: 0,
-                            }).format(sale.total_price),
-                            items: sale.SalesReportItems.map((item) => ({
-                              name: item.item_name,
-                              quantity: item.quantity,
-                              price: item.price,
-                              category: item.category,
-                            })),
-                          }));
-  
-                          setSalesData(formattedSalesData);
-                          setFilteredData(formattedSalesData);
-                        } else {
-                          const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
-                          const result = await response.json();
-                  
-                          const formattedSalesData = result.Data.map((sale) => ({
-                            id: sale.sales_report_id,
-                            rawDate: new Date(sale.date), // Save raw date for filtering
-                            date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
-                            total_price: new Intl.NumberFormat('id-ID', {
-                              style: 'currency',
-                              currency: 'IDR',
-                              minimumFractionDigits: 0,
-                            }).format(sale.total_price),
-                            items: sale.SalesReportItems.map((item) => ({
-                              name: item.item_name,
-                              quantity: item.quantity,
-                              price: item.price,
-                              category: item.category,
-                            })),
-                          }));
-                  
-                          setSalesData(formattedSalesData);
-                          setFilteredData(formattedSalesData);
-                        }
-
-                      }}
+                      onClick={handleKeyDown}
                     >
                       <path
                         fillRule="evenodd"

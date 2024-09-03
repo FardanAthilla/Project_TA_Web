@@ -152,7 +152,7 @@ const ListSparepart = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Total Semua Barang
+                Total Barang Tersedia
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {spareparts.length}
@@ -186,7 +186,7 @@ const ListSparepart = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Total Barang Kosong
+                Total Barang Tidak Tersedia
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {zeroQuantityItems.length}
