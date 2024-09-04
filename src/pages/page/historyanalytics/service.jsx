@@ -115,7 +115,7 @@ const ServiceView = () => {
     {
       name: 'Tanggal',
       selector: row => row.date,
-      width: '15%',
+      width: '20%',
     },
     {
       name: 'Nama Pelanggan',
@@ -125,7 +125,7 @@ const ServiceView = () => {
     {
       name: 'Nama Mesin',
       selector: row => row.machine_name,
-      width: '23%',
+      width: '18%',
     },
    {
   name: 'Status',
