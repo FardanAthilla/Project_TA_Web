@@ -202,10 +202,14 @@ const ListSparepart = () => {
                 className="grow"
                 placeholder="Cari"
                 value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchClick();
+                  }
                 }}
               />
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
