@@ -206,8 +206,8 @@ export const fetchSalesByOrderId = async (orderId) => {
   try {
     const url = `${baseUrl}/search/sales`;
 
-    const response = await axios.get(`${url}?order_id=` + orderId);
-    return response.data;
+    const response = await axios.get(`${url}?order_id=` + orderId,{ validateStatus: false });
+    return response;
   } catch (error) {
     console.error("Error fetching sales by order ID:", error);
     throw error;
@@ -218,8 +218,8 @@ export const fetchServiceByOrderId = async (orderId) => {
   try {
     const url = `${baseUrl}/search/service`;
 
-    const response = await axios.get(`${url}?order_id=` + orderId);
-    return response.data;
+    const response = await axios.get(`${url}?order_id=` + orderId,{ validateStatus: false });
+    return response;
   } catch (error) {
     console.error("Error fetching sales by order ID:", error);
     throw error;

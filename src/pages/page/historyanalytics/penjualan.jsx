@@ -12,22 +12,112 @@ const PenjualanView = () => {
   const [salesData, setSalesData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingData, setLoadingData] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
   const [endDate, setEndDate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [errMessage, setErrMessage] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true); // Set loading to true before fetching data
       try {
         const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
         const result = await response.json();
-
+  
         const formattedSalesData = result.Data.map((sale) => ({
           id: sale.sales_report_id,
-          rawDate: new Date(sale.date), // Save raw date for filtering
+          rawDate: new Date(sale.date),
+          date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+          total_price: new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+          }).format(sale.total_price),
+          items: sale.SalesReportItems.map((item) => ({
+            name: item.item_name,
+            quantity: item.quantity,
+            price: item.price,
+            category: item.category,
+          })),
+        }));
+  
+        setSalesData(formattedSalesData);
+        setFilteredData(formattedSalesData);
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched or in case of an error
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+
+  useEffect(() => {
+    filterDataByDate();
+  }, [startDate, endDate]);
+
+  const filterDataByDate = () => {
+    if (startDate && endDate) {
+      const endDateWithTime = new Date(endDate);
+      endDateWithTime.setHours(23, 59, 59, 999);
+
+      const filtered = salesData.filter((sale) => {
+        const saleDate = new Date(sale.rawDate);
+        return saleDate >= startDate && saleDate <= endDateWithTime;
+      });
+      setFilteredData(filtered);
+      setCurrentPage(1);
+    } else {
+      setFilteredData(salesData);
+    }
+  };
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const getPageNumbers = () => {
+    const maxVisiblePages = 5;
+    let startPage, endPage;
+
+    if (totalPages <= maxVisiblePages) {
+      startPage = 1;
+      endPage = totalPages;
+    } else if (currentPage <= Math.ceil(maxVisiblePages / 2)) {
+      startPage = 1;
+      endPage = maxVisiblePages;
+    } else if (currentPage + Math.floor(maxVisiblePages / 2) >= totalPages) {
+      startPage = totalPages - maxVisiblePages + 1;
+      endPage = totalPages;
+    } else {
+      startPage = currentPage - Math.floor(maxVisiblePages / 2);
+      endPage = currentPage + Math.floor(maxVisiblePages / 2);
+    }
+
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+  };
+
+  const clearDateFilters = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setFilteredData(salesData);
+  };
+
+  const handleKeyDown = async (e) => {
+    if (e.key === 'Enter' && searchQuery !== '') {
+      e.preventDefault();
+      setLoadingData(true);
+      const response = await fetchSalesByOrderId(searchQuery);
+      if (response.status == 200) {
+        const formattedSalesData = response.data.map((sale) => ({
+          id: sale.sales_report_id,
+          rawDate: new Date(sale.date),
           date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
           total_price: new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -44,34 +134,46 @@ const PenjualanView = () => {
 
         setSalesData(formattedSalesData);
         setFilteredData(formattedSalesData);
-      } catch (error) {
-        console.error('Error fetching data: ', error);
-      } finally {
-        setLoading(false);
+        setErrMessage(null);
+        setLoadingData(false);
+      } else if (response.status == 404) {
+        setErrMessage("Data Tidak Ditemukan");
+        setLoadingData(false);
       }
-    };
-
-    fetchData();
-  }, []);
-
-  const filterDataByDate = () => {
-    if (startDate && endDate) {
-      const endDateWithTime = new Date(endDate);
-      endDateWithTime.setHours(23, 59, 59, 999); // Set end time to the end of the day
-
-      const filtered = salesData.filter((sale) => {
-        const saleDate = new Date(sale.rawDate);
-        return saleDate >= startDate && saleDate <= endDateWithTime;
-      });
-      setFilteredData(filtered);
-      setCurrentPage(1); // Reset to the first page when filtering
-    } else {
-      setFilteredData(salesData);
+    } else if (e.key === 'Enter') {
+        setLoadingData(true);
+        const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
+        const result = await response.json();
+  
+        const formattedSalesData = result.Data.map((sale) => ({
+          id: sale.sales_report_id,
+          rawDate: new Date(sale.date),
+          date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
+          total_price: new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+          }).format(sale.total_price),
+          items: sale.SalesReportItems.map((item) => ({
+            name: item.item_name,
+            quantity: item.quantity,
+            price: item.price,
+            category: item.category,
+          })),
+        }));
+  
+        setSalesData(formattedSalesData);
+        setErrMessage(null);
+        setFilteredData(formattedSalesData);
+        setLoadingData(false);
     }
   };
 
-  const salesColumns = [
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
+  const salesColumns = [
     {
       name: 'No',
       selector: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
@@ -79,50 +181,50 @@ const PenjualanView = () => {
     },
     {
       name: 'ID',
-      selector: row => row.id,
+      selector: (row) => row.id,
       width: '10%',
     },
     {
       name: 'Barang & kuantitas',
-      selector: row => row.items.map((item, index) => (
-        <div key={index}>
-          {item.name}{" "}
-          <span style={{ color: 'blue', fontWeight: 'medium' }}>
-            {item.quantity > 0 ? `(${item.quantity}) pcs` : item.quantity}
-          </span>
-        </div>
-      )),
+      selector: (row) =>
+        row.items.map((item, index) => (
+          <div key={index}>
+            {item.name}{' '}
+            <span style={{ color: 'blue', fontWeight: 'medium' }}>
+              {item.quantity > 0 ? `(${item.quantity}) pcs` : item.quantity}
+            </span>
+          </div>
+        )),
       width: '20%',
     },
     {
       name: 'Tanggal',
-      selector: row => row.date,
+      selector: (row) => row.date,
       width: '20%',
     },
     {
       name: 'Harga',
-      selector: row => row.items.map((item, index) => (
-        <div key={index}>
-          <span style={{ fontWeight: 'medium' }}>
-            {new Intl.NumberFormat('id-ID', {
-              style: 'currency',
-              currency: 'IDR',
-              minimumFractionDigits: 0,
-            }).format(item.price)}/pcs
-          </span>
-        </div>
-      )),
+      selector: (row) =>
+        row.items.map((item, index) => (
+          <div key={index}>
+            <span style={{ fontWeight: 'medium' }}>
+              {new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+              }).format(item.price)}
+              /pcs
+            </span>
+          </div>
+        )),
       width: '20%',
     },
-    
     {
       name: 'Total Harga',
-      selector: row => row.total_price,
+      selector: (row) => row.total_price,
       width: '20%',
     },
   ];
-
-
 
   const customStyles = {
     headCells: {
@@ -141,132 +243,15 @@ const PenjualanView = () => {
     },
   };
 
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
 
-  const handleKeyDown = async (e) => {
-    if (e.key === 'Enter' && searchQuery != "") {
-      e.preventDefault(); // Mencegah form submit secara default
-      const response = await fetchSalesByOrderId(searchQuery);
-      console.log(response);
-      const formattedSalesData = response.map((sale) => ({
-        id: sale.sales_report_id,
-        rawDate: new Date(sale.date),
-        date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
-        total_price: new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          minimumFractionDigits: 0,
-        }).format(sale.total_price),
-        items: sale.SalesReportItems.map((item) => ({
-          name: item.item_name,
-          quantity: item.quantity,
-          price: item.price,
-          category: item.category,
-        })),
-      }));
-
-      setSalesData(formattedSalesData);
-      setFilteredData(formattedSalesData);
-    } else if (e.key === 'Enter') {
-      const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
-  const result = await response.json();
-
-  const formattedSalesData = result.Data.map((sale) => ({
-    id: sale.sales_report_id,
-    rawDate: new Date(sale.date), // Save raw date for filtering
-    date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
-    total_price: new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(sale.total_price),
-    items: sale.SalesReportItems.map((item) => ({
-      name: item.item_name,
-      quantity: item.quantity,
-      price: item.price,
-      category: item.category,
-    })),
-  }));
-
-  setSalesData(formattedSalesData);
-  setFilteredData(formattedSalesData);
-    }
-  };
-
-  const handleKey = async (e) => {
-    console.log(searchQuery)
-    if (searchQuery != "") {
-      const response = await fetchSalesByOrderId(searchQuery);
-      console.log(response);
-      const formattedSalesData = response.map((sale) => ({
-        id: sale.sales_report_id,
-        rawDate: new Date(sale.date),
-        date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
-        total_price: new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          minimumFractionDigits: 0,
-        }).format(sale.total_price),
-        items: sale.SalesReportItems.map((item) => ({
-          name: item.item_name,
-          quantity: item.quantity,
-          price: item.price,
-          category: item.category,
-        })),
-      }));
-
-      setSalesData(formattedSalesData);
-      setFilteredData(formattedSalesData);
-    } else {
-      const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
-  const result = await response.json();
-
-  const formattedSalesData = result.Data.map((sale) => ({
-    id: sale.sales_report_id,
-    rawDate: new Date(sale.date), // Save raw date for filtering
-    date: format(new Date(sale.date), 'eeee, dd MMMM yyyy', { locale: id }),
-    total_price: new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(sale.total_price),
-    items: sale.SalesReportItems.map((item) => ({
-      name: item.item_name,
-      quantity: item.quantity,
-      price: item.price,
-      category: item.category,
-    })),
-  }));
-
-  setSalesData(formattedSalesData);
-  setFilteredData(formattedSalesData);
-    }
-  };
-
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const maxVisiblePages = 5; // Maximum number of visible pages
-
-  // Calculate the start and end page numbers
-  const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-  // Adjust start page if the current end page is less than maxVisiblePages
-  const adjustedStartPage = Math.max(1, endPage - maxVisiblePages + 1);
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="h-screen flex bg-white">
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
-        {loading ? (
-          <div className="flex justify-center items-center h-full">
-            <ClipLoader size={50} color={"#123abc"} loading={loading} />
+      {loading ? (
+          <div className="text-center">
+            <span className="loading loading-dots loading-lg"></span>
           </div>
         ) : (
           <>
@@ -274,7 +259,7 @@ const PenjualanView = () => {
               <h1 className="text-3xl font-bold">Rekap Penjualan</h1>
               <div className="flex items-end space-x-4">
                 <div className="flex items-end space-x-4">
-                 <label className="relative flex items-center w-80">
+                  <label className="relative flex items-center w-80">
                     <input
                       type="number"
                       inputMode="numeric"
@@ -289,7 +274,7 @@ const PenjualanView = () => {
                       viewBox="0 0 16 16"
                       fill="currentColor"
                       className="w-4 h-4 opacity-70 cursor-pointer absolute right-3"
-                      onClick={handleKey}
+                      onClick={handleKeyDown}
                     >
                       <path
                         fillRule="evenodd"
@@ -307,7 +292,7 @@ const PenjualanView = () => {
                     selectsStart
                     startDate={startDate}
                     endDate={endDate}
-                    maxDate={new Date()} // Disable future dates
+                    maxDate={new Date()}
                     dateFormat="dd/MM/yyyy"
                     className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
@@ -320,55 +305,77 @@ const PenjualanView = () => {
                     selectsEnd
                     startDate={startDate}
                     endDate={endDate}
-                    maxDate={new Date()} // Disable future dates
+                    maxDate={new Date()}
                     dateFormat="dd/MM/yyyy"
                     className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
                 </div>
                 <button
-                  onClick={filterDataByDate}
-                  className="btn btn-active btn-neutral">Confirm</button>
+                  onClick={clearDateFilters}
+                  className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Reset
+                </button>
               </div>
             </div>
-
-            <DataTable
-              columns={salesColumns}
-              data={currentItems}
-              customStyles={customStyles}
-              pagination={false}
-            />
-            {currentItems.length > 0 && (
-              <div className="flex justify-center mt-4">
-                <div className="join pt-5">
-                  <button
-                    className="join-item btn"
-                    onClick={() => paginate(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    «
-                  </button>
-                  {Array.from({ length: endPage - adjustedStartPage + 1 }).map((_, index) => {
-                    const pageNumber = adjustedStartPage + index;
-                    return (
+            {loadingData ?
+            (
+              <div className="text-center">
+                <span className="loading loading-dots loading-lg"></span>
+              </div>
+            ) : 
+            errMessage == null ?
+            <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative">
+              <DataTable
+                columns={salesColumns}
+                data={currentItems}
+                customStyles={customStyles}
+              />
+            </div>
+            : <div className="text-center">
+            Data Tidak Ditemukan
+          </div>
+            }
+            
+            {
+              loadingData ?
+              <div></div>
+               : errMessage == null ? <>
+               {filteredData.length > 0 && ( // Conditionally render pagination
+                <div className="flex justify-center mt-4">
+                  <div className="join pt-5">
+                    <button
+                      className="join-item btn"
+                      onClick={() => paginate(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      «
+                    </button>
+                    {getPageNumbers().map((pageNumber) => (
                       <button
-                        key={index}
+                        key={pageNumber}
                         onClick={() => paginate(pageNumber)}
                         className={`join-item btn ${pageNumber === currentPage ? "active" : ""}`}
                       >
                         {pageNumber}
                       </button>
-                    );
-                  })}
-                  <button
-                    className="join-item btn"
-                    onClick={() => paginate(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    »
-                  </button>
+                    ))}
+                    <button
+                      className="join-item btn"
+                      onClick={() => paginate(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      »
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+              </>
+              :  <div >
+            
+            </div>
+            }
+            
           </>
         )}
       </div>
