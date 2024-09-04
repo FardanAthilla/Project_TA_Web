@@ -31,6 +31,7 @@ const ServiceView = () => {
           id: service.service_report_id,
           rawDate: new Date(service.date),
           date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
+          date_end: service.date_end ? format(new Date(service.date_end), 'eeee, dd MMMM yyyy', { locale: id }) : null,
           customer_name: service.name,
           worker_name: service.User.username,
           machine_number: service.machine_number,
@@ -114,7 +115,7 @@ const ServiceView = () => {
     {
       name: 'Tanggal',
       selector: row => row.date,
-      width: '15%',
+      width: '20%',
     },
     {
       name: 'Nama Pelanggan',
@@ -124,7 +125,7 @@ const ServiceView = () => {
     {
       name: 'Nama Mesin',
       selector: row => row.machine_name,
-      width: '23%',
+      width: '18%',
     },
    {
   name: 'Status',
@@ -179,6 +180,63 @@ const ServiceView = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleKeyDown = async (e) => {
+    if (e.key === 'Enter' && searchQuery != "") {
+      e.preventDefault(); // Mencegah form submit secara default
+      const response = await fetchServiceByOrderId(searchQuery);
+      console.log(response)
+      const formattedServiceData = response.map((service) => ({
+        id: service.service_report_id,
+        rawDate: new Date(service.date),
+        date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
+        date_end: service.date_end ? format(new Date(service.date_end), 'eeee, dd MMMM yyyy', { locale: id }) : null,
+        customer_name: service.name,
+        worker_name: service.User.username,
+        machine_number: service.machine_number,
+        machine_name: service.machine_name,
+        complaints: service.complaints,
+        status: service.Status.status_name,
+        worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
+        laporan_image: service.image,
+        serviceItems: service.ServiceReportsItems.map(item => ({
+          itemName: item.item_name,
+          quantity: item.quantity,
+          price: item.price,
+        }))
+      })).sort((a, b) => b.rawDate - a.rawDate);
+
+      setServiceData(formattedServiceData);
+      setFilteredData(formattedServiceData);
+    } else if (e.key === 'Enter') {
+      const response = await axios.get('https://rdo-app-o955y.ondigitalocean.app/service');
+      const result = response.data;
+
+      const formattedServiceData = result.Data.map((service) => ({
+        id: service.service_report_id,
+        rawDate: new Date(service.date),
+        date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
+        date_end: service.date_end ? format(new Date(service.date_end), 'eeee, dd MMMM yyyy', { locale: id }) : null,
+        customer_name: service.name,
+        worker_name: service.User.username,
+        machine_number: service.machine_number,
+        machine_name: service.machine_name,
+        complaints: service.complaints,
+        status: service.Status.status_name,
+        worker_image: `https://rdo-app-o955y.ondigitalocean.app/${service.User.image}`,
+        laporan_image: service.image,
+        serviceItems: service.ServiceReportsItems.map(item => ({
+          itemName: item.item_name,
+          quantity: item.quantity,
+          price: item.price,
+        }))
+      })).sort((a, b) => b.rawDate - a.rawDate);
+      
+
+      setServiceData(formattedServiceData);
+      setFilteredData(formattedServiceData);
+    }
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
@@ -224,11 +282,9 @@ const ServiceView = () => {
                       type="number"
                       inputMode="none"
                       value={searchQuery}
-                      placeholder="Cari Barang by ID"
+                      placeholder="Cari Service by ID"
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      onSubmit={() => {
-                        fetchServiceByOrderId(searchQuery)
-                      }}
+                      onKeyDown={handleKeyDown}
                       className="p-2 border rounded w-full border-gray-500"
                     />
                     <svg
@@ -245,6 +301,7 @@ const ServiceView = () => {
                             id: service.service_report_id,
                             rawDate: new Date(service.date),
                             date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
+                            date_end: service.date_end ? format(new Date(service.date_end), 'eeee, dd MMMM yyyy', { locale: id }) : null,
                             customer_name: service.name,
                             worker_name: service.User.username,
                             machine_number: service.machine_number,
@@ -270,6 +327,7 @@ const ServiceView = () => {
                             id: service.service_report_id,
                             rawDate: new Date(service.date),
                             date: format(new Date(service.date), 'eeee, dd MMMM yyyy', { locale: id }),
+                            date_end: service.date_end ? format(new Date(service.date_end), 'eeee, dd MMMM yyyy', { locale: id }) : null,
                             customer_name: service.name,
                             worker_name: service.User.username,
                             machine_number: service.machine_number,
@@ -284,6 +342,7 @@ const ServiceView = () => {
                               price: item.price,
                             }))
                           })).sort((a, b) => b.rawDate - a.rawDate);
+                          
                     
                           setServiceData(formattedServiceData);
                           setFilteredData(formattedServiceData);
