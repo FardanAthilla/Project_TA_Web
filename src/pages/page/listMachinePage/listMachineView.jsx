@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
 import { fetchMachines, deleteMachine } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
-import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
+import { TrashIcon, PencilIcon, CogIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
 
 const ListMachine = () => {
@@ -86,6 +86,10 @@ const ListMachine = () => {
     navigate("/editMachine", { state: { machine } });
   };
 
+  const handleAdjust = (machine) => {
+    navigate("/adjustMachine", { state: { machine } });
+  };
+
   const confirmDelete = async () => {
     if (selectedMachineId) {
       setLoading(true);
@@ -152,7 +156,7 @@ const ListMachine = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Total Barang Tersedia
+                Total Semua Barang
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {machines.length}
@@ -186,7 +190,7 @@ const ListMachine = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Total Barang Tidak Tersedia
+                Total Barang Habis
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {zeroQuantityItems.length}
@@ -286,6 +290,12 @@ const ListMachine = () => {
                       <td>Rp {machine.price.toLocaleString("id-ID")}</td>
                       <td>{machine.quantity} Pcs</td>
                       <td>
+                        <button
+                          className="btn btn-ghost btn-xs text-gray-600"
+                          onClick={() => handleAdjust(machine)}
+                        >
+                          <CogIcon className="h-5 w-5" />
+                        </button>
                         <button className="btn btn-ghost btn-xs">
                           <PencilIcon
                             className="h-5 w-5 text-blue-600"
@@ -407,12 +417,21 @@ const ListMachine = () => {
             </div>
           </div>
         )}
-        <div className="inline-block">
-          <Link to="/AddMachine">
-            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
-              Tambah Data
-            </button>
-          </Link>
+        <div className="flex space-x-4">
+          <div className="inline-block">
+            <Link to="/AddMachine">
+              <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+                Tambah Data
+              </button>
+            </Link>
+          </div>
+          <div className="inline-block">
+            <Link to="/AddMachine">
+              <button className="px-6 py-3 mt-5 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+                Pre-Order
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/sidebar";
 import { fetchSparepart, deleteSparepart } from "../../../service/fetchapi";
 import { Link } from "react-router-dom";
-import { TrashIcon, PencilIcon } from "@heroicons/react/20/solid";
+import { TrashIcon, PencilIcon, CogIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
 
 const ListSparepart = () => {
@@ -84,6 +84,10 @@ const ListSparepart = () => {
 
   const handleEdit = (sparepart) => {
     navigate("/editSparepart", { state: { sparepart } });
+  };
+
+  const handleAdjust = (sparepart) => {
+    navigate("/adjustSparepart", { state: { sparepart } });
   };
 
   const confirmDelete = async () => {
@@ -186,7 +190,7 @@ const ListSparepart = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Total Barang Tidak Tersedia
+                Total Barang Habis
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {zeroQuantityItems.length}
@@ -286,6 +290,12 @@ const ListSparepart = () => {
                       <td>Rp {sparepart.price.toLocaleString("id-ID")}</td>
                       <td>{sparepart.quantity} Pcs</td>
                       <td>
+                        <button
+                          className="btn btn-ghost btn-xs text-gray-600"
+                          onClick={() => handleAdjust(sparepart)}
+                        >
+                          <CogIcon className="h-5 w-5" />
+                        </button>
                         <button
                           className="btn btn-ghost btn-xs"
                           onClick={() => handleEdit(sparepart)}
