@@ -157,47 +157,6 @@ const EditSparepartPage = () => {
                     />
                   </div>
                 </div>
-
-                <div className="sm:col-span-4">
-                  <label
-                    htmlFor="price"
-                    className="block text-sm font-medium leading-6"
-                  >
-                    Harga
-                  </label>
-                  <div className="mt-2 flex items-center">
-                    <span className="mr-2 text-sm text-gray-500">Rp</span>
-                    <input
-                      type="text"
-                      name="price"
-                      id="price"
-                      value={price}
-                      onChange={handlePriceChange}
-                      autoComplete="price"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-4">
-                  <label
-                    htmlFor="quantity"
-                    className="block text-sm font-medium leading-6"
-                  >
-                    Jumlah Stok
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      name="quantity"
-                      id="quantity"
-                      value={quantity}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      autoComplete="quantity"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
-                </div>
               </div>
             </div>
 

@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../../../components/sidebar";
-import { updateMachine } from "../../../service/fetchapi";
+import { updateSparepart } from "../../../service/fetchapi";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 
-const EditMachinePage = () => {
+const AdjustSparepartPage = () => {
   const location = useLocation();
-  const machine = location.state.machine;
+  const sparepart = location.state.sparepart;
 
-  const [name, setName] = useState(machine.store_items_name);
-  const [price, setPrice] = useState(machine.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
-  const [quantity, setQuantity] = useState(machine.quantity);
+  const [quantity, setQuantity] = useState(0);  // Set initial quantity to 0
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     visible: false,
@@ -21,34 +19,27 @@ const EditMachinePage = () => {
 
   const navigate = useNavigate();
 
-  const formatPrice = (value) => {
-    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  };
-
-  const handlePriceChange = (e) => {
-    const formattedPrice = formatPrice(e.target.value);
-    setPrice(formattedPrice);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !price || !quantity) {
+    if (quantity < 0 || quantity > sparepart.quantity) {
       setSnackbar({
         visible: true,
-        message: "Semua field harus diisi",
+        message: "Jumlah stok yang dimasukkan tidak valid",
         type: "error",
       });
       return;
     }
 
-    setIsLoading(true);
+    const newQuantity = sparepart.quantity - quantity;
 
-    const machineData = {
-      store_items_id: machine.store_items_id,
-      store_items_name: name,
+    const sparepartData = {
+      spare_part_id: sparepart.spare_part_id,
+      quantity: newQuantity,
     };
 
-    const updateResult = await updateMachine(machineData);
+    setIsLoading(true);
+
+    const updateResult = await updateSparepart(sparepartData);
     if (!updateResult.success) {
       setSnackbar({
         visible: true,
@@ -66,6 +57,25 @@ const EditMachinePage = () => {
     });
     setIsLoading(false);
     setTimeout(() => navigate(-1), 1500);
+  };
+
+  const handleIncrement = () => {
+    if (quantity < sparepart.quantity) {
+      setQuantity((prevQuantity) => prevQuantity + 1);
+    }
+  };
+
+  const handleDecrement = () => {
+    if (quantity > 0) {
+      setQuantity((prevQuantity) => prevQuantity - 1);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const value = Number(e.target.value);
+    if (value >= 0 && value <= sparepart.quantity) {
+      setQuantity(value);
+    }
   };
 
   useEffect(() => {
@@ -130,29 +140,55 @@ const EditMachinePage = () => {
                 <ArrowLeftIcon className="h-5 w-5 mr-2" />
                 Kembali
               </button>
-              <h2 className="text-base font-semibold leading-7">Edit Mesin</h2>
+              <h2 className="text-base font-semibold leading-7">
+                Penyesuaian Sparepart
+              </h2>
               <p className="mt-1 text-sm leading-6">
-                Informasi ini akan digunakan untuk memperbarui mesin.
+                Informasi ini akan digunakan untuk memperbarui stok sparepart.
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="name"
+                    htmlFor="quantity"
                     className="block text-sm font-medium leading-6"
                   >
-                    Nama Mesin
+                    Stok Yang Tidak Dapat Dijual
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center">
+                    <button
+                      type="button"
+                      onClick={handleDecrement}
+                      className={`px-3 py-1 rounded-l-md ${
+                        quantity > 0
+                          ? "bg-red-500 text-white"
+                          : "bg-red-200 text-gray-500 cursor-not-allowed"
+                      }`}
+                      disabled={quantity <= 0}
+                    >
+                      -
+                    </button>
                     <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      autoComplete="name"
-                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      type="number"
+                      name="quantity"
+                      id="quantity"
+                      value={quantity}
+                      onChange={handleInputChange}
+                      autoComplete="quantity"
+                      className="block w-16 text-center rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 mx-2"
                     />
+                    <button
+                      type="button"
+                      onClick={handleIncrement}
+                      className={`px-3 py-1 rounded-r-md ${
+                        quantity < sparepart.quantity
+                          ? "bg-blue-500 text-white"
+                          : "bg-blue-200 text-gray-500 cursor-not-allowed"
+                      }`}
+                      disabled={quantity >= sparepart.quantity}
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
               </div>
@@ -173,4 +209,4 @@ const EditMachinePage = () => {
   );
 };
 
-export default EditMachinePage;
+export default AdjustSparepartPage;

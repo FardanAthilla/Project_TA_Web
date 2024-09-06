@@ -14,10 +14,12 @@ import AllData from "../pages/page/addAccountPage/allDataView.jsx";
 import ListMachine from "../pages/page/listMachinePage/listMachineView.jsx";
 import AddMachine from "../pages/page/listMachinePage/addMachineView.jsx";
 import EditMachine from "../pages/page/listMachinePage/editMachineView.jsx";
+import AdjustMachine from "../pages/page/listMachinePage/adjustMachineView.jsx";
 
 import ListSparepart from "../pages/page/listSparepartPage/listSparepartView.jsx";
 import AddSparepart from "../pages/page/listSparepartPage/addSparepart.jsx";
 import EditSparepart from "../pages/page/listSparepartPage/editSparepartView.jsx";
+import AdjustSparepart from "../pages/page/listSparepartPage/adjustSparepartView.jsx";
 
 import ListCategory from "../pages/page/listCategoryPage/listCategoryView.jsx";
 import AddCategory from "../pages/page/listCategoryPage/addCategoryView.jsx";
@@ -51,6 +53,7 @@ const Router = () => {
         <Route path="/ListSparepart" element={<ProtectedRoute element={<ListSparepart />} />} />
         <Route path="/AddSparepart" element={<ProtectedRoute element={<AddSparepart />} />} />
         <Route path="/EditSparepart" element={<ProtectedRoute element={<EditSparepart />} />} />
+        <Route path="/AdjustSparepart" element={<ProtectedRoute element={<AdjustSparepart />} />} />
 
         <Route path="/ListCategory" element={<ProtectedRoute element={<ListCategory />} />} />
         <Route path="/AddCategory" element={<ProtectedRoute element={<AddCategory />} />} />
@@ -59,6 +62,7 @@ const Router = () => {
         <Route path="/ListMachine" element={<ProtectedRoute element={<ListMachine />} />} />
         <Route path="/AddMachine" element={<ProtectedRoute element={<AddMachine />} />} />
         <Route path="/EditMachine" element={<ProtectedRoute element={<EditMachine />} />} />
+        <Route path="/AdjustMachine" element={<ProtectedRoute element={<AdjustMachine />} />} />
 
         <Route path="/analytics/penjualan" element={<ProtectedRoute element={<AnalyticsPenjualan />} />} />
         <Route path="/analytics/service" element={<ProtectedRoute element={<AnalyticsService />} />} />
