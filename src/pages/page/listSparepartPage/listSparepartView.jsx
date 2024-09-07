@@ -156,7 +156,7 @@ const ListSparepart = () => {
             </div>
             <div className="p-4 text-right">
               <p className="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                Total Barang Tersedia
+                Total Semua Barang
               </p>
               <h4 className="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
                 {spareparts.length}
@@ -419,12 +419,21 @@ const ListSparepart = () => {
             </div>
           </div>
         )}
-        <div className="inline-block">
-          <Link to="/AddSparepart">
-            <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
-              Tambah Data
-            </button>
-          </Link>
+        <div className="flex space-x-4">
+          <div className="inline-block">
+            <Link to="/AddSparepart">
+              <button className="px-6 py-3 mt-5 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-indigo-600 hover:to-purple-800 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+                Tambah Data
+              </button>
+            </Link>
+          </div>
+          <div className="inline-block">
+            <Link to="/PreOrderSparepart">
+              <button className="px-6 py-3 mt-5 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
+                Pre-Order
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -32,7 +32,7 @@ const EditSparepartPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !price || !quantity) {
+    if (!name || !price) {
       setSnackbar({
         visible: true,
         message: "Semua field harus diisi",
@@ -46,7 +46,7 @@ const EditSparepartPage = () => {
     const sparepartData = {
       spare_part_id: sparepart.spare_part_id,
       spare_part_name: name,
-      price: parseInt(price.replace(/\./g, ""), 10), // Remove dots before sending
+      price: parseInt(price.replace(/\./g, ""), 10),
       quantity: parseInt(quantity, 10),
     };
 
@@ -153,6 +153,27 @@ const EditSparepartPage = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       autoComplete="name"
+                      className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-4">
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium leading-6"
+                  >
+                    Harga
+                  </label>
+                  <div className="mt-2 flex items-center">
+                    <span className="mr-2 text-sm text-gray-500">Rp</span>
+                    <input
+                      type="text"
+                      name="price"
+                      id="price"
+                      value={price}
+                      onChange={handlePriceChange}
+                      autoComplete="price"
                       className="block w-full rounded-md border-0 py-1.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
