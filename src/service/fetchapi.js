@@ -155,6 +155,16 @@ export const fetchMachines = async (searchName = "", searchCategories = "") => {
   }
 };
 
+export const fetchAllMachines = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/store/items`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
+
 export const deleteMachine = async (machineId) => {
   try {
     const response = await axios.delete(`${baseUrl}/store/items/${machineId}`);
@@ -167,6 +177,18 @@ export const deleteMachine = async (machineId) => {
 export const addMachine = async (machineData) => {
   try {
     const response = await axios.post(`${baseUrl}/store/items`, machineData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding machine:", error.message);
+    if (error.response) {
+      console.error("Error details:", error.response.data);
+    }
+    throw error;
+  }
+};
+export const preOrderMachine = async (machineData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/preOrder/store/items`, machineData);
     return response.data;
   } catch (error) {
     console.error("Error adding machine:", error.message);
@@ -200,32 +222,15 @@ export const fetchSparepart = async (searchName = "", searchCategories = "") => 
     throw error;
   }
 };
-
-// Sales by Order ID
-export const fetchSalesByOrderId = async (orderId) => {
+export const fetchAllSparepart = async () => {
   try {
-    const url = `${baseUrl}/search/sales`;
-
-    const response = await axios.get(`${url}?order_id=` + orderId,{ validateStatus: false });
-    return response;
+    const response = await axios.get(`${baseUrl}/spare/part`);
+    return response.data;
   } catch (error) {
-    console.error("Error fetching sales by order ID:", error);
+    console.error('Error fetching data:', error);
     throw error;
   }
 };
-// Service by Order ID
-export const fetchServiceByOrderId = async (orderId) => {
-  try {
-    const url = `${baseUrl}/search/service`;
-
-    const response = await axios.get(`${url}?order_id=` + orderId,{ validateStatus: false });
-    return response;
-  } catch (error) {
-    console.error("Error fetching sales by order ID:", error);
-    throw error;
-  }
-};
-
 
 export const deleteSparepart = async (sparepartId) => {
   try {
@@ -239,6 +244,18 @@ export const deleteSparepart = async (sparepartId) => {
 export const addSparepart = async (sparepartData) => {
   try {
     const response = await axios.post(`${baseUrl}/spare/part`, sparepartData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding machine:", error.message);
+    if (error.response) {
+      console.error("Error details:", error.response.data);
+    }
+    throw error;
+  }
+};
+export const preOrderSparepart = async (sparepartData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/preOrder/spare/part`, sparepartData);
     return response.data;
   } catch (error) {
     console.error("Error adding machine:", error.message);
@@ -300,6 +317,32 @@ export const updateCategory = async (categoryId) => {
     return { success: false, message: error.message };
   }
 };
+
+// Sales by Order ID
+export const fetchSalesByOrderId = async (orderId) => {
+  try {
+    const url = `${baseUrl}/search/sales`;
+
+    const response = await axios.get(`${url}?order_id=` + orderId,{ validateStatus: false });
+    return response;
+  } catch (error) {
+    console.error("Error fetching sales by order ID:", error);
+    throw error;
+  }
+};
+// Service by Order ID
+export const fetchServiceByOrderId = async (orderId) => {
+  try {
+    const url = `${baseUrl}/search/service`;
+
+    const response = await axios.get(`${url}?order_id=` + orderId,{ validateStatus: false });
+    return response;
+  } catch (error) {
+    console.error("Error fetching sales by order ID:", error);
+    throw error;
+  }
+};
+
 
 //service
 export const fetchServiceData = async (days, months, years) => {

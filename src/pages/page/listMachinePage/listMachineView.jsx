@@ -426,7 +426,7 @@ const ListMachine = () => {
             </Link>
           </div>
           <div className="inline-block">
-            <Link to="/AddMachine">
+            <Link to="/PreOrderMachine">
               <button className="px-6 py-3 mt-5 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 rounded-lg text-white shadow-lg transform transition-transform duration-200 hover:scale-110">
                 Pre-Order
               </button>
