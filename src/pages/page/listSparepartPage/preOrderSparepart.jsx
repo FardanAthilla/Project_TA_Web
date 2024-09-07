@@ -85,8 +85,7 @@ const PreOrderSparepart = () => {
 
     if (
       !machineData.quantity ||
-      !machineData.spare_part_id ||
-      !machineData.price
+      !machineData.spare_part_id
     ) {
       setSnackbar({
         visible: true,
@@ -316,10 +315,10 @@ const PreOrderSparepart = () => {
                       -
                     </button>
                     <input
-                      type="
-                      text"
+                      type="number"
                       name="quantity"
                       id="quantity"
+                      autoComplete="quantity"
                       value={machineData.quantity}
                       onChange={(e) =>
                         handleQuantityChange(Number(e.target.value))

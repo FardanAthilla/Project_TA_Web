@@ -288,7 +288,14 @@ const ListMachine = () => {
                       <td>{machine.store_items_name}</td>
                       <td>{machine.Category.category_name}</td>
                       <td>Rp {machine.price.toLocaleString("id-ID")}</td>
-                      <td>{machine.quantity} Pcs</td>
+                      <td
+                        style={{
+                          color: machine.quantity <= 5 ? "red" : "black",
+                        }}
+                      >
+                        {machine.quantity} Pcs{" "}
+                        {machine.quantity <= 5 && <strong>!</strong>}
+                      </td>
                       <td>
                         <button
                           className="btn btn-ghost btn-xs text-gray-600"

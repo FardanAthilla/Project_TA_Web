@@ -79,8 +79,7 @@ const PreOrderMachine = () => {
 
     if (
       !machineData.quantity ||
-      !machineData.store_items_id ||
-      !machineData.price
+      !machineData.store_items_id
     ) {
       setSnackbar({
         visible: true,
@@ -310,11 +309,11 @@ const PreOrderMachine = () => {
                       -
                     </button>
                     <input
-                      type="
-                      text"
+                      type="number"
                       name="quantity"
                       id="quantity"
                       value={machineData.quantity}
+                      autoComplete="quantity"
                       onChange={(e) =>
                         handleQuantityChange(Number(e.target.value))
                       }
