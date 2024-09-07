@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../../components/sidebar';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import ClipLoader from 'react-spinners/ClipLoader';
 import DatePicker from 'react-datepicker';
@@ -19,10 +20,11 @@ const PenjualanView = () => {
   const [endDate, setEndDate] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [errMessage, setErrMessage] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true); // Set loading to true before fetching data
+      setLoading(true);
       try {
         const response = await fetch('https://rdo-app-o955y.ondigitalocean.app/sales');
         const result = await response.json();
@@ -49,13 +51,16 @@ const PenjualanView = () => {
       } catch (error) {
         console.error('Error fetching data: ', error);
       } finally {
-        setLoading(false); // Set loading to false after data is fetched or in case of an error
+        setLoading(false);
       }
     };
   
     fetchData();
   }, []);
   
+  const handleDetailClick = (penjualan) => {
+    navigate('/penjualan/detail', { state: { penjualan } });
+  };
 
   useEffect(() => {
     filterDataByDate();
@@ -187,14 +192,12 @@ const PenjualanView = () => {
     {
       name: 'Barang & kuantitas',
       selector: (row) =>
-        row.items.map((item, index) => (
-          <div key={index}>
-            {item.name}{' '}
+          <div>
+            {row.items[0].name}{' '}
             <span style={{ color: 'blue', fontWeight: 'medium' }}>
-              {item.quantity > 0 ? `(${item.quantity}) pcs` : item.quantity}
+              {row.items[0].quantity > 0 ? `(${row.items[0].quantity}) pcs` : row.items[0].quantity}
             </span>
-          </div>
-        )),
+          </div>,
       width: '20%',
     },
     {
@@ -205,23 +208,28 @@ const PenjualanView = () => {
     {
       name: 'Harga',
       selector: (row) =>
-        row.items.map((item, index) => (
-          <div key={index}>
+          <div>
             <span style={{ fontWeight: 'medium' }}>
               {new Intl.NumberFormat('id-ID', {
                 style: 'currency',
                 currency: 'IDR',
                 minimumFractionDigits: 0,
-              }).format(item.price)}
+              }).format(row.items[0].price)}
               /pcs
             </span>
-          </div>
-        )),
+          </div>,
       width: '20%',
     },
     {
-      name: 'Total Harga',
-      selector: (row) => row.total_price,
+      name: 'Aksi',
+      selector: row => (
+        <button
+          className="text-blue-500"
+          onClick={() => handleDetailClick(row)}
+        >
+          Lihat Detail
+        </button>
+      ),
       width: '20%',
     },
   ];
@@ -249,16 +257,16 @@ const PenjualanView = () => {
     <div className="h-screen flex bg-white">
       <Sidebar />
       <div className="flex-1 flex flex-col p-10 ml-20 sm:ml-64">
+
       {loading ? (
           <div className="text-center">
             <span className="loading loading-dots loading-lg"></span>
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-3xl font-bold">Rekap Penjualan</h1>
-              <div className="flex items-end space-x-4">
-                <div className="flex items-end space-x-4">
+              <h1 className="text-3xl font-bold">Rekap Penjualan</h1> 
+              <div className="flex justify-between space-x-4 mb-4">
+                <div className="flex items-end space-x-4 ">
                   <label className="relative flex items-center w-80">
                     <input
                       type="number"
@@ -284,6 +292,13 @@ const PenjualanView = () => {
                     </svg>
                   </label>
                 </div>
+                <div className="flex items-end space-x-4">
+                <button
+                  onClick={clearDateFilters}
+                  className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Reset
+                </button>
                 <div>
                   <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
                   <DatePicker
@@ -310,14 +325,8 @@ const PenjualanView = () => {
                     className="mt-1 p-2 border rounded w-full border-gray-500"
                   />
                 </div>
-                <button
-                  onClick={clearDateFilters}
-                  className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Reset
-                </button>
+                </div>
               </div>
-            </div>
             {loadingData ?
             (
               <div className="text-center">
@@ -332,7 +341,7 @@ const PenjualanView = () => {
                 customStyles={customStyles}
               />
             </div>
-            : <div className="text-center">
+            : <div className="text-center mt-5">
             Data Tidak Ditemukan
           </div>
             }

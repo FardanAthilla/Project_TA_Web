@@ -152,7 +152,7 @@
   },
 
       {
-        name: 'Keluhan',
+        name: 'Aksi',
         selector: row => (
           <button
             className="text-blue-500"
@@ -294,9 +294,8 @@
           </div>
         ) : (
             <>
-              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">Rekap Service</h1>
-                <div className="flex items-end space-x-4">
+              <h1 className="text-3xl font-bold">Rekap Service</h1>
+                <div className="flex justify-between space-x-4 mb-4">
                 <div className="flex items-end space-x-4">
                     <label className="relative flex items-center w-80">
                       <input
@@ -322,7 +321,14 @@
                       </svg>
                     </label>
                   </div>
-                <div>
+                  <div className="flex items-end space-x-4">
+                  <button
+                  onClick={clearDateFilters}
+                  className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Reset
+                </button> 
+                  <div>
                   <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Tanggal Awal</label>
                   <DatePicker
                     selected={startDate}
@@ -348,13 +354,10 @@
                       className="mt-1 p-2 border rounded w-full border-gray-500"
                     />
                   </div>
-                  <button
-                  onClick={clearDateFilters}
-                  className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Reset
-                </button>                </div>
-              </div>
+                    
+                  </div>
+
+                </div>
               {
                 loadingData ? (
                   <div className="text-center">
@@ -375,7 +378,7 @@
                 loadingData ? <div>
                 </div>
                 : errMessage == null ? <>
-                              {filteredData.length > 0 && ( // Conditionally render pagination
+                              {filteredData.length > 0 && (
                 <div className="flex justify-center mt-4">
                   <div className="join pt-5">
                     <button
