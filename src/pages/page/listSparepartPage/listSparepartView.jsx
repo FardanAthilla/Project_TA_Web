@@ -288,7 +288,14 @@ const ListSparepart = () => {
                       <td>{sparepart.spare_part_name}</td>
                       <td>{sparepart.Category.category_name}</td>
                       <td>Rp {sparepart.price.toLocaleString("id-ID")}</td>
-                      <td>{sparepart.quantity} Pcs</td>
+                      <td
+                        style={{
+                          color: sparepart.quantity <= 5 ? "red" : "black",
+                        }}
+                      >
+                        {sparepart.quantity} Pcs{" "}
+                        {sparepart.quantity <= 5 && <strong>!</strong>}
+                      </td>
                       <td>
                         <button
                           className="btn btn-ghost btn-xs text-gray-600"
