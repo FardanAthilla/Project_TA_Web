@@ -34,6 +34,8 @@ import PublicRoute from "../router/publicRoute.jsx";
 import AnalyticsPenjualan from "../pages/page/historyanalytics/penjualan.jsx";
 import AnalyticsService from "../pages/page/historyanalytics/service.jsx";
 
+import PenjualanDetailView from "../pages/page/historyanalytics/penjualandetail.jsx";
+
 import ServiceView from "../pages/page/historyanalytics/service.jsx" 
 import ServiceDetailView from "../pages/page/historyanalytics/servicedetail.jsx"; 
 
@@ -70,6 +72,8 @@ const Router = () => {
 
         <Route path="/analytics/penjualan" element={<ProtectedRoute element={<AnalyticsPenjualan />} />} />
         <Route path="/analytics/service" element={<ProtectedRoute element={<AnalyticsService />} />} />
+
+        <Route path="/penjualan/detail" element={<ProtectedRoute element={<PenjualanDetailView />} />} />
 
         <Route path="/service" element={<ProtectedRoute element={<ServiceView />} />} />
         <Route path="/service/detail" element={<ProtectedRoute element={<ServiceDetailView />} />} />
